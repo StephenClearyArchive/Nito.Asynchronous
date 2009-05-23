@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="d7dfd17f-4c20-4278-b1bc-f67556965fb7" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>
+        The <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> type is logically similar to the <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> type; however, there are several important differences.
+      </para>
+    </introduction>
+    <section address="SectionImplementation">
+      <title>Implementation</title>
+      <content>
+        <para>
+          <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> is intended to synchronize components with the WPF framework.
+          It uses Win32 message pumping to execute its actions.
+        </para>
+        <para>
+          <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is intended for use in non-GUI contexts.
+          It uses thread synchronization to maintain an actual queue of actions.
+        </para>
+      </content>
+    </section>
+    <section address="SectionInvoke">
+      <title>Invoking Actions</title>
+      <content>
+        <para>
+          <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.QueueAction(System.Action)</codeEntityReference> will queue an action to an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>.
+          There is no automatic completion notification for queued actions.
+        </para>
+        <para>
+          <codeEntityReference qualifyHint="true">Overload:System.Windows.Threading.Dispatcher.Invoke</codeEntityReference> will synchronously wait for a queued action to complete, which is not supported by <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>.
+          To support completion notification, queue an action that explicitly notifies the calling code when it has completed.
+          <codeEntityReference qualifyHint="true">Overload:System.Windows.Threading.Dispatcher.BeginInvoke</codeEntityReference> can be used to optionally wait for a queued action to complete as well.
+        </para>
+        <para>
+          Another way of saying this is that <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> only supports <newTerm>Post</newTerm> semantics, while <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> supports both <newTerm>Post</newTerm> and <newTerm>Send</newTerm> semantics.
+        </para>
+      </content>
+    </section>
+    <section address="SectionRun">
+      <title>Thread Affinity</title>
+      <content>
+        <para>
+          An <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> binds to its thread only when <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.Run</codeEntityReference> is called, and unbinds when <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.Run</codeEntityReference> returns.
+        </para>
+        <para>
+          A <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> binds to its thread when it is created; only one <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> may be associated with a thread, and only that thread may call <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.Run</codeEntityReference>.
+        </para>
+      </content>
+    </section>
+    <section address="SectionShutdown">
+      <title>Shutting Down</title>
+      <content>
+        <para>
+          <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.QueueExit</codeEntityReference> will queue an exit action to an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>.
+          There is no completion notification for a queued exit.
+        </para>
+        <para>
+          When a <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> is shutdown by calling <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.InvokeShutdown</codeEntityReference> or <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority)</codeEntityReference>, all current actions will be aborted and the dispatcher will not allow new ones.
+          A <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> cannot be restarted once it has been shutdown.
+        </para>
+        <para>
+          When an exit action is queued to an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>, it continues executing actions until it executes the exit action.
+          The exit action causes the thread to return from <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.Run</codeEntityReference>, but actions may remain in the queue if they were queued after the exit action.
+          New actions may be queued to the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> even if it has exited.
+          After an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> has exited, it may be run again (by any thread) by calling <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.Run</codeEntityReference>; this will resume executing queued actions.
+        </para>
+      </content>
+    </section>
+    <section address="SectionCurrent">
+      <title>Getting the Current Dispatcher</title>
+      <content>
+        <para>
+          <codeEntityReference qualifyHint="true">P:Nito.Async.ActionDispatcher.Current</codeEntityReference> will return null if the current thread is not running an action queue.
+        </para>
+        <para>
+          <codeEntityReference qualifyHint="true">P:System.Windows.Threading.Dispatcher.CurrentDispatcher</codeEntityReference> will create a dispatcher for the current thread if it doesn't have one.
+        </para>
+      </content>
+    </section>
+    <section address="SectionMissing">
+      <title>Concepts Not Supported by ActionDispatcher</title>
+      <content>
+        <para>
+          Several APIs provided by <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> are invalid or unnecessary for <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>.
+        </para>
+      </content>
+      <sections>
+        <section address="SectionMissingAccess">
+          <title>Checking for the Correct Current Thread</title>
+          <content>
+            <para>
+              <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.CheckAccess</codeEntityReference> and <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.VerifyAccess</codeEntityReference> are only useful when writing components that have <codeInline>Dispatcher</codeInline> properties.
+              No components should be developed with <codeInline>ActionDispatcher</codeInline> properties, since such a property would imply a framework and <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is framework-agnostic.
+            </para>
+          </content>
+        </section>
+        <section address="SectionMissingFrame">
+          <title>Nested Message Loops</title>
+          <content>
+            <para>
+              <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.PushFrame(System.Windows.Threading.DispatcherFrame)</codeEntityReference> and <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.ExitAllFrames</codeEntityReference> allow setting up a nested loop.
+              This may be useful in rare scenarios, but encourages bad programming practice.
+            </para>
+          </content>
+        </section>
+        <section address="SectionMissingUnhandledException">
+          <title>Handling Unhandled Exceptions Thrown by Actions</title>
+          <content>
+            <para>
+              <codeEntityReference qualifyHint="true">E:System.Windows.Threading.Dispatcher.UnhandledException</codeEntityReference> allows exceptions to be handled by an event.
+              This is not supported by <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>; top-level exceptions are treated as fatal errors and allowed to propogate to the thread executing <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.Run</codeEntityReference>.
+              Handling top-level exceptions with event handlers encourages bad programming practice.
+            </para>
+          </content>
+        </section>
+        <section address="SectionMissingDisableProcessing">
+          <title>Temporarily Disabling Processing</title>
+          <content>
+            <para>
+              <codeEntityReference qualifyHint="true">M:System.Windows.Threading.Dispatcher.DisableProcessing</codeEntityReference> is not necessary, because <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is not based on Win32 window messages and does not allow nested loops.
+            </para>
+          </content>
+        </section>
+        <section address="SectionMissingPriorities">
+          <title>Priorities</title>
+          <content>
+            <para>
+              <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference> has the notion of action priorities, and executes its actions based on those priorities.
+              <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> performs in a strictly FIFO manner.
+            </para>
+          </content>
+        </section>
+        <section address="SectionMissingEvents">
+          <title>Dispatcher Events</title>
+          <content>
+            <para>
+              <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> does not have any events, since they can cause additional thread synchronization problems.
+            </para>
+          </content>
+        </section>
+      </sections>
+    </section>
+    <relatedTopics>
+      <link xlink:href="23096cb3-05f0-4fb8-95e9-2421fc25069f">
+        <!-- "ActionDispatcher.xml" -->
+        ActionDispatcher Conceptual Documentation
+      </link>
+      <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>
+      <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
