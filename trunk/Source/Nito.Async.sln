@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async", "Nito.Async\Nito.Async.csproj", "{708763ED-7801-4F2C-B103-4FEBD771769A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.Sockets", "Nito.Async.Sockets\Nito.Async.Sockets.csproj", "{B412B766-BEC2-407C-A7A1-0E5257511515}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F70F391-A7C2-4F5B-964D-6093712F68A7}"
+	ProjectSection(SolutionItems) = preProject
+		Nito.FxCop = Nito.FxCop
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Help Concepts", "Help Concepts", "{C2ED13FE-8EED-41D4-9A2C-BD7D381D9758}"
+	ProjectSection(SolutionItems) = preProject
+		HelpConcepts\ActionDispatcher Compared To Dispatcher.aml = HelpConcepts\ActionDispatcher Compared To Dispatcher.aml
+		HelpConcepts\ActionDispatcher.aml = HelpConcepts\ActionDispatcher.aml
+		HelpConcepts\Nito.Async.aml = HelpConcepts\Nito.Async.aml
+		HelpConcepts\Revision History.aml = HelpConcepts\Revision History.aml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{708763ED-7801-4F2C-B103-4FEBD771769A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{708763ED-7801-4F2C-B103-4FEBD771769A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{708763ED-7801-4F2C-B103-4FEBD771769A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{708763ED-7801-4F2C-B103-4FEBD771769A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B412B766-BEC2-407C-A7A1-0E5257511515}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B412B766-BEC2-407C-A7A1-0E5257511515}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B412B766-BEC2-407C-A7A1-0E5257511515}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B412B766-BEC2-407C-A7A1-0E5257511515}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C2ED13FE-8EED-41D4-9A2C-BD7D381D9758} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
+	EndGlobalSection
+EndGlobal

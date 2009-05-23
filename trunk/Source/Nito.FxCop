@@ -1,0 +1,1225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FxCopProject Version="1.36" Name="Nito.Async">
+ <ProjectOptions>
+  <SharedProject>True</SharedProject>
+  <Stylesheet Apply="False">c:\program files\microsoft fxcop 1.36\Xml\FxCopReport.xsl</Stylesheet>
+  <SaveMessages>
+   <Project Status="Active, Excluded" NewOnly="False" />
+   <Report Status="Active" NewOnly="False" />
+  </SaveMessages>
+  <ProjectFile Compress="True" DefaultTargetCheck="True" DefaultRuleCheck="True" SaveByRuleGroup="" Deterministic="True" />
+  <EnableMultithreadedLoad>True</EnableMultithreadedLoad>
+  <EnableMultithreadedAnalysis>True</EnableMultithreadedAnalysis>
+  <SourceLookup>True</SourceLookup>
+  <AnalysisExceptionsThreshold>10</AnalysisExceptionsThreshold>
+  <RuleExceptionsThreshold>1</RuleExceptionsThreshold>
+  <Spelling Locale="en-US" />
+  <OverrideRuleVisibilities>False</OverrideRuleVisibilities>
+  <CustomDictionaries SearchFxCopDir="True" SearchUserProfile="True" SearchProjectDir="True" />
+  <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
+  <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
+  <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+ </ProjectOptions>
+ <Targets>
+  <Target Name="$(ProjectDir)/Nito.Async.Sockets/bin/Release/Nito.Async.Sockets.dll" Analyze="True" AnalyzeAllChildren="True" />
+  <Target Name="$(ProjectDir)/Nito.Async/bin/Release/Nito.Async.dll" Analyze="True" AnalyzeAllChildren="True" />
+ </Targets>
+ <Rules>
+  <RuleFiles>
+   <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="False">
+    <Rule Name="AbstractTypesShouldNotHaveConstructors" Enabled="True" />
+    <Rule Name="AssembliesShouldHaveValidStrongNames" Enabled="True" />
+    <Rule Name="AvoidEmptyInterfaces" Enabled="True" />
+    <Rule Name="AvoidExcessiveParametersOnGenericTypes" Enabled="True" />
+    <Rule Name="AvoidNamespacesWithFewTypes" Enabled="True" />
+    <Rule Name="AvoidOutParameters" Enabled="True" />
+    <Rule Name="CollectionsShouldImplementGenericInterface" Enabled="True" />
+    <Rule Name="ConsiderPassingBaseTypesAsParameters" Enabled="True" />
+    <Rule Name="DeclareTypesInNamespaces" Enabled="True" />
+    <Rule Name="DefaultParametersShouldNotBeUsed" Enabled="True" />
+    <Rule Name="DefineAccessorsForAttributeArguments" Enabled="True" />
+    <Rule Name="DoNotCatchGeneralExceptionTypes" Enabled="True" />
+    <Rule Name="DoNotDeclareProtectedMembersInSealedTypes" Enabled="True" />
+    <Rule Name="DoNotDeclareStaticMembersOnGenericTypes" Enabled="True" />
+    <Rule Name="DoNotDeclareVirtualMembersInSealedTypes" Enabled="True" />
+    <Rule Name="DoNotDeclareVisibleInstanceFields" Enabled="True" />
+    <Rule Name="DoNotExposeGenericLists" Enabled="True" />
+    <Rule Name="DoNotHideBaseClassMethods" Enabled="True" />
+    <Rule Name="DoNotNestGenericTypesInMemberSignatures" Enabled="True" />
+    <Rule Name="DoNotOverloadOperatorEqualsOnReferenceTypes" Enabled="True" />
+    <Rule Name="DoNotPassTypesByReference" Enabled="True" />
+    <Rule Name="DoNotRaiseExceptionsInUnexpectedLocations" Enabled="True" />
+    <Rule Name="EnumeratorsShouldBeStronglyTyped" Enabled="True" />
+    <Rule Name="EnumsShouldHaveZeroValue" Enabled="True" />
+    <Rule Name="EnumStorageShouldBeInt32" Enabled="True" />
+    <Rule Name="ExceptionsShouldBePublic" Enabled="True" />
+    <Rule Name="GenericMethodsShouldProvideTypeParameter" Enabled="True" />
+    <Rule Name="ICollectionImplementationsHaveStronglyTypedMembers" Enabled="True" />
+    <Rule Name="ImplementIDisposableCorrectly" Enabled="True" />
+    <Rule Name="ImplementStandardExceptionConstructors" Enabled="True" />
+    <Rule Name="IndexersShouldNotBeMultidimensional" Enabled="True" />
+    <Rule Name="InterfaceMethodsShouldBeCallableByChildTypes" Enabled="True" />
+    <Rule Name="ListsAreStronglyTyped" Enabled="True" />
+    <Rule Name="MarkAssembliesWithAssemblyVersion" Enabled="True" />
+    <Rule Name="MarkAssembliesWithClsCompliant" Enabled="True" />
+    <Rule Name="MarkAssembliesWithComVisible" Enabled="True" />
+    <Rule Name="MarkAttributesWithAttributeUsage" Enabled="True" />
+    <Rule Name="MarkEnumsWithFlags" Enabled="True" />
+    <Rule Name="MembersShouldNotExposeCertainConcreteTypes" Enabled="True" />
+    <Rule Name="MovePInvokesToNativeMethodsClass" Enabled="True" />
+    <Rule Name="NestedTypesShouldNotBeVisible" Enabled="True" />
+    <Rule Name="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Enabled="True" />
+    <Rule Name="OverrideMethodsOnComparableTypes" Enabled="True" />
+    <Rule Name="PropertiesShouldNotBeWriteOnly" Enabled="True" />
+    <Rule Name="ProvideObsoleteAttributeMessage" Enabled="True" />
+    <Rule Name="ReplaceRepetitiveArgumentsWithParamsArray" Enabled="True" />
+    <Rule Name="StaticHolderTypesShouldBeSealed" Enabled="True" />
+    <Rule Name="StaticHolderTypesShouldNotHaveConstructors" Enabled="True" />
+    <Rule Name="StringUriOverloadsCallSystemUriOverloads" Enabled="True" />
+    <Rule Name="TypesShouldNotExtendCertainBaseTypes" Enabled="True" />
+    <Rule Name="TypesThatOwnDisposableFieldsShouldBeDisposable" Enabled="True" />
+    <Rule Name="TypesThatOwnNativeResourcesShouldBeDisposable" Enabled="True" />
+    <Rule Name="UriParametersShouldNotBeStrings" Enabled="True" />
+    <Rule Name="UriPropertiesShouldNotBeStrings" Enabled="True" />
+    <Rule Name="UriReturnValuesShouldNotBeStrings" Enabled="True" />
+    <Rule Name="UseEventsWhereAppropriate" Enabled="True" />
+    <Rule Name="UseGenericEventHandlerInstances" Enabled="True" />
+    <Rule Name="UseGenericsWhereAppropriate" Enabled="True" />
+    <Rule Name="UseIntegralOrStringArgumentForIndexers" Enabled="True" />
+    <Rule Name="UsePropertiesWhereAppropriate" Enabled="True" />
+   </RuleFile>
+   <RuleFile Name="$(FxCopDir)\Rules\GlobalizationRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
+  </RuleFiles>
+  <Groups />
+  <Settings />
+ </Rules>
+ <FxCopReport Version="1.36">
+  <Namespaces>
+   <Namespace Name="Nito.Async">
+    <Messages>
+     <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:39:58Z">
+      <Issue Name="Namespace">
+       <Item>Nito</Item>
+       <Item>Nito.Async</Item>
+      </Issue>
+      <Notes>
+       <User Name="scleary">
+        <Note Id="1" />
+       </User>
+      </Notes>
+     </Message>
+    </Messages>
+   </Namespace>
+   <Namespace Name="Nito.Async.Sockets">
+    <Messages>
+     <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:43:57Z">
+      <Issue Name="Namespace">
+       <Item>Nito</Item>
+       <Item>Nito.Async.Sockets</Item>
+      </Issue>
+      <Notes>
+       <User Name="scleary">
+        <Note Id="2" />
+       </User>
+      </Notes>
+     </Message>
+    </Messages>
+   </Namespace>
+  </Namespaces>
+  <Targets>
+   <Target Name="$(ProjectDir)/Nito.Async.Sockets/bin/Release/Nito.Async.Sockets.dll">
+    <Modules>
+     <Module Name="nito.async.sockets.dll">
+      <Messages>
+       <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:43:57Z">
+        <Issue Name="Assembly">
+         <Item>Nito</Item>
+         <Item>'Nito.Async.Sockets.dll'</Item>
+        </Issue>
+        <Notes>
+         <User Name="scleary">
+          <Note Id="3" />
+         </User>
+        </Notes>
+       </Message>
+      </Messages>
+      <Namespaces>
+       <Namespace Name="Nito.Async.Sockets">
+        <Types>
+         <Type Name="ClientTcpSocket">
+          <Members>
+           <Member Name="#ConnectCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ReadCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;int&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ClientTcpSocketImpl">
+          <Members>
+           <Member Name="#ConnectAsync(System.Net.IPEndPoint)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'ClientTcpSocketImpl.ConnectAsync(IPEndPoint)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="16" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="IAsyncTcpConnection">
+          <Members>
+           <Member Name="#LocalEndPoint">
+            <Messages>
+             <Message Id="EndPoint" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>EndPoint</Item>
+               <Item>'IAsyncTcpConnection.LocalEndPoint'</Item>
+               <Item>Endpoint</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="11" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RemoteEndPoint">
+            <Messages>
+             <Message Id="EndPoint" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>EndPoint</Item>
+               <Item>'IAsyncTcpConnection.RemoteEndPoint'</Item>
+               <Item>Endpoint</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="12" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ReadCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;int&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ISimpleAsyncTcpConnection">
+          <Members>
+           <Member Name="#KeepaliveTimeout">
+            <Messages>
+             <Message Id="Keepalive" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="Member">
+               <Item>Keepalive</Item>
+               <Item>'ISimpleAsyncTcpConnection.KeepaliveTimeout'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="34" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#LocalEndPoint">
+            <Messages>
+             <Message Id="EndPoint" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>EndPoint</Item>
+               <Item>'ISimpleAsyncTcpConnection.LocalEndPoint'</Item>
+               <Item>Endpoint</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="9" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RemoteEndPoint">
+            <Messages>
+             <Message Id="EndPoint" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>EndPoint</Item>
+               <Item>'ISimpleAsyncTcpConnection.RemoteEndPoint'</Item>
+               <Item>Endpoint</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="10" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#PacketArrived" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;byte[]&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ServerChildTcpSocket">
+          <Members>
+           <Member Name="#ReadCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;int&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ServerTcpSocket">
+          <Members>
+           <Member Name="#LocalEndPoint">
+            <Messages>
+             <Message Id="EndPoint" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>EndPoint</Item>
+               <Item>'ServerTcpSocket.LocalEndPoint'</Item>
+               <Item>Endpoint</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="13" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#AcceptCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;ServerChildTcpSocket&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ServerTcpSocketImpl">
+          <Members>
+           <Member Name="#AcceptAsync()">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'ServerTcpSocketImpl.AcceptAsync()'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="15" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="SimpleClientTcpSocket">
+          <Members>
+           <Member Name="#ConnectCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#PacketArrived" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;byte[]&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="SimpleServerChildTcpSocket">
+          <Members>
+           <Member Name="#Dispose()">
+            <Messages>
+             <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="NotCalled">
+               <Item>'SimpleServerChildTcpSocket.Dispose()'</Item>
+               <Item>'GC.SuppressFinalize(object)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="8" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#PacketArrived" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;byte[]&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteCompleted" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncCompletedEventArgs&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="SimpleServerTcpSocket">
+          <Members>
+           <Member Name="#Dispose()">
+            <Messages>
+             <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="NotCalled">
+               <Item>'SimpleServerTcpSocket.Dispose()'</Item>
+               <Item>'GC.SuppressFinalize(object)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="6" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#LocalEndPoint">
+            <Messages>
+             <Message Id="EndPoint" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>EndPoint</Item>
+               <Item>'SimpleServerTcpSocket.LocalEndPoint'</Item>
+               <Item>Endpoint</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="14" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ConnectionArrived" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;SimpleServerChildTcpSocket&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="30" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="SocketPacketProtocol">
+          <Members>
+           <Member Name="#WriteKeepaliveAsync(Nito.Async.Sockets.IAsyncTcpConnection)">
+            <Messages>
+             <Message Id="Keepalive" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:20:22Z">
+              <Issue Name="Member">
+               <Item>Keepalive</Item>
+               <Item>'SocketPacketProtocol.WriteKeepaliveAsync(IAsyncTcpConnection)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="35" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#PacketArrived" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 20:20:22Z">
+              <Issue>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;byte[]&gt;&gt;'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="36" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="TcpSocketImpl">
+          <Members>
+           <Member Name="#Dispose()">
+            <Messages>
+             <Message TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue Name="NotCalled">
+               <Item>'TcpSocketImpl.Dispose()'</Item>
+               <Item>'GC.SuppressFinalize(object)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="7" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ReadAsync(System.Byte[],System.Int32,System.Int32)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'TcpSocketImpl.ReadAsync(byte[], int, int)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="19" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#ShutdownAsync()">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'TcpSocketImpl.ShutdownAsync()'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="17" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteAsync(System.Byte[],System.Int32,System.Int32,System.Object)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-20 19:43:57Z">
+              <Issue>
+               <Item>'TcpSocketImpl.WriteAsync(byte[], int, int, object)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="18" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+   <Target Name="$(ProjectDir)/Nito.Async/bin/Release/Nito.Async.dll">
+    <Modules>
+     <Module Name="nito.async.dll">
+      <Messages>
+       <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:39:58Z">
+        <Issue Name="Assembly">
+         <Item>Nito</Item>
+         <Item>'Nito.Async.dll'</Item>
+        </Issue>
+        <Notes>
+         <User Name="scleary">
+          <Note Id="0" />
+         </User>
+        </Notes>
+       </Message>
+      </Messages>
+      <Namespaces>
+       <Namespace Name="Nito.Async">
+        <Types>
+         <Type Name="ActionDispatcher+ExitException">
+          <Messages>
+           <Message TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064" Status="Excluded" Created="2009-01-24 15:52:10Z">
+            <Issue>
+             <Item>'ActionDispatcher.ExitException'</Item>
+            </Issue>
+            <Notes>
+             <User Name="stephen">
+              <Note Id="1" />
+             </User>
+            </Notes>
+           </Message>
+           <Message TypeName="ImplementStandardExceptionConstructors" Category="Microsoft.Design" CheckId="CA1032" Status="Excluded" Created="2009-01-24 15:52:10Z">
+            <Issue Name="MissingConstructor">
+             <Item>'ActionDispatcher.ExitException'</Item>
+             <Item>private ExitException(SerializationInfo, StreamingContext)</Item>
+            </Issue>
+            <Notes>
+             <User Name="stephen">
+              <Note Id="2" />
+             </User>
+            </Notes>
+           </Message>
+           <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Status="Excluded" Created="2009-01-24 15:52:10Z">
+            <Issue Certainty="95" Level="Error">
+             <Item>'ActionDispatcher.ExitException'</Item>
+            </Issue>
+            <Notes>
+             <User Name="stephen">
+              <Note Id="3" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="ActionDispatcherSynchronizationContext">
+          <Messages>
+           <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Excluded" Created="2009-01-24 15:52:10Z" FixCategory="DependsOnFix">
+            <Issue Name="DependsOnFix">
+             <Item>'ActionDispatcherSynchronizationContext'</Item>
+             <Item>'ManualResetEvent'</Item>
+            </Issue>
+            <Notes>
+             <User Name="stephen">
+              <Note Id="0" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="AsyncResultEventArgs`1">
+          <Members>
+           <Member Name="#.ctor(!0,System.Exception,System.Boolean,System.Object)">
+            <Messages>
+             <Message Id="cancelled" TypeName="UsePreferredTerms" Category="Microsoft.Naming" CheckId="CA1726" Status="Excluded" Created="2009-01-20 19:39:58Z">
+              <Issue Name="MemberParameter">
+               <Item>'AsyncResultEventArgs&lt;T&gt;.AsyncResultEventArgs(T, Exception, bool, object)'</Item>
+               <Item>cancelled</Item>
+               <Item>'cancelled'</Item>
+               <Item>canceled</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="AsyncTimeoutTimer">
+          <Members>
+           <Member Name="#Timeout" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:39:58Z">
+              <Issue>
+               <Item>'Action'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="29" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="GenericSynchronizingObject">
+          <Members>
+           <Member Name="#BeginInvoke(System.Delegate,System.Object[])">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-02-25 03:32:06Z">
+              <Issue>
+               <Item>'GenericSynchronizingObject.BeginInvoke(Delegate, object[])'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="7" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Invoke(System.Delegate,System.Object[])">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-02-25 03:32:06Z">
+              <Issue>
+               <Item>'GenericSynchronizingObject.Invoke(Delegate, object[])'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="8" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="GenericSynchronizingObject+AsyncResult">
+          <Messages>
+           <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Status="Excluded" Created="2009-01-20 19:39:58Z" FixCategory="NonBreaking">
+            <Issue Name="NonBreaking">
+             <Item>'GenericSynchronizingObject.AsyncResult'</Item>
+             <Item>'ManualResetEvent'</Item>
+            </Issue>
+            <Notes>
+             <User Name="scleary">
+              <Note Id="5" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="Sync">
+          <Members>
+           <Member Name="#InvokeAndCallback(System.Action,System.Action`1&lt;System.ComponentModel.AsyncCompletedEventArgs&gt;,System.Object)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-26 05:19:38Z">
+              <Issue>
+               <Item>'Sync.InvokeAndCallback(Action, Action&lt;AsyncCompletedEventArgs&gt;, object)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="5" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#InvokeAndCallback`1(System.Func`1&lt;!!0&gt;,System.Action`1&lt;Nito.Async.AsyncResultEventArgs`1&lt;!!0&gt;&gt;,System.Object)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2009-01-26 05:19:38Z">
+              <Issue>
+               <Item>'Sync.InvokeAndCallback&lt;T&gt;(Func&lt;T&gt;, Action&lt;AsyncResultEventArgs&lt;T&gt;&gt;, object)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="4" />
+               </User>
+              </Notes>
+             </Message>
+             <Message TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006" Status="Excluded" Created="2009-01-26 05:19:38Z">
+              <Issue>
+               <Item>'Sync.InvokeAndCallback&lt;T&gt;(Func&lt;T&gt;, Action&lt;AsyncResultEventArgs&lt;T&gt;&gt;, object)'</Item>
+               <Item>'Action&lt;AsyncResultEventArgs&lt;T&gt;&gt;'</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="6" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#SynchronizeAction`2(System.Action`2&lt;!!0,!!1&gt;)">
+            <Messages>
+             <Message Id="1" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2&gt;(Action&lt;T1, T2&gt;)'</Item>
+               <Item>'T1'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="33" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="2" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2&gt;(Action&lt;T1, T2&gt;)'</Item>
+               <Item>'T2'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="33" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#SynchronizeAction`3(System.Action`3&lt;!!0,!!1,!!2&gt;)">
+            <Messages>
+             <Message Id="1" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;)'</Item>
+               <Item>'T1'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="31" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="2" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;)'</Item>
+               <Item>'T2'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="31" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="3" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;)'</Item>
+               <Item>'T3'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="31" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#SynchronizeAction`4(System.Action`4&lt;!!0,!!1,!!2,!!3&gt;)">
+            <Messages>
+             <Message Id="1" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)'</Item>
+               <Item>'T1'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="32" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="2" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)'</Item>
+               <Item>'T2'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="32" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="3" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)'</Item>
+               <Item>'T3'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="32" />
+               </User>
+              </Notes>
+             </Message>
+             <Message Id="4" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 20:15:02Z" FixCategory="NonBreaking">
+              <Issue Name="MethodTypeParameterMoreMeaningfulName">
+               <Item>'Sync.SynchronizeAction&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)'</Item>
+               <Item>'T4'</Item>
+              </Issue>
+              <Notes>
+               <User Name="scleary">
+                <Note Id="32" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Timer">
+          <Members>
+           <Member Name="#Elapsed" Kind="Event">
+            <Messages>
+             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-05-08 10:38:43Z">
+              <Issue>
+               <Item>'Action'</Item>
+               <Item>EventHandler</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="9" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+  </Targets>
+  <Notes>
+   <User Name="scleary">
+    <Note Id="0" Modified="2009-01-20 19:45:46Z">'Nito' is the correct spelling.</Note>
+    <Note Id="1" Modified="2009-01-20 19:45:57Z">'Nito' is the correct spelling.</Note>
+    <Note Id="2" Modified="2009-01-20 19:46:13Z">'Nito' is the correct spelling.</Note>
+    <Note Id="3" Modified="2009-01-20 19:46:20Z">'Nito' is the correct spelling.</Note>
+    <Note Id="4" Modified="2009-01-20 19:49:04Z">Nito prefers the term 'cancelled'</Note>
+    <Note Id="5" Modified="2009-01-20 19:52:35Z">GenericSynchronizingObject.AsyncResult will dispose of its IDisposable member if it is passed to EndInvoke; if not, GC will take place. This is a rare situation, since the end-user would have to access AsyncWaitHandle without then passing it to EndInvoke.</Note>
+    <Note Id="6" Modified="2009-01-20 19:53:20Z">SimpleServerTcpSocket does not have a finalizer.</Note>
+    <Note Id="7" Modified="2009-01-20 19:53:29Z">TcpSocketImpl does not have a finalizer.</Note>
+    <Note Id="8" Modified="2009-01-20 19:53:41Z">SimpleServerChildTcpSocket does not have a finalizer.</Note>
+    <Note Id="9" Modified="2009-01-20 19:54:32Z">Followed Microsoft practice - see Socket.LocalEndPoint.</Note>
+    <Note Id="10" Modified="2009-01-20 19:54:42Z">Followed Microsoft practice - see Socket.RemoteEndPoint.</Note>
+    <Note Id="11" Modified="2009-01-20 19:54:47Z">Followed Microsoft practice - see Socket.LocalEndPoint.</Note>
+    <Note Id="12" Modified="2009-01-20 19:54:58Z">Followed Microsoft practice - see Socket.RemoteEndPoint.</Note>
+    <Note Id="13" Modified="2009-01-20 19:55:03Z">Followed Microsoft practice - see Socket.LocalEndPoint.</Note>
+    <Note Id="14" Modified="2009-01-20 19:55:08Z">Followed Microsoft practice - see Socket.LocalEndPoint.</Note>
+    <Note Id="15" Modified="2009-01-20 19:57:49Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
+    <Note Id="16" Modified="2009-01-20 19:57:51Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
+    <Note Id="17" Modified="2009-01-20 19:57:53Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
+    <Note Id="18" Modified="2009-01-20 19:57:55Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
+    <Note Id="19" Modified="2009-01-20 19:57:58Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
+    <Note Id="29" Modified="2009-01-20 20:06:59Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
+    <Note Id="30" Modified="2009-01-20 20:07:30Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
+    <Note Id="31" Modified="2009-01-20 20:15:38Z">Followed Microsoft practice - see Action&lt;T1, T2, T3&gt;.</Note>
+    <Note Id="32" Modified="2009-01-20 20:15:49Z">Followed Microsoft practice - see Action&lt;T1, T2, T3, T4&gt;.</Note>
+    <Note Id="33" Modified="2009-01-20 20:16:00Z">Followed Microsoft practice - see Action&lt;T1, T2&gt;.</Note>
+    <Note Id="34" Modified="2009-01-20 20:16:26Z">'Keepalive' is a single word and a single concept. It should not be camelcased.</Note>
+    <Note Id="35" Modified="2009-01-20 20:20:59Z">'Keepalive' is a single word and a single concept. It should not be camelcased.</Note>
+    <Note Id="36" Modified="2009-01-20 20:21:45Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
+   </User>
+   <User Name="stephen">
+    <Note Id="0" Modified="2009-01-24 15:59:03Z">False positive: ActionDispatcherSynchronizationContext.Send binds a lambda to a local variable of type ManualResetEvent which is in a using statement (the lambda executes completely before Send returns). So, the object is being disposed properly.</Note>
+    <Note Id="1" Modified="2009-01-24 15:59:48Z">ExitException is a special, private exception type. Making it public would allow end-users to change the semantics of QueueExit.</Note>
+    <Note Id="2" Modified="2009-01-24 15:59:54Z">ExitException is a special, private exception type. Making it public would allow end-users to change the semantics of QueueExit.</Note>
+    <Note Id="3" Modified="2009-01-24 16:00:05Z">ExitException is a special, private exception type. Making it public would allow end-users to change the semantics of QueueExit.</Note>
+    <Note Id="4" Modified="2009-01-26 11:54:40Z">InvokeAndCallback is specifically supposed to catch all exceptions and pass them to the callback delegate.</Note>
+    <Note Id="5" Modified="2009-01-26 11:54:44Z">InvokeAndCallback is specifically supposed to catch all exceptions and pass them to the callback delegate.</Note>
+    <Note Id="6" Modified="2009-01-26 11:55:34Z">This method is usually called with a delegate or method argument, so the generic types are not directly nested.</Note>
+    <Note Id="7" Modified="2009-02-25 03:33:19Z">Invoke is specifically supposed to catch all exceptions and pass them back to the original caller.</Note>
+    <Note Id="8" Modified="2009-02-25 03:33:27Z">Invoke is specifically supposed to catch all exceptions and pass them back to the original caller.</Note>
+    <Note Id="9" Modified="2009-05-08 10:39:32Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
+   </User>
+  </Notes>
+  <Rules>
+   <Rule TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816">
+    <Resolution Name="NotCalled">Change {0} to call {1}. This will prevent unnecessary finalization of the object once it has been disposed and it has fallen out of scope.</Resolution>
+   </Rule>
+   <Rule TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702">
+    <Resolution Name="MemberShouldBeDiscreteTerm">The compound word '{0}' in member name {1} exists as a discrete term. If your usage is intended to be single word, case it as '{2}' or strip the first token entirely if it represents any sort of Hungarian notation.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
+    <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006">
+    <Resolution Name="Default">Consider a design where {0} doesn't nest generic type {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="ExceptionsShouldBePublic" Category="Microsoft.Design" CheckId="CA1064">
+    <Resolution Name="Default">Make exception class {0} public.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
+    <Resolution Name="Assembly">Correct the spelling of '{0}' in assembly name {1}.</Resolution>
+    <Resolution Name="Member">Correct the spelling of '{0}' in member name {1} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
+    <Resolution Name="MethodTypeParameterMoreMeaningfulName">On method {0}, consider providing a more meaningful name than generic type parameter name {1}.</Resolution>
+    <Resolution Name="Namespace">Correct the spelling of '{0}' in namespace name '{1}'.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710">
+    <Resolution Name="Default">Rename {0} to end in '{1}'.</Resolution>
+   </Rule>
+   <Rule TypeName="ImplementStandardExceptionConstructors" Category="Microsoft.Design" CheckId="CA1032">
+    <Resolution Name="MissingConstructor">Add the following constructor to {0}: {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237">
+    <Resolution Name="Default">Add [Serializable] to {0} as this type implements ISerializable.</Resolution>
+   </Rule>
+   <Rule TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001">
+    <Resolution Name="DependsOnFix">Implement IDisposable on {0} because it creates members of the following IDisposable types: {1}. If {0} has previously shipped, adding new members that implement IDisposable to this type is considered a breaking change to existing consumers.</Resolution>
+    <Resolution Name="NonBreaking">Implement IDisposable on {0} because it creates members of the following IDisposable types: {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="UsePreferredTerms" Category="Microsoft.Naming" CheckId="CA1726">
+    <Resolution Name="MemberParameter">In member {0}, replace the term '{1}' in parameter name {2} with the preferred alternate '{3}'.</Resolution>
+   </Rule>
+  </Rules>
+ </FxCopReport>
+</FxCopProject>
