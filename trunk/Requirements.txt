@@ -1,0 +1,5 @@
+Visual Studio 2008 (Express version should work)
+Sandcastle Help File Builder, 1.8.0.1 Beta (2009-02-05)
+ Sandcastle, May 2008 release (2.4.10520)
+ Sandcastle Styles: Sandcastle May 2008 Patch, Rev 2 (2008-11-02)
+ HTML Help Workshop
