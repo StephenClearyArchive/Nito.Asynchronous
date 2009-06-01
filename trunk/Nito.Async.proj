@@ -4,6 +4,7 @@
   <!-- Recommended command-line: msbuild /nologo /p:Version=2.0 /fl1 /flp1:v=diag -->
   
   <!-- We do not do automatic SCC checkins or "get latest"; this allows rebuilding previous releases. -->
+  <!-- Also, the entire build process is x86-based. -->
 
   <ItemGroup>
     <!--
@@ -23,6 +24,12 @@
     <Sources Include="Source\**\*.cs"/>
   </ItemGroup>
 
+  <PropertyGroup>
+    <!-- The SrcSrv directory from Debugging Tools for Windows -->
+    <SrcSrv Condition="Exists('$(ProgramFiles)\Debugging Tools for Windows (x86)\srcsrv\')">$(ProgramFiles)\Debugging Tools for Windows (x86)\srcsrv\</SrcSrv>
+  </PropertyGroup>
+  
+  
   <!-- Defines the steps necessary to build a release -->
   <Target Name="BuildRelease"
           DependsOnTargets="UpdateVersions;BuildLibraries;BuildHelp"
@@ -105,7 +112,7 @@
   </Target>
 
   <!-- This task should be run *after* UpdateVersions, if UpdateVersions is required
-    1) Build all .csproj files under Source (with strong-name signing if possible)
+    1) Builds all .csproj files under Source (with strong-name signing if possible)
     2) Authenticode-signs the dlls if possible
     3) Corrects the xml documentation files so that referring to method overload pages is possible
     4) Copies output to appropriate directories
@@ -184,7 +191,15 @@
               SigningTarget="%(BuildOutputs.Identity)"
               TimestampUrl="http://timestamp.globalsign.com/scripts/timstamp.dll"
               />
+
+    <!-- Copy PDB files to staging directory -->
+    <Copy SourceFiles="@(BuildOutputs->'%(RootDir)%(Directory)%(Filename).pdb')" DestinationFolder="staging\pdb" />
     
+    <!-- Source index the PDB files -->
+    <Exec Condition="'$(SrcSrv)' != ''"
+          Command="&quot;$(SrcSrv)SSIndex.cmd&quot; -SYSTEM=SVN -SYMBOLS=staging"
+          />
+
     <!-- Copy DLL files and PDB files to binary output folders -->
     <Copy SourceFiles="@(BuildOutputs)" DestinationFolder="release" />
     <Copy SourceFiles="@(BuildOutputs->'%(RootDir)%(Directory)%(Filename).pdb')" DestinationFolder="release" />
@@ -236,6 +251,7 @@ TODO:
 . Run unit tests on compiled code
 . CheckCopyrights
 . Consider StyleCop
+. Have a "clean" command
 
 -->
 

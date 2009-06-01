@@ -1,5 +1,16 @@
-Visual Studio 2008 (Express version should work)
-Sandcastle Help File Builder, 1.8.0.1 Beta (2009-02-05)
- Sandcastle, May 2008 release (2.4.10520)
- Sandcastle Styles: Sandcastle May 2008 Patch, Rev 2 (2008-11-02)
- HTML Help Workshop
+In order to build Nito.Async from source, the following tools are required.
+
+For the binaries:
+  .NET Framework 3.5 SP1: http://www.microsoft.com/downloads/details.aspx?FamilyID=ab99342f-5d1a-413d-8319-81da479ab0d7
+  Visual Studio 2008 SP1: http://www.microsoft.com/express/download/
+
+For the help file:
+  Sandcastle Help File Builder, 1.8.0.1 Beta (2009-02-05): http://shfb.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=18639
+  Sandcastle, May 2008 release (2.4.10520): http://sandcastle.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=13873
+  Sandcastle Styles: Sandcastle May 2008 Patch, Rev 2 (2008-11-02): http://sandcastlestyles.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=18784
+  HTML Help Workshop: http://msdn.microsoft.com/en-us/library/ms669985.aspx
+
+For the pdb files:
+  Debugging Tools for Windows (x86), 6.3 or newer: http://www.microsoft.com/whdc/devtools/debugging/default.mspx
+  Perl 5.6 or newer: http://www.activestate.com/activeperl/
+  Subversion command-line client: http://www.sliksvn.com/en/download
