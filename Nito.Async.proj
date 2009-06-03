@@ -1,8 +1,6 @@
-<Project ToolsVersion="3.5" DefaultTargets="BuildRelease" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="3.5" DefaultTargets="BuildLibraries" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\ExtensionPack\MSBuild.ExtensionPack.tasks" />
 
-  <!-- Recommended command-line: msbuild /nologo /p:Version=<maj>.<min> /fl1 /flp1:v=diag -->
-  
   <!-- We do not do automatic SCC checkins or "get latest"; this allows rebuilding previous releases. -->
   <!-- Also, the entire build process is x86-based. -->
 
@@ -439,9 +437,6 @@
 <!--
 
 TODO:
-. Change default target to BuildLibraries, not BuildRelease
-. Add cmd for building a release, specifically
-. Move version from cmd into build script (reduce duplication)
 . Package into zip (?)
 . Run unit tests on compiled code
 . CheckCopyrights
