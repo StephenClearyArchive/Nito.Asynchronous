@@ -15,7 +15,7 @@
     <Projects Include="Source\**\*.csproj"/>
 
     <!-- The certificate to use for strong-name signing (a missing file is not an error; the signing is just skipped instead) -->
-    <StrongNameCertificate Include="C:\Work\Nito\_\Code Signing\Certificates\Microsoft Strong Name\Microsoft Strong Name Private Key.snk"/>
+    <StrongNameCertificate Include="C:\Work\Nito\Code Signing\Certificates\Microsoft Strong Name\Microsoft Strong Name Private Key.snk"/>
 
     <!-- The certificate to use for authenticode signing (a missing file is not an error; the signing is just skipped instead) -->
     <AuthenticodeCertificate Include="C:\Work\Nito\Code Signing\Certificates\GlobalSign ObjectSign Code Signing Certificate\MSCV-GlobalSign.cer"/>
@@ -165,7 +165,7 @@
       <Output TaskParameter="AnalysisFailed" PropertyName="FxCopResult"/>
       <Output TaskParameter="OutputText" PropertyName="FxCopErrorMessage"/>
     </MSBuild.ExtensionPack.CodeQuality.FxCop>
-    <Error Condition="'$(FxCopResult)' == 'true'" Text="FxCop failed: $(OutputText)"/>
+    <Warning Condition="'$(FxCopResult)' == 'true'" Text="FxCop failed: $(OutputText) See FxCopLog.xml for details."/>
     
     <!-- Correct XML documentation using XSL -->
     <PropertyGroup>
@@ -439,7 +439,6 @@
 <!--
 
 TODO:
-. Change FxCop to not halt the build (just output a warning instead, pointing to the log file) - e.g., non-signed assemblies will abort the build.
 . Change default target to BuildLibraries, not BuildRelease
 . Add cmd for building a release, specifically
 . Move version from cmd into build script (reduce duplication)
