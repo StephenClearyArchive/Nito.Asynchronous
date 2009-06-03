@@ -161,7 +161,7 @@
     <!-- Run FxCop -->
     <MSBuild.ExtensionPack.CodeQuality.FxCop TaskAction="Analyse"
                                              Project="Source\Nito.FxCop"
-                                             OutputFile="FxCopLog.txt">
+                                             OutputFile="FxCopLog.xml">
       <Output TaskParameter="AnalysisFailed" PropertyName="FxCopResult"/>
       <Output TaskParameter="OutputText" PropertyName="FxCopErrorMessage"/>
     </MSBuild.ExtensionPack.CodeQuality.FxCop>
@@ -440,7 +440,6 @@
 
 TODO:
 . Change FxCop to not halt the build (just output a warning instead, pointing to the log file) - e.g., non-signed assemblies will abort the build.
-. Output FxCop log to ".xml" file, which is what the tool insists on.
 . Change default target to BuildLibraries, not BuildRelease
 . Add cmd for building a release, specifically
 . Move version from cmd into build script (reduce duplication)
