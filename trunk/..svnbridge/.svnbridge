@@ -2,4 +2,9 @@
 release
 staging
 FxCopLog.txt
+</Value></Property><Property><Name>svn:ignore</Name><Value>FxCopLog.txt
+FxCopLog.xml
+msbuild1.log
+release
+staging
 </Value></Property></Properties></ItemProperties>
