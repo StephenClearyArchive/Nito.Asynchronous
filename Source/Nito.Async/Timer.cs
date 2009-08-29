@@ -16,7 +16,6 @@ namespace Nito.Async
     /// <para>An enabled timer waits until the time specified by <see cref="Interval"/> has elapsed; at that time, if <see cref="AutoReset"/> is false, the timer becomes disabled. The timer then invokes <see cref="Elapsed"/>. When the <see cref="Elapsed"/> handler returns, if the timer is enabled, it begins waiting again.</para>
     /// <para>Note that periodic timers do not count the time spent in <see cref="Elapsed"/> as part of the wait time.</para>
     /// <para>A timer may be restarted by calling <see cref="Restart"/>, setting <see cref="Interval"/> to its own value, or setting <see cref="Enabled"/> to false and then back to true.</para>
-    /// <para>Timers do not increment or decrement the asynchronous operation count, so they must be handled explicitly if the <see cref="SynchronizationContext"/> implementation depends on it (such as the ASP.NET <see cref="SynchronizationContext"/>).</para>
     /// <para>A Timer must be used with a synchronization context that supports <see cref="SynchronizationContextProperties.Synchronized"/>.</para>
     /// </remarks>
     public sealed class Timer : IDisposable
