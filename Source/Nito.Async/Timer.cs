@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
+﻿// <copyright file="Timer.cs" company="Nito Programs">
+//     Copyright (c) 2009 Nito Programs.
+// </copyright>
 
 namespace Nito.Async
 {
+    using System;
+    using System.Threading;
+
     /// <summary>
     /// Represents a timer that uses <see cref="SynchronizationContext"/> to synchronize with its creating thread.
     /// </summary>
@@ -35,60 +36,53 @@ namespace Nito.Async
         private CallbackContext context;
 
         /// <summary>
-        /// Creates a new timer, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
+        /// Whether or not this timer class is currently executing <see cref="Elapsed"/>.
+        /// </summary>
+        private bool inElapsed;
+
+        /// <summary>
+        /// The backing field for <see cref="Enabled"/> while <see cref="inElapsed"/> is true.
+        /// </summary>
+        private bool enabledAfterElapsed;
+
+        /// <summary>
+        /// The backing field for <see cref="Interval"/> while <see cref="inElapsed"/> is false.
+        /// </summary>
+        private TimeSpan interval;
+
+        /// <summary>
+        /// The backing field for <see cref="Interval"/> while <see cref="inElapsed"/> is true.
+        /// </summary>
+        private TimeSpan intervalAfterElapsed;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Timer"/> class, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
         /// </summary>
         public Timer()
         {
             // Capture the synchronization context 
-            synchronizationContext = SynchronizationContext.Current;
-            if (synchronizationContext == null)
-                synchronizationContext = new SynchronizationContext();
+            this.synchronizationContext = SynchronizationContext.Current;
+            if (this.synchronizationContext == null)
+            {
+                this.synchronizationContext = new SynchronizationContext();
+            }
 
             // Create the context for timer callbacks
-            context = new CallbackContext();
+            this.context = new CallbackContext();
         }
 
         /// <summary>
-        /// Handles a timer event from the underlying timer.
+        /// Occurs when the timer's wait time has elapsed.
         /// </summary>
-        private void OnTimer()
-        {
-            // When this is called, we have already been synchronized with the original thread and our context is valid (see Enabled.set() for details).
-
-            // Copy properties for use from within the callback; these are the "default values"
-            EnabledAfterElapsed_ = AutoReset;
-            IntervalAfterElapsed_ = Interval_;
-
-            // Set the flag indicating we're in the callback
-            inElapsed = true;
-
-            // Call the callback
-            try
-            {
-                if (Elapsed != null)
-                    Elapsed();
-            }
-            finally
-            {
-                // Reset "in callback" flag
-                inElapsed = false;
-
-                // Apply all variables that may have been set in the callback
-                Interval_ = IntervalAfterElapsed_;
-                if (!EnabledAfterElapsed_)
-                {
-                    // Destroy the underlying timer
-                    timer.Dispose();
-                    timer = null;
-                }
-                else
-                {
-                    // Since the timer is enabled (either single-shot or periodic, we don't care), and since it has already elapsed, we can just
-                    //  re-use the underlying timer object and context instead of re-creating them at this point.
-                    timer.Change(Interval_, TimeSpan.FromMilliseconds(-1));
-                }
-            }
-        }
+        /// <remarks>
+        /// <para>This event is not invoked for disabled timers (see <see cref="Enabled"/>). However, it may be invoked with the <see cref="Enabled"/> property set to false; see below.</para>
+        /// <para>If <see cref="AutoReset"/> is true, then <see cref="Enabled"/> remains true when this event is invoked. If <see cref="AutoReset"/> is false, then <see cref="Enabled"/> is set to false immediately before invoking this event.</para>
+        /// <para>Handlers for this event may enable/disable the timer or set any properties. These operations will not have an effect until <see cref="Elapsed"/> returns. If <see cref="Elapsed"/> raises an exception, these operations will still apply.</para>
+        /// <para>Note that <see cref="AutoReset"/> is not used after <see cref="Elapsed"/> returns. It is only used to determine the value of <see cref="Enabled"/> when <see cref="Elapsed"/> is invoked.</para>
+        /// <para>If <see cref="Enabled"/> is true when <see cref="Elapsed"/> returns, then the timer is restarted.</para>
+        /// <para><see cref="Elapsed"/> should not raise an exception; if it does, the exception will be passed through to the <see cref="SynchronizationContext"/>. Different <see cref="SynchronizationContext"/> implementations handle this situation differently.</para>
+        /// </remarks>
+        public event Action Elapsed;
 
         /// <summary>
         /// Gets or sets a value indicating whether a timer is enabled.
@@ -103,47 +97,52 @@ namespace Nito.Async
         {
             get
             {
-                if (inElapsed)
-                    return EnabledAfterElapsed_;
+                if (this.inElapsed)
+                {
+                    return this.enabledAfterElapsed;
+                }
                 else
-                    return (timer != null);
+                {
+                    return this.timer != null;
+                }
             }
+
             set
             {
                 // If we are in the callback, just save the value and return (it will be applied after the callback returns)
-                if (inElapsed)
+                if (this.inElapsed)
                 {
-                    EnabledAfterElapsed_ = value;
+                    this.enabledAfterElapsed = value;
                     return;
                 }
 
                 // Do nothing if enabling an already-enabled timer, or disabling an already-disabled timer.
-                if (Enabled == value)
+                if (this.Enabled == value)
+                {
                     return;
+                }
 
                 if (value)
                 {
                     // Start the timer
 
                     // Bind the callback to our context and synchronization context
-                    Action boundOnTimer = context.Bind(OnTimer, synchronizationContext);
+                    Action boundOnTimer = this.context.Bind(this.OnTimer, this.synchronizationContext);
 
                     // The underlying timer delegate (raised on a ThreadPool thread) will first synchronize with the original thread
                     //  using the captured SynchronizationContext. Then it will determine if its binding is still valid and call OnTimer
                     //  if it's OK. OnTimer only handles the user callback logic.
-                    timer = new System.Threading.Timer((state) => boundOnTimer(),
-                        null, Interval_, TimeSpan.FromMilliseconds(-1));
+                    this.timer = new System.Threading.Timer((state) => boundOnTimer(), null, this.interval, TimeSpan.FromMilliseconds(-1));
                 }
                 else
                 {
                     // Stop the underlying timer
-                    context.Reset();
-                    timer.Dispose();
-                    timer = null;
+                    this.context.Reset();
+                    this.timer.Dispose();
+                    this.timer = null;
                 }
             }
         }
-        private bool EnabledAfterElapsed_;
 
         /// <summary>
         /// Gets or sets a value indicating whether the timer should become enabled again by default when <see cref="Elapsed"/> returns.
@@ -168,35 +167,38 @@ namespace Nito.Async
         {
             get
             {
-                if (inElapsed)
-                    return IntervalAfterElapsed_;
+                if (this.inElapsed)
+                {
+                    return this.intervalAfterElapsed;
+                }
                 else
-                    return Interval_;
+                {
+                    return this.interval;
+                }
             }
+
             set
             {
                 // If we are in the callback, just save the value and return (it will be applied after the callback returns)
-                if (inElapsed)
+                if (this.inElapsed)
                 {
-                    IntervalAfterElapsed_ = value;
+                    this.intervalAfterElapsed = value;
                     return;
                 }
 
                 // If the timer is already running, then stop it, set the time, and restart it.
-                if (Enabled)
+                if (this.Enabled)
                 {
-                    Enabled = false;
-                    Interval_ = value;
-                    Enabled = true;
+                    this.Enabled = false;
+                    this.interval = value;
+                    this.Enabled = true;
                     return;
                 }
 
                 // The timer is not already running, so we can just directly set the value.
-                Interval_ = value;
+                this.interval = value;
             }
         }
-        private TimeSpan Interval_;
-        private TimeSpan IntervalAfterElapsed_;
 
         /// <summary>
         /// Sets the timer to wait for an interval.
@@ -211,10 +213,10 @@ namespace Nito.Async
         public void SetSingleShot(TimeSpan interval)
         {
             // Only public properties are used here to allow this function to be called from Elapsed
-            Enabled = false;
-            AutoReset = false;
-            Interval = interval;
-            Enabled = true;
+            this.Enabled = false;
+            this.AutoReset = false;
+            this.Interval = interval;
+            this.Enabled = true;
         }
 
         /// <summary>
@@ -231,10 +233,10 @@ namespace Nito.Async
         public void SetPeriodic(TimeSpan period)
         {
             // Only public properties are used here to allow this function to be called from Elapsed
-            Enabled = false;
-            AutoReset = true;
-            Interval = period;
-            Enabled = true;
+            this.Enabled = false;
+            this.AutoReset = true;
+            this.Interval = period;
+            this.Enabled = true;
         }
 
         /// <summary>
@@ -248,7 +250,7 @@ namespace Nito.Async
         public void Cancel()
         {
             // Only public properties are used here to allow this function to be called from Elapsed
-            Enabled = false;
+            this.Enabled = false;
         }
 
         /// <summary>
@@ -259,8 +261,8 @@ namespace Nito.Async
         /// </remarks>
         public void Dispose()
         {
-            Enabled = false;
-            context.Dispose();
+            this.Enabled = false;
+            this.context.Dispose();
         }
 
         /// <summary>
@@ -271,26 +273,52 @@ namespace Nito.Async
         /// </remarks>
         public void Restart()
         {
-            Enabled = false;
-            Enabled = true;
+            this.Enabled = false;
+            this.Enabled = true;
         }
 
         /// <summary>
-        /// Whether or not this timer class is currently executing <see cref="Elapsed"/>.
+        /// Handles a timer event from the underlying timer.
         /// </summary>
-        private bool inElapsed;
+        private void OnTimer()
+        {
+            // When this is called, we have already been synchronized with the original thread and our context is valid (see Enabled.set() for details).
 
-        /// <summary>
-        /// Occurs when the timer's wait time has elapsed.
-        /// </summary>
-        /// <remarks>
-        /// <para>This event is not invoked for disabled timers (see <see cref="Enabled"/>). However, it may be invoked with the <see cref="Enabled"/> property set to false; see below.</para>
-        /// <para>If <see cref="AutoReset"/> is true, then <see cref="Enabled"/> remains true when this event is invoked. If <see cref="AutoReset"/> is false, then <see cref="Enabled"/> is set to false immediately before invoking this event.</para>
-        /// <para>Handlers for this event may enable/disable the timer or set any properties. These operations will not have an effect until <see cref="Elapsed"/> returns. If <see cref="Elapsed"/> raises an exception, these operations will still apply.</para>
-        /// <para>Note that <see cref="AutoReset"/> is not used after <see cref="Elapsed"/> returns. It is only used to determine the value of <see cref="Enabled"/> when <see cref="Elapsed"/> is invoked.</para>
-        /// <para>If <see cref="Enabled"/> is true when <see cref="Elapsed"/> returns, then the timer is restarted.</para>
-        /// <para><see cref="Elapsed"/> should not raise an exception; if it does, the exception will be passed through to the <see cref="SynchronizationContext"/>. Different <see cref="SynchronizationContext"/> implementations handle this situation differently.</para>
-        /// </remarks>
-        public event Action Elapsed;
+            // Copy properties for use from within the callback; these are the "default values"
+            this.enabledAfterElapsed = this.AutoReset;
+            this.intervalAfterElapsed = this.interval;
+
+            // Set the flag indicating we're in the callback
+            this.inElapsed = true;
+
+            // Call the callback
+            try
+            {
+                if (this.Elapsed != null)
+                {
+                    this.Elapsed();
+                }
+            }
+            finally
+            {
+                // Reset "in callback" flag
+                this.inElapsed = false;
+
+                // Apply all variables that may have been set in the callback
+                this.interval = this.intervalAfterElapsed;
+                if (!this.enabledAfterElapsed)
+                {
+                    // Destroy the underlying timer
+                    this.timer.Dispose();
+                    this.timer = null;
+                }
+                else
+                {
+                    // Since the timer is enabled (either single-shot or periodic, we don't care), and since it has already elapsed, we can just
+                    //  re-use the underlying timer object and context instead of re-creating them at this point.
+                    this.timer.Change(this.interval, TimeSpan.FromMilliseconds(-1));
+                }
+            }
+        }
     }
 }

@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel;
-using System.Threading;
-
-// Copyright 2009 by Nito Programs.
+﻿// <copyright file="Synchronize.cs" company="Nito Programs">
+//     Copyright (c) 2009 Nito Programs.
+// </copyright>
 
 namespace Nito.Async
 {
+    using System;
+    using System.ComponentModel;
+    using System.Threading;
+
     /// <summary>
     /// Provides utility methods for implementing asynchronous operations.
     /// </summary>
@@ -37,7 +37,7 @@ namespace Nito.Async
             AsyncOperation operation = AsyncOperationManager.CreateOperation(new object());
 
             // This delegate will be executed on another thread, probably a ThreadPool thread
-            return delegate()
+            return delegate
             {
                 // Synchronize the operation back to the originating thread
                 operation.PostOperationCompleted((unusedState) => callback(), null);
@@ -114,7 +114,7 @@ namespace Nito.Async
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
         /// <typeparam name="T3">The type of the third parameter to the callback.</typeparam>
-        /// <typeparam name="T4">The type of the third parameter to the callback.</typeparam>
+        /// <typeparam name="T4">The type of the fourth parameter to the callback.</typeparam>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
         public static Action<T1, T2, T3, T4> SynchronizeAction<T1, T2, T3, T4>(Action<T1, T2, T3, T4> callback)

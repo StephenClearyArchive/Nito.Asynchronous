@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Security.Permissions;
-
-// Copyright 2009 by Nito Programs.
+﻿// <copyright file="ActionDispatcher.cs" company="Nito Programs">
+//     Copyright (c) 2009 Nito Programs.
+// </copyright>
 
 namespace Nito.Async
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Security.Permissions;
+    using System.Threading;
+
     /// <summary>
     /// A thread-safe queue of actions.
     /// </summary>
@@ -18,27 +19,40 @@ namespace Nito.Async
     public sealed class ActionDispatcher : IDisposable
     {
         /// <summary>
-        /// A special type; when thrown, this indicates the thread should exit <see cref="Run"/>.
-        /// </summary>
-        private sealed class ExitException : Exception { }
-
-        /// <summary>
         /// An event that is signalled when the action queue has at least one action to run.
         /// </summary>
-        private ManualResetEvent ActionQueueNotEmpty_;
+        private ManualResetEvent actionQueueNotEmptyEvent;
 
         /// <summary>
         /// The queue holding the actions to run.
         /// </summary>
-        private Queue<Action> ActionQueue_;
+        private Queue<Action> actionQueue;
 
         /// <summary>
-        /// Initializes a new, empty action queue.
+        /// Initializes a new instance of the <see cref="ActionDispatcher"/> class with an empty action queue.
         /// </summary>
         public ActionDispatcher()
         {
-            ActionQueueNotEmpty_ = new ManualResetEvent(false);
-            ActionQueue_ = new Queue<Action>();
+            this.actionQueueNotEmptyEvent = new ManualResetEvent(false);
+            this.actionQueue = new Queue<Action>();
+        }
+
+        /// <summary>
+        /// Gets the currently active action queue. For executing actions, this is their own action queue; for other threads, this is null.
+        /// </summary>
+        /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
+        public static ActionDispatcher Current
+        {
+            get
+            {
+                ActionDispatcherSynchronizationContext context = SynchronizationContext.Current as ActionDispatcherSynchronizationContext;
+                if (context == null)
+                {
+                    return null;
+                }
+
+                return context.ActionDispatcher;
+            }
         }
 
         /// <summary>
@@ -50,30 +64,7 @@ namespace Nito.Async
         /// </threadsafety>
         public void Dispose()
         {
-            ActionQueueNotEmpty_.Close();
-        }
-
-        /// <summary>
-        /// Waits for the action queue to be non-empty, removes a single action, and returns it.
-        /// </summary>
-        private Action DequeueAction()
-        {
-            // Wait for an action to arrive
-            ActionQueueNotEmpty_.WaitOne();
-
-            Action ret;
-
-            lock (ActionQueue_)
-            {
-                // Remove an action from the action queue
-                ret = ActionQueue_.Dequeue();
-
-                // Reset the signal if necessary
-                if (ActionQueue_.Count == 0)
-                    ActionQueueNotEmpty_.Reset();
-            }
-
-            return ret;
+            this.actionQueueNotEmptyEvent.Close();
         }
 
         /// <summary>
@@ -96,7 +87,7 @@ namespace Nito.Async
                 while (true)
                 {
                     // Dequeue and run an action
-                    DequeueAction()();
+                    this.DequeueAction()();
                 }
             }
             catch (ExitException)
@@ -115,14 +106,16 @@ namespace Nito.Async
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
         public void QueueAction(Action action)
         {
-            lock (ActionQueue_)
+            lock (this.actionQueue)
             {
                 // Add the action to the action queue
-                ActionQueue_.Enqueue(action);
+                this.actionQueue.Enqueue(action);
 
                 // Set the signal if necessary
-                if (ActionQueue_.Count == 1)
-                    ActionQueueNotEmpty_.Set();
+                if (this.actionQueue.Count == 1)
+                {
+                    this.actionQueueNotEmptyEvent.Set();
+                }
             }
         }
 
@@ -136,80 +129,40 @@ namespace Nito.Async
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
         public void QueueExit()
         {
-            QueueAction(() => { throw new ExitException(); });
+            this.QueueAction(() => { throw new ExitException(); });
         }
 
         /// <summary>
-        /// Returns the currently active action queue. For executing actions, this is their own action queue; for other threads, this is null.
+        /// Waits for the action queue to be non-empty, removes a single action, and returns it.
         /// </summary>
-        /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
-        public static ActionDispatcher Current
+        /// <returns>The next action from the action queue.</returns>
+        private Action DequeueAction()
         {
-            get
+            // Wait for an action to arrive
+            this.actionQueueNotEmptyEvent.WaitOne();
+
+            Action ret;
+
+            lock (this.actionQueue)
             {
-                ActionDispatcherSynchronizationContext context = SynchronizationContext.Current as ActionDispatcherSynchronizationContext;
-                if (context == null)
-                    return null;
-                return context.ActionDispatcher_;
+                // Remove an action from the action queue
+                ret = this.actionQueue.Dequeue();
+
+                // Reset the signal if necessary
+                if (this.actionQueue.Count == 0)
+                {
+                    this.actionQueueNotEmptyEvent.Reset();
+                }
             }
-        }
-    }
 
-    /// <summary>
-    /// Provides a synchronization context for a thread running an <see cref="ActionDispatcher"/>.
-    /// </summary>
-    public sealed class ActionDispatcherSynchronizationContext : SynchronizationContext
-    {
-        /// <summary>
-        /// The action queue for the thread to synchronize with.
-        /// </summary>
-        internal ActionDispatcher ActionDispatcher_;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ActionDispatcherSynchronizationContext"/> class by using the specified <see cref="ActionDispatcher"/>.
-        /// </summary>
-        /// <param name="actionDispatcher">The action queue to associate with this <see cref="ActionDispatcherSynchronizationContext"/>.</param>
-        public ActionDispatcherSynchronizationContext(ActionDispatcher actionDispatcher)
-        {
-            ActionDispatcher_ = actionDispatcher;
+            return ret;
         }
 
         /// <summary>
-        /// Creates a copy of this <see cref="ActionDispatcherSynchronizationContext"/>.
+        /// A special exception type; when thrown, this indicates the thread should exit <see cref="Run"/>.
         /// </summary>
-        /// <returns>The copy of this synchronization context.</returns>
-        /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
-        public override SynchronizationContext CreateCopy()
+        private sealed class ExitException : Exception
         {
-            return new ActionDispatcherSynchronizationContext(ActionDispatcher_);
-        }
-
-        /// <summary>
-        /// Invokes the callback in the synchronization context asynchronously. The callback is placed in the action queue.
-        /// </summary>
-        /// <param name="d">The delegate to call.</param>
-        /// <param name="state">The object passed to the delegate.</param>
-        /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
-        public override void Post(SendOrPostCallback d, object state)
-        {
-            ActionDispatcher_.QueueAction(() => d(state));
-        }
-
-        /// <summary>
-        /// Invokes the callback in the synchronization context synchronously. The callback is placed in the action queue.
-        /// </summary>
-        /// <param name="d">The delegate to call.</param>
-        /// <param name="state">The object passed to the delegate.</param>
-        /// <remarks>
-        /// <para>This method cannot be called from the thread running the action queue associated with this synchronization context.</para>
-        /// </remarks>
-        public override void Send(SendOrPostCallback d, object state)
-        {
-            using (ManualResetEvent evt = new ManualResetEvent(false))
-            {
-                ActionDispatcher_.QueueAction(() => { d(state); evt.Set(); });
-                evt.WaitOne();
-            }
         }
     }
 }
