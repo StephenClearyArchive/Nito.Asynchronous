@@ -40,9 +40,14 @@ namespace Nito.Async
         Sequential = 0x8,
 
         /// <summary>
-        /// The <see cref="SynchronizationContext"/> makes all guarantees.
+        /// The <see cref="SynchronizationContext"/> has exactly one managed thread associated with it. Any <see cref="SynchronizationContext"/> specifying <see cref="SpecificAssociatedThread"/> should also specify <see cref="Synchronized"/>.
         /// </summary>
-        All = NonReentrantPost | NonReentrantSend | Synchronized | Sequential
+        SpecificAssociatedThread = 0x10,
+
+        /// <summary>
+        /// The <see cref="SynchronizationContext"/> makes the standard guarantees (<see cref="NonReentrantPost"/>, <see cref="NonReentrantSend"/>, <see cref="Synchronized"/>, <see cref="Sequential"/>, and <see cref="SpecificAssociatedThread"/>). This is defined as a constant because most custom synchronization contexts do make these guarantees.
+        /// </summary>
+        Standard = NonReentrantPost | NonReentrantSend | Synchronized | Sequential | SpecificAssociatedThread,
     }
 
     /// <summary>
@@ -53,20 +58,7 @@ namespace Nito.Async
         /// <summary>
         /// A mapping from synchronization context type names to their properties. We map from type names instead of actual types to avoid dependencies on unnecessary assemblies.
         /// </summary>
-        private static Dictionary<string, SynchronizationContextProperties> synchronizationContextProperties;
-
-        /// <summary>
-        /// Initializes static members of the <see cref="SynchronizationContextRegister"/> class with all <see cref="SynchronizationContext"/> types built into the .NET framework.
-        /// </summary>
-        static SynchronizationContextRegister()
-        {
-            synchronizationContextProperties = new Dictionary<string, SynchronizationContextProperties>();
-            synchronizationContextProperties.Add("System.Threading.SynchronizationContext", SynchronizationContextProperties.NonReentrantPost);
-            synchronizationContextProperties.Add("System.Windows.Forms.WindowsFormsSynchronizationContext", SynchronizationContextProperties.All);
-            synchronizationContextProperties.Add("System.Windows.Threading.DispatcherSynchronizationContext", SynchronizationContextProperties.All);
-            
-            // AspNetSynchronizationContext does not provide any guarantees at all, so it is not added here
-        }
+        private static Dictionary<string, SynchronizationContextProperties> synchronizationContextProperties = PredefinedSynchronizationContextProperties();
 
         /// <summary>
         /// Registers a <see cref="SynchronizationContext"/> type claiming to provide certain guarantees.
@@ -127,6 +119,21 @@ namespace Nito.Async
             {
                 Verify(SynchronizationContext.Current.GetType(), properties);
             }
+        }
+
+        /// <summary>
+        /// Returns the mapping for all predefined (.NET) <see cref="SynchronizationContext"/> types.
+        /// </summary>
+        /// <returns>The mapping for all predefined (.NET) <see cref="SynchronizationContext"/> types.</returns>
+        private static Dictionary<string, SynchronizationContextProperties> PredefinedSynchronizationContextProperties()
+        {
+            Dictionary<string, SynchronizationContextProperties> ret = new Dictionary<string, SynchronizationContextProperties>();
+            ret.Add("System.Threading.SynchronizationContext", SynchronizationContextProperties.NonReentrantPost);
+            ret.Add("System.Windows.Forms.WindowsFormsSynchronizationContext", SynchronizationContextProperties.Standard);
+            ret.Add("System.Windows.Threading.DispatcherSynchronizationContext", SynchronizationContextProperties.Standard);
+
+            // AspNetSynchronizationContext does not provide any guarantees at all, so it is not added here
+            return ret;
         }
     }
 }

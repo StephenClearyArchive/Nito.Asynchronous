@@ -16,7 +16,7 @@ namespace Nito.Async
         /// </summary>
         static ActionDispatcherSynchronizationContext()
         {
-            SynchronizationContextRegister.Register(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.All);
+            SynchronizationContextRegister.Register(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.Standard);
         }
 
         /// <summary>
