@@ -138,6 +138,11 @@
     <Modules>
      <Module Name="nito.async.sockets.dll">
       <Messages>
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2009-08-29 13:29:18Z">
+        <Issue Name="NoStrongName">
+         <Item>'Nito.Async.Sockets.dll'</Item>
+        </Issue>
+       </Message>
        <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:43:57Z">
         <Issue Name="Assembly">
          <Item>Nito</Item>
@@ -802,6 +807,11 @@
     <Modules>
      <Module Name="nito.async.dll">
       <Messages>
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2009-08-29 13:29:18Z">
+        <Issue Name="NoStrongName">
+         <Item>'Nito.Async.dll'</Item>
+        </Issue>
+       </Message>
        <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:39:58Z">
         <Issue Name="Assembly">
          <Item>Nito</Item>
@@ -888,25 +898,6 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="AsyncTimeoutTimer">
-          <Members>
-           <Member Name="#Timeout" Kind="Event">
-            <Messages>
-             <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Status="Excluded" Created="2009-01-20 19:39:58Z">
-              <Issue>
-               <Item>'Action'</Item>
-               <Item>EventHandler</Item>
-              </Issue>
-              <Notes>
-               <User Name="scleary">
-                <Note Id="29" />
-               </User>
-              </Notes>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
          <Type Name="GenericSynchronizingObject">
           <Members>
            <Member Name="#BeginInvoke(System.Delegate,System.Object[])">
@@ -955,6 +946,26 @@
             </Notes>
            </Message>
           </Messages>
+         </Type>
+         <Type Name="ScopedSynchronizationContext">
+          <Members>
+           <Member Name="#Dispose()">
+            <Messages>
+             <Message TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122" Status="Excluded" Created="2009-08-29 21:37:32Z">
+              <Issue>
+               <Item>'ScopedSynchronizationContext.Dispose()'</Item>
+               <Item>'SynchronizationContext.SetSynchronizationContext(SynchronizationContext)'</Item>
+               <Item>&#xD;&#xA;   -&gt;'ScopedSynchronizationContext.Dispose()'&#xD;&#xA;   -&gt;'ScopedSynchronizationContext.Dispose()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="stephen">
+                <Note Id="10" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
          </Type>
          <Type Name="Sync">
           <Members>
@@ -1160,7 +1171,6 @@
     <Note Id="17" Modified="2009-01-20 19:57:53Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
     <Note Id="18" Modified="2009-01-20 19:57:55Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
     <Note Id="19" Modified="2009-01-20 19:57:58Z">All exception types are captured, so they can be marshalled to an event handler.</Note>
-    <Note Id="29" Modified="2009-01-20 20:06:59Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
     <Note Id="30" Modified="2009-01-20 20:07:30Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
     <Note Id="31" Modified="2009-01-20 20:15:38Z">Followed Microsoft practice - see Action&lt;T1, T2, T3&gt;.</Note>
     <Note Id="32" Modified="2009-01-20 20:15:49Z">Followed Microsoft practice - see Action&lt;T1, T2, T3, T4&gt;.</Note>
@@ -1180,9 +1190,13 @@
     <Note Id="7" Modified="2009-02-25 03:33:19Z">Invoke is specifically supposed to catch all exceptions and pass them back to the original caller.</Note>
     <Note Id="8" Modified="2009-02-25 03:33:27Z">Invoke is specifically supposed to catch all exceptions and pass them back to the original caller.</Note>
     <Note Id="9" Modified="2009-05-08 10:39:32Z">We use actions for event handlers rather than giving event handler delegates explicit names.</Note>
+    <Note Id="10" Modified="2009-08-29 21:40:21Z">This link demand is covered in the link demand for the constructor.</Note>
    </User>
   </Notes>
   <Rules>
+   <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
+    <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
+   </Rule>
    <Rule TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816">
     <Resolution Name="NotCalled">Change {0} to call {1}. This will prevent unnecessary finalization of the object once it has been disposed and it has fallen out of scope.</Resolution>
    </Rule>
@@ -1191,6 +1205,9 @@
    </Rule>
    <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
     <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122">
+    <Resolution Name="Default">{0} calls into {1} which has a LinkDemand. By making this call, {1} is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: {2}</Resolution>
    </Rule>
    <Rule TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006">
     <Resolution Name="Default">Consider a design where {0} doesn't nest generic type {1}.</Resolution>
