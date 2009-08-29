@@ -137,6 +137,9 @@ namespace Nito.Async
                     //  using the captured SynchronizationContext. Then it will determine if its binding is still valid and call OnTimer
                     //  if it's OK. OnTimer only handles the user callback logic.
                     this.timer = new System.Threading.Timer((state) => boundOnTimer(), null, this.interval, TimeSpan.FromMilliseconds(-1));
+
+                    // Inform the synchronization context that there is an active asynchronous operation
+                    this.synchronizationContext.OperationStarted();
                 }
                 else
                 {
@@ -144,6 +147,9 @@ namespace Nito.Async
                     this.context.Reset();
                     this.timer.Dispose();
                     this.timer = null;
+
+                    // Inform the synchronization context that the asynchronous operation has completed
+                    this.synchronizationContext.OperationCompleted();
                 }
             }
         }
