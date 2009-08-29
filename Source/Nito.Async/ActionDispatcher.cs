@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Security.Permissions;
 
 // Copyright 2009 by Nito Programs.
 
@@ -85,6 +86,7 @@ namespace Nito.Async
         /// <threadsafety>
         /// <para>This method may only be called by one thread at a time.</para>
         /// </threadsafety>
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.ControlEvidence | SecurityPermissionFlag.ControlPolicy)]
         public void Run()
         {
             try
