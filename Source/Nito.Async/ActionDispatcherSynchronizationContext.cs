@@ -12,6 +12,14 @@ namespace Nito.Async
     public sealed class ActionDispatcherSynchronizationContext : SynchronizationContext
     {
         /// <summary>
+        /// Initializes static members of the <see cref="ActionDispatcherSynchronizationContext"/> class by registering with <see cref="SynchronizationContextRegister"/>.
+        /// </summary>
+        static ActionDispatcherSynchronizationContext()
+        {
+            SynchronizationContextRegister.Register(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.All);
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ActionDispatcherSynchronizationContext"/> class by using the specified <see cref="ActionDispatcher"/>.
         /// </summary>
         /// <param name="actionDispatcher">The action queue to associate with this <see cref="ActionDispatcherSynchronizationContext"/>.</param>
