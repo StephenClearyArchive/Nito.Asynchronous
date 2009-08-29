@@ -3,4 +3,8 @@ StyleCop.Cache
 </Value></Property><Property><Name>svn:ignore</Name><Value>*.suo
 PublisherPolicies
 StyleCop.Cache
+</Value></Property><Property><Name>svn:ignore</Name><Value>*.suo
+PublisherPolicies
+StyleCop.Cache
+TestResults
 </Value></Property></Properties></ItemProperties>
