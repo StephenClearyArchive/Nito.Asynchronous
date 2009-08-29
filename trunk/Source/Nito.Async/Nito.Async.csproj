@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="ActionDispatcher.cs" />
     <Compile Include="ActionDispatcherSynchronizationContext.cs" />
+    <Compile Include="ActionThread.cs" />
     <Compile Include="CallbackContext.cs" />
     <Compile Include="EventHandlers.Synchronize.cs" />
     <Compile Include="GenericSynchronizingObject.cs" />

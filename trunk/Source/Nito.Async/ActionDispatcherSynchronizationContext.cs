@@ -7,8 +7,11 @@ namespace Nito.Async
     using System.Threading;
 
     /// <summary>
-    /// Provides a synchronization context for a thread running an <see cref="ActionDispatcher"/>.
+    /// Provides a synchronization context for a thread running an <see cref="Nito.Async.ActionDispatcher"/>.
     /// </summary>
+    /// <remarks>
+    /// <para>If only one thread ever runs <see cref="Nito.Async.ActionDispatcher.Run"/> for an <see cref="ActionDispatcherSynchronizationContext"/>'s <see cref="ActionDispatcherSynchronizationContext.ActionDispatcher"/>, then that object satisfies all the guarantees specified by <see cref="SynchronizationContextProperties.Standard"/>. This makes it suitable for use with asynchronous objects requiring thread affinity, as long as those objects don't require an STA thread.</para>
+    /// </remarks>
     public sealed class ActionDispatcherSynchronizationContext : SynchronizationContext
     {
         /// <summary>
@@ -20,7 +23,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ActionDispatcherSynchronizationContext"/> class by using the specified <see cref="ActionDispatcher"/>.
+        /// Initializes a new instance of the <see cref="ActionDispatcherSynchronizationContext"/> class by using the specified <see cref="Nito.Async.ActionDispatcher"/>.
         /// </summary>
         /// <param name="actionDispatcher">The action queue to associate with this <see cref="ActionDispatcherSynchronizationContext"/>.</param>
         public ActionDispatcherSynchronizationContext(ActionDispatcher actionDispatcher)
