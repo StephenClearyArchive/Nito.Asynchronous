@@ -61,6 +61,7 @@
     <Compile Include="GenericSynchronizingObject.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScopedSynchronizationContext.cs" />
     <Compile Include="SynchronizationContextRegister.cs" />
     <Compile Include="Synchronize.cs" />
     <Compile Include="Timer.cs" />

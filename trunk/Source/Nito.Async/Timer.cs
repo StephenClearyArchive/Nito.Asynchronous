@@ -17,6 +17,7 @@ namespace Nito.Async
     /// <para>Note that periodic timers do not count the time spent in <see cref="Elapsed"/> as part of the wait time.</para>
     /// <para>A timer may be restarted by calling <see cref="Restart"/>, setting <see cref="Interval"/> to its own value, or setting <see cref="Enabled"/> to false and then back to true.</para>
     /// <para>Timers do not increment or decrement the asynchronous operation count, so they must be handled explicitly if the <see cref="SynchronizationContext"/> implementation depends on it (such as the ASP.NET <see cref="SynchronizationContext"/>).</para>
+    /// <para>A Timer must be used with a synchronization context that supports <see cref="SynchronizationContextProperties.Synchronized"/>.</para>
     /// </remarks>
     public sealed class Timer : IDisposable
     {
@@ -60,6 +61,9 @@ namespace Nito.Async
         /// </summary>
         public Timer()
         {
+            // Verify that the synchronization context is synchronized
+            SynchronizationContextRegister.Verify(SynchronizationContextProperties.Synchronized);
+
             // Capture the synchronization context 
             this.synchronizationContext = SynchronizationContext.Current;
             if (this.synchronizationContext == null)
@@ -127,7 +131,7 @@ namespace Nito.Async
                     // Start the timer
 
                     // Bind the callback to our context and synchronization context
-                    Action boundOnTimer = this.context.Bind(this.OnTimer, this.synchronizationContext);
+                    Action boundOnTimer = this.context.Bind(this.OnTimer, this.synchronizationContext, false);
 
                     // The underlying timer delegate (raised on a ThreadPool thread) will first synchronize with the original thread
                     //  using the captured SynchronizationContext. Then it will determine if its binding is still valid and call OnTimer
