@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using System.Threading;
-
-// Copyright 2009 by Nito Programs.
+﻿// <copyright file="CallbackContext.cs" company="Nito Programs">
+//     Copyright (c) 2009 Nito Programs.
+// </copyright>
 
 namespace Nito.Async
 {
+    using System;
+    using System.ComponentModel;
+    using System.Threading;
+
     /// <summary>
     /// Provides a context to which delegates may be bound.
     /// </summary>
@@ -29,17 +29,19 @@ namespace Nito.Async
         private object context;
 
         /// <summary>
-        /// Creates a new context.
+        /// Initializes a new instance of the <see cref="CallbackContext"/> class.
         /// </summary>
         public CallbackContext()
         {
         }
 
         /// <summary>
-        /// Returns true if all delegates previously bound to this context have been invalidated. Returns false if there is at least one delegate
-        /// that is valid.
+        /// Gets a value indicating whether all delegates previously bound to this context have been invalidated. Returns false if there is at least one delegate that is valid.
         /// </summary>
-        public bool Invalidated { get { return (context == null); } }
+        public bool Invalidated
+        {
+            get { return this.context == null; }
+        }
 
         /// <summary>
         /// Resets a context. This invalidates all delegates currently bound to this context.
@@ -49,7 +51,7 @@ namespace Nito.Async
         /// </remarks>
         public void Reset()
         {
-            context = null;
+            this.context = null;
         }
 
         /// <summary>
@@ -67,17 +69,21 @@ namespace Nito.Async
         public Action Bind(Action action)
         {
             // Create the object-context if it doesn't already exist.
-            if (context == null)
-                context = new object();
+            if (this.context == null)
+            {
+                this.context = new object();
+            }
 
             // Make a (reference) copy of the current object-context; this is necessary because lambda expressions bind to variables, not values
-            object boundContext = context;
+            object boundContext = this.context;
             return () =>
                 {
                     // Compare the bound object-context to the current object-context; if they differ, then do nothing
                     // Use the static object.Equals instead of the instance object.Equals because the current object-context may be null
-                    if (object.Equals(boundContext, context))
+                    if (object.Equals(boundContext, this.context))
+                    {
                         action();
+                    }
                 };
         }
 
@@ -97,17 +103,22 @@ namespace Nito.Async
         public Func<T> Bind<T>(Func<T> func)
         {
             // Create the object-context if it doesn't already exist.
-            if (context == null)
-                context = new object();
+            if (this.context == null)
+            {
+                this.context = new object();
+            }
 
             // Make a (reference) copy of the current object-context; this is necessary because lambda expressions bind to variables, not values
-            object boundContext = context;
+            object boundContext = this.context;
             return () =>
                 {
                     // Compare the bound object-context to the current object-context; if they differ, then do nothing
                     // Use the static object.Equals instead of the instance object.Equals because the current object-context may be null
-                    if (object.Equals(boundContext, context))
+                    if (object.Equals(boundContext, this.context))
+                    {
                         return func();
+                    }
+
                     return default(T);
                 };
         }
@@ -128,16 +139,20 @@ namespace Nito.Async
         public Action Bind(Action action, ISynchronizeInvoke synchronizingObject)
         {
             // Create the bound delegate
-            Action boundAction = Bind(action);
+            Action boundAction = this.Bind(action);
 
             // Return a synchronized wrapper for the bound delegate
             return () =>
                 {
                     // We synchronously invoke rather than async (BeginInvoke) because it's up to the implementation whether to require EndInvoke
                     if (synchronizingObject.InvokeRequired)
+                    {
                         synchronizingObject.Invoke(action, null);
+                    }
                     else
+                    {
                         action();
+                    }
                 };
         }
 
@@ -157,7 +172,7 @@ namespace Nito.Async
         public Action Bind(Action action, SynchronizationContext synchronizationContext)
         {
             // Create the bound delegate
-            Action boundAction = Bind(action);
+            Action boundAction = this.Bind(action);
 
             // Return a synchronized wrapper for the bound delegate
             return () =>
@@ -183,15 +198,19 @@ namespace Nito.Async
         public Func<T> Bind<T>(Func<T> func, ISynchronizeInvoke synchronizingObject)
         {
             // Create the bound delegate
-            Func<T> boundFunc = Bind(func);
+            Func<T> boundFunc = this.Bind(func);
 
             // Return a synchronized wrapper for the bound delegate
             return () =>
                 {
                     if (synchronizingObject.InvokeRequired)
+                    {
                         return (T)synchronizingObject.Invoke(func, null);
+                    }
                     else
+                    {
                         return func();
+                    }
                 };
         }
 
@@ -212,7 +231,7 @@ namespace Nito.Async
         public Func<T> Bind<T>(Func<T> func, SynchronizationContext synchronizationContext)
         {
             // Create the bound delegate
-            Func<T> boundFunc = Bind(func);
+            Func<T> boundFunc = this.Bind(func);
 
             // Return a synchronized wrapper for the bound delegate
             return () =>
@@ -231,7 +250,7 @@ namespace Nito.Async
         /// </remarks>
         public void Dispose()
         {
-            Reset();
+            this.Reset();
         }
     }
 }

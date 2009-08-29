@@ -1,6 +1,9 @@
-﻿using System;
+﻿// <copyright file="AssemblyInfo.cs" company="Nito Programs">
+//     Copyright (c) 2009 Nito Programs.
+// </copyright>
+
+using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("Helper classes for asynchronous programming")]

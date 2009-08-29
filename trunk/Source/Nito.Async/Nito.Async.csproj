@@ -54,9 +54,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionDispatcher.cs" />
+    <Compile Include="ActionDispatcherSynchronizationContext.cs" />
     <Compile Include="CallbackContext.cs" />
+    <Compile Include="EventHandlers.Synchronize.cs" />
     <Compile Include="GenericSynchronizingObject.cs" />
-    <Compile Include="AsyncTimeoutTimer.cs" />
     <Compile Include="EventHandlers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Synchronize.cs" />
