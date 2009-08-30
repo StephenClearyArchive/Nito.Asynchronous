@@ -42,7 +42,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionDispatcherSynchronizationContextUnitTests.cs" />
     <Compile Include="ActionDispatcherUnitTests.cs" />
+    <Compile Include="ActionThreadUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScopedSynchronizationContextUnitTests.cs" />
     <Compile Include="SynchronizationContextRegisterUnitTests.cs" />
