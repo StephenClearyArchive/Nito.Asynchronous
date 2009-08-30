@@ -147,11 +147,11 @@ namespace Nito.Async
                     // We synchronously invoke rather than async (BeginInvoke) because it's up to the implementation whether to require EndInvoke
                     if (synchronizingObject.InvokeRequired)
                     {
-                        synchronizingObject.Invoke(action, null);
+                        synchronizingObject.Invoke(boundAction, null);
                     }
                     else
                     {
-                        action();
+                        boundAction();
                     }
                 };
         }
@@ -202,7 +202,7 @@ namespace Nito.Async
             // Return a synchronized wrapper for the bound delegate
             return () =>
             {
-                synchronizationContext.Post((state) => action(), null);
+                synchronizationContext.Post((state) => boundAction(), null);
             };
         }
 
@@ -230,11 +230,11 @@ namespace Nito.Async
                 {
                     if (synchronizingObject.InvokeRequired)
                     {
-                        return (T)synchronizingObject.Invoke(func, null);
+                        return (T)synchronizingObject.Invoke(boundFunc, null);
                     }
                     else
                     {
-                        return func();
+                        return boundFunc();
                     }
                 };
         }
@@ -288,7 +288,7 @@ namespace Nito.Async
             return () =>
             {
                 T retVal = default(T);
-                synchronizationContext.Send((state) => retVal = func(), null);
+                synchronizationContext.Send((state) => retVal = boundFunc(), null);
                 return retVal;
             };
         }
