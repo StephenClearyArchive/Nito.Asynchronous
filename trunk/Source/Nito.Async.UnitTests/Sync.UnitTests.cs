@@ -23,16 +23,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                Action action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                Action action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                        {
-                            action = Sync.SynchronizeAction(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                            evt.Set();
-                        });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeAction(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -53,16 +47,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                Action<int> action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                Action<int> action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeAction((int a) => { arg1 = a;  actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeAction((int a) => { arg1 = a;  actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -85,16 +73,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                Action<int, int> action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                Action<int, int> action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeAction((int a, int b) => { arg1 = a; arg2 = b; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeAction((int a, int b) => { arg1 = a; arg2 = b; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -119,16 +101,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                Action<int, int, int> action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                Action<int, int, int> action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeAction((int a, int b, int c) => { arg1 = a; arg2 = b; arg3 = c; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeAction((int a, int b, int c) => { arg1 = a; arg2 = b; arg3 = c; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -155,16 +131,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                Action<int, int, int, int> action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                Action<int, int, int, int> action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeAction((int a, int b, int c, int d) => { arg1 = a; arg2 = b; arg3 = c; arg4 = d; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeAction((int a, int b, int c, int d) => { arg1 = a; arg2 = b; arg3 = c; arg4 = d; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -189,16 +159,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                AsyncCallback action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                AsyncCallback action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeAsyncCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeAsyncCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -221,16 +185,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                TimerCallback action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                TimerCallback action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeTimerCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                   return Sync.SynchronizeTimerCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -253,16 +211,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                WaitCallback action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                WaitCallback action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeWaitCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeWaitCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
@@ -286,16 +238,10 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                WaitOrTimerCallback action = null;
-                using (ManualResetEvent evt = new ManualResetEvent(false))
+                WaitOrTimerCallback action = thread.DoGet(() =>
                 {
-                    thread.Do(() =>
-                    {
-                        action = Sync.SynchronizeWaitOrTimerCallback((a, b) => { arg1 = a; arg2 = b; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
-                        evt.Set();
-                    });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                    return Sync.SynchronizeWaitOrTimerCallback((a, b) => { arg1 = a; arg2 = b; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
 
                 // The action should be run in the context of the ActionThread
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");

@@ -108,11 +108,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, actionThreadSyncContext);
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
@@ -140,11 +136,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
                 {
@@ -184,11 +176,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
                 {
@@ -418,11 +406,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, actionThreadSyncContext);
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
@@ -451,11 +435,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
                 {
@@ -496,11 +476,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
                 {

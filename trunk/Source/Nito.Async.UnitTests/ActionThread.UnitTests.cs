@@ -97,11 +97,7 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread.Do(() => { actionThreadSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 // Use the SynchronizationContext to give the ActionThread more work to do
                 actionThreadSyncContext.Post((state) => { sawAction = true; }, null);
@@ -120,6 +116,21 @@ namespace UnitTests
 
                 int threadId = Thread.CurrentThread.ManagedThreadId;
                 thread.DoSynchronously(() => { threadId = Thread.CurrentThread.ManagedThreadId; });
+                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+                Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+            }
+        }
+
+        [TestMethod]
+        public void TestSynchronousFunc()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                int threadId = Thread.CurrentThread.ManagedThreadId;
+                object obj = thread.DoGet(() => { threadId = Thread.CurrentThread.ManagedThreadId; return new object(); });
+                Assert.IsNotNull(obj, "ActionThread did not return result");
                 Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
                 Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
             }

@@ -165,6 +165,22 @@ namespace Nito.Async
         }
 
         /// <summary>
+        /// Queues work for the <see cref="ActionThread"/> to do, and blocks the calling thread until it is complete.
+        /// </summary>
+        /// <typeparam name="T">The type of object retrieved by the delegate.</typeparam>
+        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <returns>The return value of the delegate.</returns>
+        /// <remarks>
+        /// <para>This method may only be called after the thread has been started.</para>
+        /// </remarks>
+        public T DoGet<T>(Func<T> action)
+        {
+            T ret = default(T);
+            this.DoSynchronously(() => { ret = action(); }, TimeSpan.FromMilliseconds(-1));
+            return ret;
+        }
+
+        /// <summary>
         /// Requests this <see cref="ActionThread"/> to exit, blocks the calling thread until this <see cref="ActionThread"/> exits, and then cleans up all resources.
         /// </summary>
         public void Dispose()
