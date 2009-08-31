@@ -45,16 +45,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionDispatcherSynchronizationContextUnitTests.cs" />
-    <Compile Include="ActionDispatcherUnitTests.cs" />
-    <Compile Include="ActionThreadUnitTests.cs" />
-    <Compile Include="CallbackContextUnitTests.cs" />
-    <Compile Include="EventHandlers.AsyncResultEventArgsUnitTests.cs" />
-    <Compile Include="EventHandlers.SyncUnitTests.cs" />
+    <Compile Include="ActionDispatcher.UnitTests.cs" />
+    <Compile Include="ActionDispatcherSynchronizationContext.UnitTests.cs" />
+    <Compile Include="ActionThread.UnitTests.cs" />
+    <Compile Include="CallbackContext.UnitTests.cs" />
+    <Compile Include="EventHandlers.AsyncResultEventArgs.UnitTests.cs" />
+    <Compile Include="EventHandlers.Sync.UnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScopedSynchronizationContextUnitTests.cs" />
-    <Compile Include="SynchronizationContextRegisterUnitTests.cs" />
-    <Compile Include="SyncUnitTests.cs" />
+    <Compile Include="ScopedSynchronizationContext.UnitTests.cs" />
+    <Compile Include="Sync.UnitTests.cs" />
+    <Compile Include="SynchronizationContextRegister.UnitTests.cs" />
     <Compile Include="Util\LoggingSynchronizationContext.cs" />
   </ItemGroup>
   <ItemGroup>
