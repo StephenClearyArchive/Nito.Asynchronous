@@ -12,7 +12,6 @@ namespace Nito.Async
     /// Allows objects that use <see cref="ISynchronizeInvoke"/> (usually using a property named SynchronizingObject) to synchronize to a generic <see cref="SynchronizationContext"/>.
     /// </summary>
     /// <remarks>
-    /// <para>If an exception is raied by the delegate passed to <see cref="Invoke"/> or <see cref="BeginInvoke"/>, then that exception is propogated back to the caller. The stack trace of the exception is wiped out in the process, but is saved in <see cref="Exception.Data"/> under the key "Previous Stack Trace".</para>
     /// <para>This class does not invoke <see cref="SynchronizationContext.OperationStarted"/> or <see cref="SynchronizationContext.OperationCompleted"/>, so for some synchronization contexts, these may need to be called explicitly in addition to using this class. ASP.NET do require them to be called; Windows Forms, WPF, free threads, and <see cref="ActionDispatcher"/> do not.</para>
     /// </remarks>
     /// <threadsafety static="true" instance="true"/>
@@ -107,6 +106,9 @@ namespace Nito.Async
         /// </summary>
         /// <param name="result">The <see cref="IAsyncResult"/> returned from a call to <see cref="BeginInvoke"/>.</param>
         /// <returns>The result of the delegate.</returns>
+        /// <remarks>
+        /// <para>If the delegate raised an exception, then this method will raise a <see cref="System.Reflection.TargetInvocationException"/> with that exception as the <see cref="Exception.InnerException"/> property.</para>
+        /// </remarks>
         public object EndInvoke(IAsyncResult result)
         {
             // (This method may be invoked from any thread)
@@ -114,13 +116,6 @@ namespace Nito.Async
             asyncResult.WaitForAndDispose();
             if (asyncResult.Error != null)
             {
-                string key = "Previous Stack Trace";
-                while (asyncResult.Error.Data.Contains(key))
-                {
-                    key = "Previous " + key;
-                }
-
-                asyncResult.Error.Data.Add(key, asyncResult.Error.StackTrace);
                 throw asyncResult.Error;
             }
 
@@ -135,6 +130,7 @@ namespace Nito.Async
         /// <returns>The result of the delegate.</returns>
         /// <remarks>
         /// <para>If the <see cref="SynchronizationContext.Send"/> for this object's synchronization context is reentrant, then this method is also reentrant.</para>
+        /// <para>If the delegate raises an exception, then this method will raise a <see cref="System.Reflection.TargetInvocationException"/> with that exception as the <see cref="Exception.InnerException"/> property.</para>
         /// </remarks>
         public object Invoke(Delegate method, object[] args)
         {
@@ -155,13 +151,6 @@ namespace Nito.Async
                 null);
             if (ret.Error != null)
             {
-                string key = "Previous Stack Trace";
-                while (ret.Error.Data.Contains(key))
-                {
-                    key = "Previous " + key;
-                }
-
-                ret.Error.Data.Add(key, ret.Error.StackTrace);
                 throw ret.Error;
             }
 
