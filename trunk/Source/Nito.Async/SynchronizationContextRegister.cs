@@ -84,11 +84,11 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Verifies that a <see cref="SynchronizationContext"/> satisfies the guarantees required by the calling code.
+        /// Looks up the guarantees for a <see cref="SynchronizationContext"/> type.
         /// </summary>
         /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/> to test.</param>
-        /// <param name="properties">The guarantees required by the calling code.</param>
-        public static void Verify(Type synchronizationContextType, SynchronizationContextProperties properties)
+        /// <returns>The properties guaranteed by <paramref name="synchronizationContextType"/>.</returns>
+        public static SynchronizationContextProperties Lookup(Type synchronizationContextType)
         {
             lock (synchronizationContextProperties)
             {
@@ -98,10 +98,21 @@ namespace Nito.Async
                     supported = synchronizationContextProperties[synchronizationContextType.FullName];
                 }
 
-                if ((supported & properties) != properties)
-                {
-                    throw new InvalidOperationException("This asynchronous object cannot be used with this SynchronizationContext");
-                }
+                return supported;
+            }
+        }
+
+        /// <summary>
+        /// Verifies that a <see cref="SynchronizationContext"/> satisfies the guarantees required by the calling code.
+        /// </summary>
+        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/> to test.</param>
+        /// <param name="properties">The guarantees required by the calling code.</param>
+        public static void Verify(Type synchronizationContextType, SynchronizationContextProperties properties)
+        {
+            SynchronizationContextProperties supported = Lookup(synchronizationContextType);
+            if ((supported & properties) != properties)
+            {
+                throw new InvalidOperationException("This asynchronous object cannot be used with this SynchronizationContext");
             }
         }
 
