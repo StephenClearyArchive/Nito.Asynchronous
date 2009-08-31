@@ -1,4 +1,4 @@
-﻿// <copyright file="EventHandlers.Synchronize.cs" company="Nito Programs">
+﻿// <copyright file="EventHandlers.Sync.cs" company="Nito Programs">
 //     Copyright (c) 2009 Nito Programs.
 // </copyright>
 

@@ -1,4 +1,4 @@
-﻿// <copyright file="EventHandlers.cs" company="Nito Programs">
+﻿// <copyright file="EventHandlers.AsyncResultEventArgs.cs" company="Nito Programs">
 //     Copyright (c) 2009 Nito Programs.
 // </copyright>
 

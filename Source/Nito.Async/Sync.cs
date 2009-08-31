@@ -1,4 +1,4 @@
-﻿// <copyright file="Synchronize.cs" company="Nito Programs">
+﻿// <copyright file="Sync.cs" company="Nito Programs">
 //     Copyright (c) 2009 Nito Programs.
 // </copyright>
 

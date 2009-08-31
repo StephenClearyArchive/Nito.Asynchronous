@@ -26,6 +26,11 @@ namespace Nito.Async
         private SynchronizationContext synchronizationContext;
 
         /// <summary>
+        /// The managed thread id of the synchronization context's specific associated thread, if any.
+        /// </summary>
+        private int? synchronizationContextThreadId;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="GenericSynchronizingObject"/> class, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
         /// </summary>
         /// <remarks>
@@ -38,6 +43,11 @@ namespace Nito.Async
             {
                 this.synchronizationContext = new SynchronizationContext();
             }
+
+            if ((SynchronizationContextRegister.Lookup(this.synchronizationContext.GetType()) & SynchronizationContextProperties.SpecificAssociatedThread) == SynchronizationContextProperties.SpecificAssociatedThread)
+            {
+                this.synchronizationContextThreadId = Thread.CurrentThread.ManagedThreadId;
+            }
         }
 
         /// <summary>
@@ -48,8 +58,18 @@ namespace Nito.Async
         /// </remarks>
         public bool InvokeRequired
         {
-            // TODO: invalid logic!!!
-            get { return this.synchronizationContext != SynchronizationContext.Current; }
+            get
+            {
+                if (this.synchronizationContextThreadId != null)
+                {
+                    return this.synchronizationContextThreadId != Thread.CurrentThread.ManagedThreadId;
+                }
+
+                // Unfortunately, there is no way to determine InvokeRequired for contexts without specific associated threads.
+                // So, we just return false. This will result in correct behavior on all existing SynchronizationContext implementations,
+                //  but may cause a cross-threading exception if some weird new SynchronizationContext is invented in the future.
+                return false;
+            }
         }
 
         /// <summary>
