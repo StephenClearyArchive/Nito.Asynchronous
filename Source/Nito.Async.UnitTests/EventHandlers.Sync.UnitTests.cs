@@ -93,7 +93,9 @@ namespace UnitTests
             object argsState = null;
             Exception argsResultException = null;
 
-            Sync.InvokeAndCallback(() => { sawAction = true; throw actionException; return 13; }, (x) =>
+            Func<int> throws = () => { throw actionException; };
+
+            Sync.InvokeAndCallback(() => { sawAction = true; return throws(); }, (x) =>
             {
                 argsCancelled = x.Cancelled;
                 argsError = x.Error;
