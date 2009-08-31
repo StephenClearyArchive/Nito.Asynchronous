@@ -108,10 +108,41 @@ namespace Nito.Async
         /// <summary>
         /// Queues work for the <see cref="ActionThread"/> to do.
         /// </summary>
-        /// <param name="action">The work to do.</param>
+        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
         public void Do(Action action)
         {
             this.dispatcher.QueueAction(action);
+        }
+
+        /// <summary>
+        /// Queues work for the <see cref="ActionThread"/> to do, and blocks the calling thread until it is complete or until the specified time has elapsed.
+        /// </summary>
+        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <param name="timeout">The time to wait for <paramref name="action"/> to execute.</param>
+        /// <returns><c>true</c> if <paramref name="action"/> executed completely; <c>false</c> if there was a timeout.</returns>
+        /// <remarks>
+        /// <para>Be careful when using short timeout values; the <paramref name="action"/> delegate may not be scheduled for work immediately.</para>
+        /// <para>This method may only be called after the thread has been started.</para>
+        /// </remarks>
+        public bool DoSynchronously(Action action, TimeSpan timeout)
+        {
+            using (ManualResetEvent evt = new ManualResetEvent(false))
+            {
+                this.dispatcher.QueueAction(() => { action(); evt.Set(); });
+                return evt.WaitOne(timeout);
+            }
+        }
+
+        /// <summary>
+        /// Queues work for the <see cref="ActionThread"/> to do, and blocks the calling thread until it is complete.
+        /// </summary>
+        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <remarks>
+        /// <para>This method may only be called after the thread has been started.</para>
+        /// </remarks>
+        public void DoSynchronously(Action action)
+        {
+            this.DoSynchronously(action, TimeSpan.FromMilliseconds(-1));
         }
 
         /// <summary>
