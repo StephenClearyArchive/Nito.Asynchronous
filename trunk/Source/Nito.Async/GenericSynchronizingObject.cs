@@ -9,15 +9,13 @@ namespace Nito.Async
     using System.Threading;
 
     /// <summary>
-    /// Allows objects that use <see cref="ISynchronizeInvoke"/> (usually using a property named SynchronizingObject) to synchronize to a
-    /// generic <see cref="SynchronizationContext"/>.
+    /// Allows objects that use <see cref="ISynchronizeInvoke"/> (usually using a property named SynchronizingObject) to synchronize to a generic <see cref="SynchronizationContext"/>.
     /// </summary>
     /// <remarks>
     /// <para>If an exception is raied by the delegate passed to <see cref="Invoke"/> or <see cref="BeginInvoke"/>, then that exception is propogated back to the caller. The stack trace of the exception is wiped out in the process, but is saved in <see cref="Exception.Data"/> under the key "Previous Stack Trace".</para>
-    /// <para>This class does not invoke <see cref="SynchronizationContext.OperationStarted"/> or <see cref="SynchronizationContext.OperationCompleted"/>, so for some synchronization contexts, these may need to be called explicitly in addition to using this class. ASP.NET do require them to be called; Windows Forms, WPF, and <see cref="ActionDispatcher"/> do not.</para>
-    /// <para>The thread that synchronizes the operation is the "source" thread. This is the thread that owns the object with a SynchronizingObject property.</para>
-    /// <para>The thread that executes the operation is the "target" thread. This is the thread that creates the <see cref="SynchronizationContext"/> used for synchronization.</para>
+    /// <para>This class does not invoke <see cref="SynchronizationContext.OperationStarted"/> or <see cref="SynchronizationContext.OperationCompleted"/>, so for some synchronization contexts, these may need to be called explicitly in addition to using this class. ASP.NET do require them to be called; Windows Forms, WPF, free threads, and <see cref="ActionDispatcher"/> do not.</para>
     /// </remarks>
+    /// <threadsafety static="true" instance="true"/>
     public sealed class GenericSynchronizingObject : ISynchronizeInvoke
     {
         /// <summary>
@@ -33,11 +31,9 @@ namespace Nito.Async
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericSynchronizingObject"/> class, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
         /// </summary>
-        /// <remarks>
-        /// <para>This method always runs in the target thread.</para>
-        /// </remarks>
         public GenericSynchronizingObject()
         {
+            // (This method is always invoked from a SynchronizationContext thread)
             this.synchronizationContext = SynchronizationContext.Current;
             if (this.synchronizationContext == null)
             {
@@ -54,7 +50,7 @@ namespace Nito.Async
         /// Gets a value indicating whether the current thread must invoke a delegate.
         /// </summary>
         /// <remarks>
-        /// <para>This method always runs in the source thread.</para>
+        /// <para>If there is not enough information about the synchronization context to determine this value, then this property evaluates to <c>false</c>. This is done because a cross-thread exception is easier to diagnose than a deadlock.</para>
         /// </remarks>
         public bool InvokeRequired
         {
@@ -73,19 +69,20 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Starts the invocation of a delegate on the thread that created this <see cref="GenericSynchronizingObject"/>.
-        /// A corresponding call to <see cref="EndInvoke"/> is not required.
+        /// Starts the invocation of a delegate on the thread that created this <see cref="GenericSynchronizingObject"/>. A corresponding call to <see cref="EndInvoke"/> is not required.
         /// </summary>
         /// <param name="method">The delegate to run.</param>
         /// <param name="args">The arguments to pass to <paramref name="method"/>.</param>
         /// <returns>An <see cref="IAsyncResult"/> that can be used to detect completion of the delegate.</returns>
         /// <remarks>
-        /// <para>The thread that created this <see cref="GenericSynchronizingObject"/> must have a non-null <see cref="SynchronizationContext"/>.</para>
-        /// <para>This method always runs in the source thread.</para>
+        /// <para>If the <see cref="SynchronizationContext.Post"/> for this object's synchronization context is reentrant, then this method is also reentrant.</para>
         /// </remarks>
         public IAsyncResult BeginInvoke(Delegate method, object[] args)
         {
+            // (This method may be invoked from any thread)
             IAsyncResult ret = new AsyncResult();
+
+            // (The delegate passed to Post will run in the thread chosen by the SynchronizationContext)
             this.synchronizationContext.Post(
                 (SendOrPostCallback)delegate(object state)
                 {
@@ -106,16 +103,13 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Waits for the invocation of a delegate to complete, and returns the result of the delegate.
-        /// This may only be called once for a given <see cref="IAsyncResult"/> object, from one thread.
+        /// Waits for the invocation of a delegate to complete, and returns the result of the delegate. This may only be called once for a given <see cref="IAsyncResult"/> object.
         /// </summary>
         /// <param name="result">The <see cref="IAsyncResult"/> returned from a call to <see cref="BeginInvoke"/>.</param>
         /// <returns>The result of the delegate.</returns>
-        /// <remarks>
-        /// <para>This method may run in an arbitrary thread context.</para>
-        /// </remarks>
         public object EndInvoke(IAsyncResult result)
         {
+            // (This method may be invoked from any thread)
             AsyncResult asyncResult = (AsyncResult)result;
             asyncResult.WaitForAndDispose();
             if (asyncResult.Error != null)
@@ -140,11 +134,11 @@ namespace Nito.Async
         /// <param name="args">The parameters for <paramref name="method"/>.</param>
         /// <returns>The result of the delegate.</returns>
         /// <remarks>
-        /// <para>The thread that created this <see cref="GenericSynchronizingObject"/> must have a non-null <see cref="SynchronizationContext"/>.</para>
-        /// <para>This method always runs in the source thread.</para>
+        /// <para>If the <see cref="SynchronizationContext.Send"/> for this object's synchronization context is reentrant, then this method is also reentrant.</para>
         /// </remarks>
         public object Invoke(Delegate method, object[] args)
         {
+            // (This method may be invoked from any thread)
             ReturnValue ret = new ReturnValue();
             this.synchronizationContext.Send(
                 delegate(object unusedState)
