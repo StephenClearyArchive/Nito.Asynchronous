@@ -26,8 +26,7 @@ namespace Nito.Async
         //  When considering the generic (Action<...>) overloads, the problem only grows worse.
 
         /// <summary>
-        /// Returns an <see cref="Action"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="Action"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -39,14 +38,13 @@ namespace Nito.Async
             // This delegate will be executed on another thread, probably a ThreadPool thread
             return delegate
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(), null);
             };
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T}"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="Action{T}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T">The type of the parameter to the callback.</typeparam>
         /// <param name="callback">The callback to wrap.</param>
@@ -59,14 +57,13 @@ namespace Nito.Async
             // This delegate will be executed on another thread, probably a ThreadPool thread
             return delegate(T arg)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(arg), null);
             };
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T1, T2}"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="Action{T1, T2}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
@@ -80,14 +77,13 @@ namespace Nito.Async
             // This delegate will be executed on another thread, probably a ThreadPool thread
             return delegate(T1 arg1, T2 arg2)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(arg1, arg2), null);
             };
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T1, T2, T3}"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="Action{T1, T2, T3}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
@@ -102,14 +98,13 @@ namespace Nito.Async
             // This delegate will be executed on another thread, probably a ThreadPool thread
             return delegate(T1 arg1, T2 arg2, T3 arg3)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(arg1, arg2, arg3), null);
             };
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T1, T2, T3, T4}"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="Action{T1, T2, T3, T4}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
@@ -125,14 +120,13 @@ namespace Nito.Async
             // This delegate will be executed on another thread, probably a ThreadPool thread
             return delegate(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(arg1, arg2, arg3, arg4), null);
             };
         }
 
         /// <summary>
-        /// Returns an <see cref="AsyncCallback"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="AsyncCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -147,14 +141,13 @@ namespace Nito.Async
             // This delegate will be executed on another thread, probably a ThreadPool thread
             return delegate(IAsyncResult asyncResult)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(asyncResult), null);
             };
         }
 
         /// <summary>
-        /// Returns a <see cref="TimerCallback"/> that executes in the context of the thread that called this method (if that
-        /// thread exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="TimerCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -169,14 +162,13 @@ namespace Nito.Async
             // This delegate will be executed on a ThreadPool thread
             return delegate(object state)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(state), null);
             };
         }
 
         /// <summary>
-        /// Returns a <see cref="WaitCallback"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="WaitCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -188,14 +180,13 @@ namespace Nito.Async
             // This delegate will be executed on a ThreadPool thread
             return delegate(object state)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(state), null);
             };
         }
 
         /// <summary>
-        /// Returns a <see cref="WaitOrTimerCallback"/> that executes in the context of the thread that called this method (if that thread
-        /// exposes <see cref="SynchronizationContext"/>).
+        /// Returns an <see cref="WaitOrTimerCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -210,7 +201,7 @@ namespace Nito.Async
             // This delegate will be executed on a ThreadPool thread
             return delegate(object state, bool timedOut)
             {
-                // Synchronize the operation back to the originating thread
+                // Synchronize the operation back to the originating thread's SynchronizationContext
                 operation.PostOperationCompleted((unusedState) => callback(state, timedOut), null);
             };
         }
