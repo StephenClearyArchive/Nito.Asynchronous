@@ -50,7 +50,7 @@
     <Compile Include="ActionThreadUnitTests.cs" />
     <Compile Include="CallbackContextUnitTests.cs" />
     <Compile Include="EventHandlers.AsyncResultEventArgsUnitTests.cs" />
-    <Compile Include="EventHandlers.SynchronizeUnitTests.cs" />
+    <Compile Include="EventHandlers.SyncUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScopedSynchronizationContextUnitTests.cs" />
     <Compile Include="SynchronizationContextRegisterUnitTests.cs" />
