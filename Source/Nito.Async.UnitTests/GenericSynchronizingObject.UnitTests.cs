@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using System.ComponentModel;
 
 namespace UnitTests
 {
@@ -14,8 +15,146 @@ namespace UnitTests
     public class GenericSynchronizingObjectUnitTests
     {
         [TestMethod]
-        public void Test()
+        public void TestInvokeRequiredWithActionThread()
         {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                ISynchronizeInvoke test = null;
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    thread.Do(() => { test = new GenericSynchronizingObject(); evt.Set(); });
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
+                }
+
+                Assert.IsTrue(test.InvokeRequired, "GenericSynchronizingObject does not require invoke for ActionThread");
+
+                // Capture InvokeRequired from the ActionThread's context
+                bool nestedInvokeRequired = true;
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    thread.Do(() => { nestedInvokeRequired = test.InvokeRequired; evt.Set(); });
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
+                }
+
+                Assert.IsFalse(nestedInvokeRequired, "GenericSynchronizingObject does require invoke within ActionThread");
+            }
+        }
+
+        [TestMethod]
+        public void TestInvokeWithActionThread()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                ISynchronizeInvoke test = null;
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    thread.Do(() => { test = new GenericSynchronizingObject(); evt.Set(); });
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
+                }
+
+                // Ensure it will invoke on the correct thread
+                int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+                Assert.AreNotEqual(thread.ManagedThreadId, actionThreadId, "ActionThread is this thread");
+
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    test.Invoke((MethodInvoker)(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; evt.Set(); }), null);
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "GenericSynchronizingObject.Invoke did not perform action");
+                }
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "GenericSynchronizingObject.Invoke did not synchronize");
+            }
+        }
+
+        [TestMethod]
+        public void TestBeginEndInvokeWithActionThread()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                ISynchronizeInvoke test = null;
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    thread.Do(() => { test = new GenericSynchronizingObject(); evt.Set(); });
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
+                }
+
+                // Ensure it will invoke on the correct thread
+                int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+                Assert.AreNotEqual(thread.ManagedThreadId, actionThreadId, "ActionThread is this thread");
+
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    IAsyncResult result = test.BeginInvoke((MethodInvoker)(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; evt.Set(); }), null);
+                    test.EndInvoke(result);
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "GenericSynchronizingObject.Invoke did not perform action");
+                }
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "GenericSynchronizingObject.Invoke did not synchronize");
+            }
+        }
+
+        [TestMethod]
+        public void TestInvokeRequiredWithThreadPool()
+        {
+            using (ScopedSynchronizationContext x = new ScopedSynchronizationContext(new SynchronizationContext()))
+            {
+                ISynchronizeInvoke test = new GenericSynchronizingObject();
+
+                Assert.IsFalse(test.InvokeRequired, "GenericSynchronizingObject does require invoke within thread pool");
+            }
+        }
+
+        [TestMethod]
+        public void TestInvokeWithThreadPool()
+        {
+            int threadId = ~Thread.CurrentThread.ManagedThreadId;
+
+            using (ScopedSynchronizationContext x = new ScopedSynchronizationContext(new SynchronizationContext()))
+            {
+                ISynchronizeInvoke test = new GenericSynchronizingObject();
+                test.Invoke((MethodInvoker)(() => { threadId = Thread.CurrentThread.ManagedThreadId; }), null);
+            }
+
+            Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ThreadPool invoke did not operate synchronously");
+        }
+
+        [TestMethod]
+        public void TestBeginEndInvokeWithThreadPool()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                bool actionThreadIsThreadPoolThread = true;
+                bool threadPoolThreadIsThreadPoolThread = false;
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    thread.Do(() =>
+                        {
+                            using (ScopedSynchronizationContext x = new ScopedSynchronizationContext(new SynchronizationContext()))
+                            {
+                                actionThreadIsThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread;
+                                ISynchronizeInvoke test = new GenericSynchronizingObject();
+                                IAsyncResult result = test.BeginInvoke((MethodInvoker)(() => { threadPoolThreadIsThreadPoolThread = Thread.CurrentThread.IsThreadPoolThread; }), null);
+                                test.EndInvoke(result);
+                            }
+                            evt.Set();
+                        });
+                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
+                }
+
+                Assert.IsFalse(actionThreadIsThreadPoolThread, "ActionThread is a thread pool thread");
+                Assert.IsTrue(threadPoolThreadIsThreadPoolThread, "ThreadPool thread is not a thread pool thread");
+            }
         }
     }
 }
