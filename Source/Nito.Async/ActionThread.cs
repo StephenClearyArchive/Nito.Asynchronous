@@ -60,7 +60,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Gets or sets the name of this <see cref="ActionThread"/>.
+        /// Gets or sets the name of this <see cref="ActionThread"/>. This property may only be set once.
         /// </summary>
         public string Name
         {
@@ -82,24 +82,43 @@ namespace Nito.Async
         /// </summary>
         /// <param name="timeout">The length of time to wait for this <see cref="ActionThread"/> to exit.</param>
         /// <returns><c>true</c> if this <see cref="ActionThread"/> exited cleanly; <c>false</c> if the timout occurred.</returns>
+        /// <remarks>
+        /// <para>This method has no effect if the thread has not started or has already exited.</para>
+        /// </remarks>
         public bool Join(TimeSpan timeout)
         {
-            this.dispatcher.QueueExit();
-            return this.thread.Join(timeout);
+            if (this.IsAlive)
+            {
+                this.dispatcher.QueueExit();
+                return this.thread.Join(timeout);
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
         /// Requests this <see cref="ActionThread"/> to exit and then blocks the calling thread until this <see cref="ActionThread"/> exits.
         /// </summary>
+        /// <remarks>
+        /// <para>This method has no effect if the thread has not started or has already exited.</para>
+        /// </remarks>
         public void Join()
         {
-            this.dispatcher.QueueExit();
-            this.thread.Join();
+            if (this.IsAlive)
+            {
+                this.dispatcher.QueueExit();
+                this.thread.Join();
+            }
         }
 
         /// <summary>
-        /// Starts this <see cref="ActionThread"/> running.
+        /// Starts this <see cref="ActionThread"/> running. A thread may not be started more than once.
         /// </summary>
+        /// <remarks>
+        /// <para>Work may be queued to the thread before it starts running.</para>
+        /// </remarks>
         public void Start()
         {
             this.thread.Start();

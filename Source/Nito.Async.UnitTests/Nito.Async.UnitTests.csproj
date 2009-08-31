@@ -60,6 +60,7 @@
     <Compile Include="Sync.UnitTests.cs" />
     <Compile Include="SynchronizationContextRegister.UnitTests.cs" />
     <Compile Include="Util\LoggingSynchronizationContext.cs" />
+    <Compile Include="_FrameworkAssumptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nito.Async\Nito.Async.csproj">
