@@ -35,12 +35,8 @@ namespace UnitTests
                 thread1.Start();
                 thread2.Start();
 
-                // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread2.Do(() => { actionDispatcherSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                // Capture the second thread's SynchronizationContext.
+                actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current; });
 
                 // Sanity check
                 Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
@@ -79,11 +75,7 @@ namespace UnitTests
                 thread2.Start();
 
                 // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread2.Do(() => { actionDispatcherSyncContext = SynchronizationContext.Current; evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current; });
 
                 // Sanity check
                 Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
@@ -122,11 +114,7 @@ namespace UnitTests
                 thread2.Start();
 
                 // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread2.Do(() => { actionDispatcherSyncContext = SynchronizationContext.Current.CreateCopy(); evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current.CreateCopy(); });
 
                 // Sanity check
                 Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
@@ -165,11 +153,7 @@ namespace UnitTests
                 thread2.Start();
 
                 // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    thread2.Do(() => { actionDispatcherSyncContext = SynchronizationContext.Current.CreateCopy(); evt.Set(); });
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "ActionThread did not perform action");
-                }
+                actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current.CreateCopy(); });
 
                 // Sanity check
                 Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
