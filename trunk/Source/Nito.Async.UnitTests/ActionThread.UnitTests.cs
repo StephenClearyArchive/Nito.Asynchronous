@@ -86,5 +86,19 @@ namespace UnitTests
                 Assert.IsTrue(sawAction, "ActionThread did not perform action from SynchronizationContext");
             }
         }
+
+        [TestMethod]
+        public void TestSynchronousAction()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                int threadId = Thread.CurrentThread.ManagedThreadId;
+                thread.DoSynchronously(() => { threadId = Thread.CurrentThread.ManagedThreadId; });
+                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+                Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+            }
+        }
     }
 }
