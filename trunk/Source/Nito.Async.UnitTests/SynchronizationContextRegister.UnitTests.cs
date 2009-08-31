@@ -56,7 +56,40 @@ namespace UnitTests
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TestReRegisteredSynchronizationContextPropertiesReplacesOldValue()
+        {
+            SynchronizationContextRegister.Register(typeof(MyOtherSynchronizationContext), SynchronizationContextProperties.NonReentrantPost);
+            SynchronizationContextRegister.Register(typeof(MyOtherSynchronizationContext), SynchronizationContextProperties.NonReentrantSend);
+
+            using (var x = new ScopedSynchronizationContext(new MyOtherSynchronizationContext()))
+            {
+                SynchronizationContextRegister.Verify(SynchronizationContextProperties.NonReentrantPost);
+            }
+        }
+
+        [TestMethod]
+        public void TestReRegisteredSynchronizationContextProperties()
+        {
+            SynchronizationContextRegister.Register(typeof(MyThirdSynchronizationContext), SynchronizationContextProperties.NonReentrantPost);
+            SynchronizationContextRegister.Register(typeof(MyThirdSynchronizationContext), SynchronizationContextProperties.NonReentrantSend);
+
+            using (var x = new ScopedSynchronizationContext(new MyThirdSynchronizationContext()))
+            {
+                SynchronizationContextRegister.Verify(SynchronizationContextProperties.NonReentrantSend);
+            }
+        }
+
         private sealed class MySynchronizationContext : SynchronizationContext
+        {
+        }
+
+        private sealed class MyOtherSynchronizationContext : SynchronizationContext
+        {
+        }
+
+        private sealed class MyThirdSynchronizationContext : SynchronizationContext
         {
         }
     }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
+using System.Diagnostics;
 
 namespace UnitTests
 {
@@ -19,6 +20,29 @@ namespace UnitTests
                 thread.Start();
                 Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
             }
+        }
+
+        [TestMethod]
+        public void TestImplicitJoin()
+        {
+            ActionThread thread = new ActionThread();
+            using (thread)
+            {
+                thread.Start();
+            }
+
+            Assert.IsFalse(thread.IsAlive, "ActionThread did not implicitly join");
+        }
+
+        [TestMethod]
+        public void TestImplicitJoinWithoutStart()
+        {
+            ActionThread thread = new ActionThread();
+            using (thread)
+            {
+            }
+
+            Assert.IsFalse(thread.IsAlive, "ActionThread did not implicitly join");
         }
 
         [TestMethod]
@@ -98,6 +122,92 @@ namespace UnitTests
                 thread.DoSynchronously(() => { threadId = Thread.CurrentThread.ManagedThreadId; });
                 Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
                 Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+            }
+        }
+
+        [TestMethod]
+        public void TestIsAlive()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                Assert.IsFalse(thread.IsAlive, "ActionThread is alive before starting");
+
+                thread.Start();
+                Assert.IsTrue(thread.IsAlive, "ActionThread is not alive after starting");
+
+                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not join");
+                Assert.IsFalse(thread.IsAlive, "ActionThread is alive after joining");
+            }
+        }
+
+        [TestMethod]
+        public void TestIsBackgroundSetBeforeStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                Assert.IsFalse(thread.IsBackground, "ActionThread should not be a background thread by default");
+
+                thread.IsBackground = true;
+                Assert.IsTrue(thread.IsBackground, "ActionThread did not remember IsBackground");
+
+                thread.IsBackground = false;
+                Assert.IsFalse(thread.IsBackground, "ActionThread did not remember IsBackground");
+            }
+        }
+
+        [TestMethod]
+        public void TestIsBackgroundSetAfterStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                Assert.IsFalse(thread.IsBackground, "ActionThread should not be a background thread by default");
+
+                thread.IsBackground = true;
+                Assert.IsTrue(thread.IsBackground, "ActionThread did not remember IsBackground");
+
+                thread.IsBackground = false;
+                Assert.IsFalse(thread.IsBackground, "ActionThread did not remember IsBackground");
+            }
+        }
+
+        [TestMethod]
+        public void TestNameSetBeforeStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                Assert.IsNull(thread.Name, "ActionThread has a name without being set");
+
+                thread.Name = "Bob";
+                Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name");
+            }
+        }
+
+        [TestMethod]
+        public void TestNameSetAfterStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                Assert.IsNull(thread.Name, "ActionThread has a name without being set");
+
+                thread.Start();
+                thread.Name = "Bob";
+                Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name");
+
+                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not join");
+                Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name after joining");
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void TestNameMultiSet()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.Name = "Bob";
+                thread.Name = "Sue";
             }
         }
     }

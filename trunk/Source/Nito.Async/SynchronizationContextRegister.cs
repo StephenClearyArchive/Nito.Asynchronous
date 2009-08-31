@@ -67,6 +67,7 @@ namespace Nito.Async
         /// <param name="properties">The guarantees provided by this type.</param>
         /// <remarks>
         /// <para>This method should be called once for each type of <see cref="SynchronizationContext"/>. It is not necessary to call this method for .NET <see cref="SynchronizationContext"/> types or <see cref="ActionDispatcherSynchronizationContext"/>.</para>
+        /// <para>If this method is called more than once for a type, the new value of <paramref name="properties"/> replaces the old value. The flags are not merged.</para>
         /// </remarks>
         public static void Register(Type synchronizationContextType, SynchronizationContextProperties properties)
         {
