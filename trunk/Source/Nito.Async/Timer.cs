@@ -130,7 +130,7 @@ namespace Nito.Async
                     // Start the timer
 
                     // Bind the callback to our context and synchronization context
-                    Action boundOnTimer = this.context.Bind(this.OnTimer, this.synchronizationContext, false);
+                    Action boundOnTimer = this.context.AsyncBind(this.OnTimer, this.synchronizationContext, false);
 
                     // The underlying timer delegate (raised on a ThreadPool thread) will first synchronize with the original thread
                     //  using the captured SynchronizationContext. Then it will determine if its binding is still valid and call OnTimer
