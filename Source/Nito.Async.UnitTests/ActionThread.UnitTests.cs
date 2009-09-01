@@ -13,32 +13,34 @@ namespace UnitTests
     public class ActionThreadUnitTests
     {
         [TestMethod]
-        public void TestNoActions()
+        public void JoinWithTimeout_WithoutActions_Joins()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
+                bool signalled = thread.Join(TimeSpan.FromMilliseconds(100));
+                Assert.IsTrue(signalled, "ActionThread did not Join");
             }
         }
 
         [TestMethod]
-        public void TestJoinTimeout()
+        public void Join_WithAction_DoesNotJoin()
         {
-            using (ActionThread thread = new ActionThread())
             using (ManualResetEvent evt = new ManualResetEvent(false))
+            using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
                 thread.Do(() => evt.WaitOne());
-                Assert.IsFalse(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread joined");
+
+                bool signalled = thread.Join(TimeSpan.FromMilliseconds(100));
+                Assert.IsFalse(signalled, "ActionThread joined");
 
                 evt.Set();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not join");
             }
         }
 
         [TestMethod]
-        public void TestJoin()
+        public void Join_WithoutActions_Joins()
         {
             using (ActionThread thread = new ActionThread())
             {
@@ -48,7 +50,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestJoinWithoutStart()
+        public void Join_BeforeStart_Joins()
         {
             using (ActionThread thread = new ActionThread())
             {
@@ -57,16 +59,17 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestJoinTimeoutWithoutStart()
+        public void JoinWithTimeout_BeforeStart_JoinsImmediately()
         {
             using (ActionThread thread = new ActionThread())
             {
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(0)), "ActionThread did not join");
+                bool signalled = thread.Join(TimeSpan.FromMilliseconds(0));
+                Assert.IsTrue(signalled, "ActionThread did not join");
             }
         }
 
         [TestMethod]
-        public void TestImplicitJoin()
+        public void Dispose_WithoutExplicitJoin_Joins()
         {
             ActionThread thread = new ActionThread();
             using (thread)
@@ -78,7 +81,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestImplicitJoinWithoutStart()
+        public void Dispose_WithoutStart_Joins()
         {
             ActionThread thread = new ActionThread();
             using (thread)
@@ -89,7 +92,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestSingleActionBeforeStart()
+        public void Action_QueuedBeforeStart_IsExecutedByThread()
         {
             int threadId = Thread.CurrentThread.ManagedThreadId;
 
@@ -97,14 +100,14 @@ namespace UnitTests
             {
                 thread.Do(() => threadId = Thread.CurrentThread.ManagedThreadId);
                 thread.Start();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+                thread.Join();
+
                 Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
             }
         }
 
         [TestMethod]
-        public void TestSingleActionAfterStart()
+        public void Action_QueuedAfterStart_IsExecutedByThread()
         {
             int threadId = Thread.CurrentThread.ManagedThreadId;
 
@@ -112,15 +115,15 @@ namespace UnitTests
             {
                 thread.Start();
                 thread.Do(() => threadId = Thread.CurrentThread.ManagedThreadId);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+                thread.Join();
+
                 Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(ThreadStateException))]
-        public void TestDoubleStart()
+        public void Start_OnStartedThread_ThrowsThreadStateException()
         {
             using (ActionThread thread = new ActionThread())
             {
@@ -130,10 +133,49 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestSynchronizationContext()
+        public void SyncContext_FromInsideAction_PostsToSameThread()
+        {
+            int threadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                // Use the SynchronizationContext to give the ActionThread more work to do
+                actionThreadSyncContext.Post((state) => { threadId = Thread.CurrentThread.ManagedThreadId; }, null);
+
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+            }
+        }
+
+        [TestMethod]
+        public void SyncContext_FromInsideAction_SendsToSameThread()
+        {
+            int threadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                // Use the SynchronizationContext to give the ActionThread more work to do
+                actionThreadSyncContext.Send((state) => { threadId = Thread.CurrentThread.ManagedThreadId; }, null);
+
+                Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+            }
+        }
+
+        [TestMethod]
+        public void SyncContext_FromInsideAction_IsActionDispatcherSyncContext()
         {
             SynchronizationContext actionThreadSyncContext = null;
-            bool sawAction = false;
 
             using (ActionThread thread = new ActionThread())
             {
@@ -142,31 +184,27 @@ namespace UnitTests
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
                 actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
-                // Use the SynchronizationContext to give the ActionThread more work to do
-                actionThreadSyncContext.Post((state) => { sawAction = true; }, null);
-
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.IsTrue(sawAction, "ActionThread did not perform action from SynchronizationContext");
+                Assert.IsInstanceOfType(actionThreadSyncContext, typeof(ActionDispatcherSynchronizationContext), "ActionThread did not provide an ActionDispatcherSynchronizationContext");
             }
         }
 
         [TestMethod]
-        public void TestSynchronousAction()
+        public void SyncAction_QueuedAfterStart_IsExecutedByThread()
         {
+            int threadId = Thread.CurrentThread.ManagedThreadId;
+
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
-
-                int threadId = Thread.CurrentThread.ManagedThreadId;
                 thread.DoSynchronously(() => { threadId = Thread.CurrentThread.ManagedThreadId; });
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+
                 Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(ThreadStateException))]
-        public void TestSynchronousActionBeforeStart()
+        public void SyncAction_QueuedBeforeStart_ThrowsThreadStateException()
         {
             using (ActionThread thread = new ActionThread())
             {
@@ -176,7 +214,7 @@ namespace UnitTests
 
         [TestMethod]
         [ExpectedException(typeof(ThreadStateException))]
-        public void TestSynchronousActionAfterJoin()
+        public void SyncAction_QueuedAfterJoin_ThrowsThreadStateException()
         {
             using (ActionThread thread = new ActionThread())
             {
@@ -187,97 +225,140 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestSynchronousFunc()
+        public void SyncFunc_QueuedAfterStart_IsExecutedByThread()
         {
+            int threadId = Thread.CurrentThread.ManagedThreadId;
+
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
-
-                int threadId = Thread.CurrentThread.ManagedThreadId;
                 object obj = thread.DoGet(() => { threadId = Thread.CurrentThread.ManagedThreadId; return new object(); });
-                Assert.IsNotNull(obj, "ActionThread did not return result");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
+
                 Assert.AreEqual(thread.ManagedThreadId, threadId, "ActionThread ran in wrong thread context");
             }
         }
 
         [TestMethod]
-        public void TestIsAlive()
+        public void SyncFunc_QueuedAfterStart_PreservesReturnValue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                object obj = thread.DoGet(() => { return new object(); });
+                Assert.IsNotNull(obj, "ActionThread did not return result");
+            }
+        }
+
+        [TestMethod]
+        public void IsAliveProperty_BeforeStart_IsFalse()
         {
             using (ActionThread thread = new ActionThread())
             {
                 Assert.IsFalse(thread.IsAlive, "ActionThread is alive before starting");
+            }
+        }
 
+        [TestMethod]
+        public void IsAliveProperty_AfterStart_IsTrue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
                 thread.Start();
-                Assert.IsTrue(thread.IsAlive, "ActionThread is not alive after starting");
 
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not join");
+                Assert.IsTrue(thread.IsAlive, "ActionThread is not alive after starting");
+            }
+        }
+
+        [TestMethod]
+        public void IsAliveProperty_AfterStartAndJoin_IsFalse()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.Join();
+
                 Assert.IsFalse(thread.IsAlive, "ActionThread is alive after joining");
             }
         }
 
         [TestMethod]
-        public void TestIsBackgroundSetBeforeStart()
+        public void IsBackgroundProperty_InitialValue_IsFalse()
         {
             using (ActionThread thread = new ActionThread())
             {
                 Assert.IsFalse(thread.IsBackground, "ActionThread should not be a background thread by default");
-
-                thread.IsBackground = true;
-                Assert.IsTrue(thread.IsBackground, "ActionThread did not remember IsBackground");
-
-                thread.IsBackground = false;
-                Assert.IsFalse(thread.IsBackground, "ActionThread did not remember IsBackground");
             }
         }
 
         [TestMethod]
-        public void TestIsBackgroundSetAfterStart()
+        public void IsBackgroundProperty_BeforeStart_CanBeSetToTrue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.IsBackground = true;
+                Assert.IsTrue(thread.IsBackground, "ActionThread did not remember IsBackground");
+            }
+        }
+
+        [TestMethod]
+        public void IsBackgroundProperty_AfterStart_CanBeSetToTrue()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
-                Assert.IsFalse(thread.IsBackground, "ActionThread should not be a background thread by default");
 
                 thread.IsBackground = true;
                 Assert.IsTrue(thread.IsBackground, "ActionThread did not remember IsBackground");
-
-                thread.IsBackground = false;
-                Assert.IsFalse(thread.IsBackground, "ActionThread did not remember IsBackground");
             }
         }
 
         [TestMethod]
-        public void TestNameSetBeforeStart()
+        public void Name_InitialValue_IsNull()
         {
             using (ActionThread thread = new ActionThread())
             {
                 Assert.IsNull(thread.Name, "ActionThread has a name without being set");
+            }
+        }
 
+        [TestMethod]
+        public void NameSet_BeforeStart_RemembersValue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
                 thread.Name = "Bob";
                 Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name");
             }
         }
 
         [TestMethod]
-        public void TestNameSetAfterStart()
+        public void NameSet_AfterStart_RemembersValue()
         {
             using (ActionThread thread = new ActionThread())
             {
-                Assert.IsNull(thread.Name, "ActionThread has a name without being set");
-
                 thread.Start();
                 thread.Name = "Bob";
                 Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name");
+            }
+        }
 
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not join");
+        [TestMethod]
+        public void NameSet_AfterJoin_RemembersValue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.Name = "Bob";
+                thread.Join();
+
                 Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name after joining");
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void TestNameMultiSet()
+        public void Name_OnMultipleSets_ThrowsInvalidOperationException()
         {
             using (ActionThread thread = new ActionThread())
             {
@@ -288,33 +369,32 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestPrioritySetBeforeStart()
+        public void Priority_InitialValue_IsNormal()
         {
             using (ActionThread thread = new ActionThread())
             {
                 Assert.AreEqual(ThreadPriority.Normal, thread.Priority, "ActionThread did not start with ThreadPriority.Normal");
-
-                thread.Priority = ThreadPriority.Highest;
-                Assert.AreEqual(ThreadPriority.Highest, thread.Priority, "ActionThread did not remember Priority");
-
-                thread.Priority = ThreadPriority.Lowest;
-                Assert.AreEqual(ThreadPriority.Lowest, thread.Priority, "ActionThread did not remember Priority");
             }
         }
 
         [TestMethod]
-        public void TestPrioritySetAfterStart()
+        public void PrioritySet_BeforeStart_RemembersValue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Priority = ThreadPriority.Highest;
+                Assert.AreEqual(ThreadPriority.Highest, thread.Priority, "ActionThread did not remember Priority");
+            }
+        }
+
+        [TestMethod]
+        public void PrioritySet_AfterStart_RemembersValue()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
-                Assert.AreEqual(ThreadPriority.Normal, thread.Priority, "ActionThread did not start with ThreadPriority.Normal");
-
                 thread.Priority = ThreadPriority.BelowNormal;
                 Assert.AreEqual(ThreadPriority.BelowNormal, thread.Priority, "ActionThread did not remember Priority");
-
-                thread.Priority = ThreadPriority.AboveNormal;
-                Assert.AreEqual(ThreadPriority.AboveNormal, thread.Priority, "ActionThread did not remember Priority");
             }
         }
     }
