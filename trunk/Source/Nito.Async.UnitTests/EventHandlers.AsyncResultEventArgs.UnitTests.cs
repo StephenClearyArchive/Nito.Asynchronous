@@ -62,7 +62,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestSuccessfulResult()
+        public void TestSuccessfulResultWithState()
         {
             object state = new object();
 
@@ -70,6 +70,16 @@ namespace UnitTests
             Assert.IsFalse(test.Cancelled, "Successful event args should not be cancelled");
             Assert.IsNull(test.Error, "Successful event args should not preserve exception");
             Assert.AreSame(state, test.UserState, "Successful event args did not preserve user state");
+            Assert.AreEqual(13, test.Result, "Successful event args did not preserve result");
+        }
+
+        [TestMethod]
+        public void TestSuccessfulResult()
+        {
+            var test = new AsyncResultEventArgs<int>(13);
+            Assert.IsFalse(test.Cancelled, "Successful event args should not be cancelled");
+            Assert.IsNull(test.Error, "Successful event args should not preserve exception");
+            Assert.IsNull(test.UserState, "Successful event args has unexpected user state");
             Assert.AreEqual(13, test.Result, "Successful event args did not preserve result");
         }
     }
