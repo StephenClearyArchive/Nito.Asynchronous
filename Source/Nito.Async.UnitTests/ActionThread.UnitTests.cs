@@ -23,6 +23,49 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void TestJoinTimeout()
+        {
+            using (ActionThread thread = new ActionThread())
+            using (ManualResetEvent evt = new ManualResetEvent(false))
+            {
+                thread.Start();
+                thread.Do(() => evt.WaitOne());
+                Assert.IsFalse(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread joined");
+
+                evt.Set();
+                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not join");
+            }
+        }
+
+        [TestMethod]
+        public void TestJoin()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.Join();
+            }
+        }
+
+        [TestMethod]
+        public void TestJoinWithoutStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Join();
+            }
+        }
+
+        [TestMethod]
+        public void TestJoinTimeoutWithoutStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(0)), "ActionThread did not join");
+            }
+        }
+
+        [TestMethod]
         public void TestImplicitJoin()
         {
             ActionThread thread = new ActionThread();
@@ -219,6 +262,37 @@ namespace UnitTests
                 thread.Start();
                 thread.Name = "Bob";
                 thread.Name = "Sue";
+            }
+        }
+
+        [TestMethod]
+        public void TestPrioritySetBeforeStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                Assert.AreEqual(ThreadPriority.Normal, thread.Priority, "ActionThread did not start with ThreadPriority.Normal");
+
+                thread.Priority = ThreadPriority.Highest;
+                Assert.AreEqual(ThreadPriority.Highest, thread.Priority, "ActionThread did not remember Priority");
+
+                thread.Priority = ThreadPriority.Lowest;
+                Assert.AreEqual(ThreadPriority.Lowest, thread.Priority, "ActionThread did not remember Priority");
+            }
+        }
+
+        [TestMethod]
+        public void TestPrioritySetAfterStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                Assert.AreEqual(ThreadPriority.Normal, thread.Priority, "ActionThread did not start with ThreadPriority.Normal");
+
+                thread.Priority = ThreadPriority.BelowNormal;
+                Assert.AreEqual(ThreadPriority.BelowNormal, thread.Priority, "ActionThread did not remember Priority");
+
+                thread.Priority = ThreadPriority.AboveNormal;
+                Assert.AreEqual(ThreadPriority.AboveNormal, thread.Priority, "ActionThread did not remember Priority");
             }
         }
     }
