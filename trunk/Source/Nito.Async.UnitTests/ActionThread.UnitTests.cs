@@ -165,6 +165,28 @@ namespace UnitTests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ThreadStateException))]
+        public void TestSynchronousActionBeforeStart()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.DoSynchronously(() => { });
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ThreadStateException))]
+        public void TestSynchronousActionAfterJoin()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.Join();
+                thread.DoSynchronously(() => { });
+            }
+        }
+
+        [TestMethod]
         public void TestSynchronousFunc()
         {
             using (ActionThread thread = new ActionThread())

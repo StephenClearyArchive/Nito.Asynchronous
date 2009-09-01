@@ -59,6 +59,7 @@
     <Compile Include="ScopedSynchronizationContext.UnitTests.cs" />
     <Compile Include="Sync.UnitTests.cs" />
     <Compile Include="SynchronizationContextRegister.UnitTests.cs" />
+    <Compile Include="Timer.UnitTests.cs" />
     <Compile Include="Util\LoggingSynchronizationContext.cs" />
     <Compile Include="_FrameworkAssumptions.cs" />
   </ItemGroup>
