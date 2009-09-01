@@ -9,49 +9,87 @@ using System.ComponentModel;
 
 namespace UnitTests
 {
+    /// <summary>
+    /// A "Synced" action is one that has been bound with a SynchronizationContext.
+    /// An "Objectsynced" action is one that has been bound with an ISynchronizeInvoke object whose InvokeRequired property is true.
+    /// A "Fakesynced" action is one that has been bound with an ISynchronizeInvoke object whose InvokeRequired property is false.
+    /// </summary>
     [TestClass]
     public class CallbackContextUnitTests
     {
         [TestMethod]
-        public void TestActionBindAndRun()
+        public void CallbackContext_WithBoundAction_IsNotInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { });
+                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+            }
+        }
+
+        [TestMethod]
+        public void ValidAction_Invoked_Executes()
         {
             bool sawAction = false;
 
             using (CallbackContext context = new CallbackContext())
             {
                 var action = context.Bind(() => { sawAction = true; });
-                Assert.IsFalse(sawAction, "Bind should not execute action");
-
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
                 action();
                 Assert.IsTrue(sawAction, "Bound action did not execute");
+            }
+        }
+
+        [TestMethod]
+        public void CallbackContext_WithInvokedAction_IsNotInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { });
+                action();
                 Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
         }
 
         [TestMethod]
-        public void TestActionBindAndReset()
+        public void CallbackContext_ResetAfterBindingAction_IsInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { });
+                context.Reset();
+                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidAction_Invoked_DoesNotExecute()
         {
             bool sawAction = false;
 
             using (CallbackContext context = new CallbackContext())
             {
                 var action = context.Bind(() => { sawAction = true; });
-                Assert.IsFalse(sawAction, "Bind should not execute action");
-
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
                 context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
-                Assert.IsFalse(sawAction, "Reset should not execute action");
-
                 action();
                 Assert.IsFalse(sawAction, "Invalid action did execute");
+            }
+        }
+
+        [TestMethod]
+        public void CallbackContext_AfterInvokingInvalidAction_IsInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { });
+                context.Reset();
+                action();
                 Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
             }
         }
 
         [TestMethod]
-        public void TestActionBindAndDispose()
+        public void Action_InvokedAfterContextDispose_DoesNotExecute()
         {
             bool sawAction = false;
             Action action = null;
@@ -59,18 +97,14 @@ namespace UnitTests
             using (CallbackContext context = new CallbackContext())
             {
                 action = context.Bind(() => { sawAction = true; });
-                Assert.IsFalse(sawAction, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
-
-            Assert.IsFalse(sawAction, "Dispose should not execute action");
 
             action();
             Assert.IsFalse(sawAction, "Invalid action did execute");
         }
 
         [TestMethod]
-        public void TestMultipleActionsWithReset()
+        public void CallbackContext_Reset_InvalidatesAllActions()
         {
             bool sawAction1 = false;
             bool sawAction2 = false;
@@ -79,27 +113,18 @@ namespace UnitTests
             {
                 var action1 = context.Bind(() => { sawAction1 = true; });
                 var action2 = context.Bind(() => { sawAction2 = true; });
-                Assert.IsFalse(sawAction1, "Bind should not execute action");
-                Assert.IsFalse(sawAction2, "Bind should not execute action");
 
-                Assert.IsFalse(context.Invalidated, "Bound actions should be valid");
                 context.Reset();
-                Assert.IsFalse(sawAction1, "Reset should not execute action");
-                Assert.IsFalse(sawAction2, "Reset should not execute action");
-                Assert.IsTrue(context.Invalidated, "Bound actions should be invalid");
-
                 action1();
                 action2();
                 Assert.IsFalse(sawAction1, "Invalid action did execute");
                 Assert.IsFalse(sawAction2, "Invalid action did execute");
-                Assert.IsTrue(context.Invalidated, "Bound actions should be invalid");
             }
         }
 
         [TestMethod]
-        public void TestActionSyncContextBindAndRun()
+        public void BoundSyncedAction_Invoked_ExecutesSynchronized()
         {
-            SynchronizationContext actionThreadSyncContext = null;
             int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
@@ -107,27 +132,19 @@ namespace UnitTests
             {
                 thread.Start();
 
-                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, actionThreadSyncContext);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
                 action();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
+
                 Assert.AreEqual(thread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
         }
 
         [TestMethod]
-        public void TestActionSyncContextUsage()
+        public void BoundSyncedAction_Invoked_UsesSyncContext()
         {
-            SynchronizationContext actionThreadSyncContext = null;
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
-            bool sawOperationCompleted = false;
-            bool sawOperationStarted = false;
             bool sawSync = false;
 
             using (CallbackContext context = new CallbackContext())
@@ -135,40 +152,76 @@ namespace UnitTests
             {
                 thread.Start();
 
-                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
                 {
-                    OnOperationCompleted = () => { sawOperationCompleted = true; },
-                    OnOperationStarted = () => { sawOperationStarted = true; },
                     OnPost = () => { sawSync = true; },
                     OnSend = () => { sawSync = true; }
                 };
 
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, syncContext, false);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(sawOperationStarted, "Bind should not start operation");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { }, syncContext, false);
                 action();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
-                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+
                 Assert.IsTrue(sawSync, "Context did not use SyncContext for sync");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
         }
 
         [TestMethod]
-        public void TestActionSyncContextWithReset()
+        public void BoundSyncedAction_Invoked_IncrementsSyncContextOperationCount()
         {
-            SynchronizationContext actionThreadSyncContext = null;
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
-            bool sawOperationCompleted = false;
             bool sawOperationStarted = false;
-            bool sawSync = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnOperationStarted = () => { sawOperationStarted = true; }
+                };
+
+                var action = context.Bind(() => { }, syncContext, false);
+                action();
+
+                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
+            }
+        }
+
+        [TestMethod]
+        public void BoundSyncedAction_Invoked_DecrementsSyncContextOperationCount()
+        {
+            bool sawOperationCompleted = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnOperationCompleted = () => { sawOperationCompleted = true; }
+                };
+
+                var action = context.Bind(() => { }, syncContext, false);
+                action();
+
+                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundSyncedAction_Invoked_DoesNotExecute()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
             using (ActionThread thread = new ActionThread())
@@ -176,177 +229,423 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
-                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
-                {
-                    OnOperationCompleted = () => { sawOperationCompleted = true; },
-                    OnOperationStarted = () => { sawOperationStarted = true; },
-                    OnPost = () => { sawSync = true; },
-                    OnSend = () => { sawSync = true; }
-                };
-
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, syncContext, false);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(sawOperationStarted, "Bind should not start operation");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, actionThreadSyncContext, false);
                 context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
                 action();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action should not run");
-                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
-                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+
+                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Invalid action should not run");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundSyncedAction_Invoked_DoesSync()
+        {
+            bool sawSync = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnPost = () => { sawSync = true; },
+                    OnSend = () => { sawSync = true; }
+                };
+
+                var action = context.Bind(() => { }, syncContext, false);
+                context.Reset();
+                action();
+
                 Assert.IsTrue(sawSync, "Context did not use SyncContext for sync");
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
+            }
+        }
+
+        [TestMethod]
+        public void BoundAsyncAction_Invoked_ExecutesSynchronized()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var action = context.AsyncBind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, actionThreadSyncContext);
+                action();
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void BoundAsyncAction_Invoked_UsesSyncContext()
+        {
+            bool sawSync = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnPost = () => { sawSync = true; },
+                    OnSend = () => { sawSync = true; }
+                };
+
+                var action = context.AsyncBind(() => { }, syncContext, false);
+                action();
+                thread.Join();
+
+                Assert.IsTrue(sawSync, "Context did not use SyncContext for sync");
+            }
+        }
+
+        [TestMethod]
+        public void BoundAsyncAction_Invoked_IncrementsSyncContextOperationCount()
+        {
+            bool sawOperationStarted = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnOperationStarted = () => { sawOperationStarted = true; }
+                };
+
+                var action = context.AsyncBind(() => { }, syncContext, false);
+                action();
+                thread.Join();
+
+                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
+            }
+        }
+
+        [TestMethod]
+        public void BoundAsyncAction_Invoked_DecrementsSyncContextOperationCount()
+        {
+            bool sawOperationCompleted = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnOperationCompleted = () => { sawOperationCompleted = true; }
+                };
+
+                var action = context.AsyncBind(() => { }, syncContext, false);
+                action();
+                thread.Join();
+
+                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundAsyncAction_Invoked_DoesNotExecute()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var action = context.AsyncBind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, actionThreadSyncContext, false);
+                context.Reset();
+                action();
+                thread.Join();
+
+                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Invalid action should not run");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundAsyncAction_Invoked_DoesSync()
+        {
+            bool sawSync = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnPost = () => { sawSync = true; },
+                    OnSend = () => { sawSync = true; }
+                };
+
+                var action = context.AsyncBind(() => { }, syncContext, false);
+                context.Reset();
+                action();
+                thread.Join();
+
+                Assert.IsTrue(sawSync, "Context did not use SyncContext for sync");
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void TestActionDefaultSyncContextBindAndRun()
+        public void CallbackContext_BindingActionWithDefaultSyncContext_ThrowsInvalidOperationException()
         {
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { }, new SynchronizationContext());
+            }
+        }
 
+        /// <summary>
+        /// Note: this is not a supported scenario! The "skip verification" overload is intended for efficiency reasons only.
+        /// </summary>
+        [TestMethod]
+        public void ActionBoundToDefaultSyncContext_Invoked_Executes()
+        {
             using (CallbackContext context = new CallbackContext())
             using (ManualResetEvent evt = new ManualResetEvent(false))
             {
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); }, new SynchronizationContext());
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { evt.Set(); }, new SynchronizationContext(), false);
                 action();
-                Assert.IsTrue(evt.WaitOne(100), "Action did not run on ThreadPool");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                bool signalled = evt.WaitOne(100);
+                Assert.IsTrue(signalled, "Action did not run");
             }
         }
 
         [TestMethod]
-        public void TestActionDefaultSyncContextSkippingTestBindAndRun()
+        public void BoundObjectsyncedAction_Invoked_Executes()
         {
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+            bool sawAction = false;
 
             using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
-            {
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); }, new SynchronizationContext(), false);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
-                action();
-                Assert.IsTrue(evt.WaitOne(100), "Action did not run on ThreadPool");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-            }
-        }
-
-        [TestMethod]
-        public void TestActionSyncObjectBindAndRun()
-        {
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
-
-            using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
             {
                 var syncObject = new FakeActionSynchronizingObject(true);
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); }, syncObject);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawAction = true; }, syncObject);
                 action();
-                Assert.IsTrue(evt.WaitOne(100), "Action did not run on ThreadPool");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                Assert.IsTrue(sawAction, "Bound action did not run");
             }
         }
 
         [TestMethod]
-        public void TestActionCurrentSyncObjectBindAndRun()
+        public void BoundObjectsyncedAction_Invoked_UsesSyncObject()
         {
-            int sawActionThread = ~Thread.CurrentThread.ManagedThreadId;
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeActionSynchronizingObject(true);
+                var action = context.Bind(() => { }, syncObject);
+                action();
+                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
+            }
+        }
+
+        [TestMethod]
+        public void BoundObjectsyncedAction_Invoked_SynchronizesWithSyncObject()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
+            {
+                var syncObject = new FakeActionSynchronizingObject(true);
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, syncObject);
+                action();
+                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void BoundFakesyncedAction_Invoked_Executes()
+        {
+            bool sawAction = false;
+
+            using (CallbackContext context = new CallbackContext())
             {
                 var syncObject = new FakeActionSynchronizingObject(false);
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); }, syncObject);
-                Assert.AreEqual(~Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawAction = true; }, syncObject);
                 action();
-                Assert.IsTrue(evt.WaitOne(0), "Action did not run synchronously");
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(syncObject.sawInvoke, "Bound action did run through synchronizing object");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                Assert.IsTrue(sawAction, "Bound action did not run");
             }
         }
 
         [TestMethod]
-        public void TestActionSyncObjectWithReset()
+        public void BoundFakesyncedAction_Invoked_DoesNotUseSyncObject()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeActionSynchronizingObject(false);
+                var action = context.Bind(() => { }, syncObject);
+                action();
+                Assert.IsFalse(syncObject.sawInvoke, "Bound action did run through synchronizing object");
+            }
+        }
+
+        [TestMethod]
+        public void BoundFakesyncedAction_Invoked_DoesNotSynchronizeWithSyncObject()
         {
             int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
+            {
+                var syncObject = new FakeActionSynchronizingObject(false);
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, syncObject);
+                action();
+                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not run inline");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundObjectsyncedAction_Invoked_SynchronizesWithSyncObject()
+        {
+            using (CallbackContext context = new CallbackContext())
             {
                 var syncObject = new FakeActionSynchronizingObject(true);
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); }, syncObject);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { }, syncObject);
                 context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
+                action();
+                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundObjectsyncedAction_Invoked_DoesNotExecute()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeActionSynchronizingObject(true);
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; }, syncObject);
+                context.Reset();
                 action();
                 Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was executed");
-                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
             }
         }
 
         [TestMethod]
-        public void TestFuncBindAndRun()
+        public void CallbackContext_WithBoundFunc_IsNotInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; });
+                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+            }
+        }
+
+        [TestMethod]
+        public void ValidFunc_Invoked_Executes()
         {
             bool sawAction = false;
 
             using (CallbackContext context = new CallbackContext())
             {
                 var action = context.Bind(() => { sawAction = true; return 13; });
-                Assert.IsFalse(sawAction, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                int result = action();
+                Assert.IsTrue(sawAction, "Bound action did not execute");
+            }
+        }
 
+        [TestMethod]
+        public void ValidFunc_Invoked_ReturnsValue()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; });
                 int result = action();
                 Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(sawAction, "Bound action did not execute");
+            }
+        }
+
+        [TestMethod]
+        public void CallbackContext_WithInvokedFunc_IsNotInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; });
+                int result = action();
                 Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
         }
 
         [TestMethod]
-        public void TestFuncBindAndReset()
+        public void CallbackContext_ResetAfterBindingFunc_IsInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; });
+                context.Reset();
+                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidFunc_Invoked_DoesNotExecute()
         {
             bool sawAction = false;
 
             using (CallbackContext context = new CallbackContext())
             {
-                var action = context.Bind(() => { sawAction = true; return 13; });
-                Assert.IsFalse(sawAction, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawAction = true;  return 13; });
                 context.Reset();
-                Assert.IsFalse(sawAction, "Reset should not execute action");
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
-
                 int result = action();
-                Assert.AreEqual(0, result, "Func result seen");
                 Assert.IsFalse(sawAction, "Invalid action did execute");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidFunc_Invoked_ReturnsDefault()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; });
+                context.Reset();
+                int result = action();
+                Assert.AreEqual(default(int), result, "Invalid func had a non-default return value");
+            }
+        }
+
+        [TestMethod]
+        public void CallbackContext_AfterInvokingInvalidFunc_IsInvalid()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; });
+                context.Reset();
+                int result = action();
                 Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
             }
         }
 
         [TestMethod]
-        public void TestFuncBindAndDispose()
+        public void Func_InvokedAfterContextDispose_DoesNotExecute()
         {
             bool sawAction = false;
             Func<int> action = null;
@@ -354,19 +653,28 @@ namespace UnitTests
             using (CallbackContext context = new CallbackContext())
             {
                 action = context.Bind(() => { sawAction = true; return 13; });
-                Assert.IsFalse(sawAction, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
 
-            Assert.IsFalse(sawAction, "Dispose should not execute action");
-
             int result = action();
-            Assert.AreEqual(0, result, "Func result seen");
             Assert.IsFalse(sawAction, "Invalid action did execute");
         }
 
         [TestMethod]
-        public void TestMultipleFuncsWithReset()
+        public void Func_InvokedAfterContextDispose_ReturnsDefault()
+        {
+            Func<int> action = null;
+
+            using (CallbackContext context = new CallbackContext())
+            {
+                action = context.Bind(() => { return 13; });
+            }
+
+            int result = action();
+            Assert.AreEqual(0, result, "Invalid func had a non-default return value");
+        }
+
+        [TestMethod]
+        public void CallbackContext_Reset_InvalidatesAllFuncs()
         {
             bool sawAction1 = false;
             bool sawAction2 = false;
@@ -375,29 +683,19 @@ namespace UnitTests
             {
                 var action1 = context.Bind(() => { sawAction1 = true; return 13; });
                 var action2 = context.Bind(() => { sawAction2 = true; return 17; });
-                Assert.IsFalse(sawAction1, "Bind should not execute action");
-                Assert.IsFalse(sawAction2, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound actions should be valid");
 
                 context.Reset();
-                Assert.IsFalse(sawAction1, "Reset should not execute action");
-                Assert.IsFalse(sawAction2, "Reset should not execute action");
-                Assert.IsTrue(context.Invalidated, "Bound actions should be invalid");
-
                 int result1 = action1();
                 int result2 = action2();
-                Assert.AreEqual(0, result1, "Func result returned");
-                Assert.AreEqual(0, result2, "Func result returned");
+
                 Assert.IsFalse(sawAction1, "Invalid action did execute");
                 Assert.IsFalse(sawAction2, "Invalid action did execute");
-                Assert.IsTrue(context.Invalidated, "Bound actions should be invalid");
             }
         }
 
         [TestMethod]
-        public void TestFuncSyncContextBindAndRun()
+        public void BoundSyncedFunc_Invoked_ExecutesSynchronized()
         {
-            SynchronizationContext actionThreadSyncContext = null;
             int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
@@ -405,28 +703,19 @@ namespace UnitTests
             {
                 thread.Start();
 
-                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, actionThreadSyncContext);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
                 int result = action();
-                Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
+
                 Assert.AreEqual(thread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
         }
 
         [TestMethod]
-        public void TestFuncSyncContextUsage()
+        public void BoundSyncedFunc_Invoked_UsesSyncContext()
         {
-            SynchronizationContext actionThreadSyncContext = null;
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
-            bool sawOperationCompleted = false;
-            bool sawOperationStarted = false;
             bool sawSync = false;
 
             using (CallbackContext context = new CallbackContext())
@@ -434,41 +723,76 @@ namespace UnitTests
             {
                 thread.Start();
 
-                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
                 var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
                 {
-                    OnOperationCompleted = () => { sawOperationCompleted = true; },
-                    OnOperationStarted = () => { sawOperationStarted = true; },
                     OnPost = () => { sawSync = true; },
                     OnSend = () => { sawSync = true; }
                 };
 
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, syncContext, false);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(sawOperationStarted, "Bind should not start operation");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { return 13;  }, syncContext, false);
                 int result = action();
-                Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
-                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+
                 Assert.IsTrue(sawSync, "Context did not use SyncContext for sync");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
             }
         }
 
         [TestMethod]
-        public void TestFuncSyncContextWithReset()
+        public void BoundSyncedFunc_Invoked_IncrementsSyncContextOperationCount()
         {
-            SynchronizationContext actionThreadSyncContext = null;
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
-            bool sawOperationCompleted = false;
             bool sawOperationStarted = false;
-            bool sawSync = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnOperationStarted = () => { sawOperationStarted = true; }
+                };
+
+                var action = context.Bind(() => { return 13; }, syncContext, false);
+                int result = action();
+
+                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
+            }
+        }
+
+        [TestMethod]
+        public void BoundSyncedFunc_Invoked_DecrementsSyncContextOperationCount()
+        {
+            bool sawOperationCompleted = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnOperationCompleted = () => { sawOperationCompleted = true; }
+                };
+
+                var action = context.Bind(() => { return 13; }, syncContext, false);
+                int result = action();
+
+                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundSyncedFunc_Invoked_DoesNotExecute()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
             using (ActionThread thread = new ActionThread())
@@ -476,160 +800,230 @@ namespace UnitTests
                 thread.Start();
 
                 // Capture the thread's SynchronizationContext and signal this thread when it's captured.
-                actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
 
-                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
-                {
-                    OnOperationCompleted = () => { sawOperationCompleted = true; },
-                    OnOperationStarted = () => { sawOperationStarted = true; },
-                    OnPost = () => { sawSync = true; },
-                    OnSend = () => { sawSync = true; }
-                };
-
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, syncContext, false);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(sawOperationStarted, "Bind should not start operation");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, actionThreadSyncContext, false);
                 context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
-
                 int result = action();
-                Assert.AreEqual(0, result, "Func result returned");
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action should not run");
-                Assert.IsFalse(sawOperationStarted, "Context incremented operation count");
-                Assert.IsFalse(sawOperationCompleted, "Context decremented operation count");
+
+                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Invalid action should not run");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundSyncedFunc_Invoked_DoesSync()
+        {
+            bool sawSync = false;
+
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var syncContext = new Util.LoggingSynchronizationContext(actionThreadSyncContext)
+                {
+                    OnPost = () => { sawSync = true; },
+                    OnSend = () => { sawSync = true; }
+                };
+
+                var action = context.Bind(() => { return 13; }, syncContext, false);
+                context.Reset();
+                int result = action();
+
                 Assert.IsTrue(sawSync, "Context did not use SyncContext for sync");
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundSyncedFunc_Invoked_ReturnsDefault()
+        {
+            using (CallbackContext context = new CallbackContext())
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture the thread's SynchronizationContext and signal this thread when it's captured.
+                SynchronizationContext actionThreadSyncContext = thread.DoGet(() => { return SynchronizationContext.Current; });
+
+                var action = context.Bind(() => { return 13; }, actionThreadSyncContext, false);
+                context.Reset();
+                int result = action();
+
+                Assert.AreEqual(0, result, "Invalid Func returned a non-default value");
             }
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void TestFuncDefaultSyncContextBindAndRun()
+        public void CallbackContext_BindingFuncWithDefaultSyncContext_ThrowsInvalidOperationException()
         {
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+            using (CallbackContext context = new CallbackContext())
+            {
+                var action = context.Bind(() => { return 13; }, new SynchronizationContext());
+            }
+        }
 
+        /// <summary>
+        /// Note: this is not a supported scenario! The "skip verification" overload is intended for efficiency reasons only.
+        /// </summary>
+        [TestMethod]
+        public void FuncBoundToDefaultSyncContext_Invoked_Executes()
+        {
             using (CallbackContext context = new CallbackContext())
             using (ManualResetEvent evt = new ManualResetEvent(false))
             {
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); return 13; }, new SynchronizationContext());
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { evt.Set(); return 13; }, new SynchronizationContext(), false);
                 int result = action();
-                Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(evt.WaitOne(100), "Action did not run on ThreadPool");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                bool signalled = evt.WaitOne(100);
+                Assert.IsTrue(signalled, "Action did not run");
             }
         }
 
         [TestMethod]
-        public void TestFuncDefaultSyncContextSkippingTestBindAndRun()
+        public void BoundObjectsyncedFunc_Invoked_Executes()
         {
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+            bool sawAction = false;
 
             using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
-            {
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); return 13; }, new SynchronizationContext(), false);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
-                int result = action();
-                Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(evt.WaitOne(100), "Action did not run on ThreadPool");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-            }
-        }
-
-        [TestMethod]
-        public void TestFuncSyncObjectBindAndRun()
-        {
-            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
-
-            using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
             {
                 var syncObject = new FakeFuncSynchronizingObject(true);
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); return 13; }, syncObject);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawAction = true; return 13; }, syncObject);
                 int result = action();
-                Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(evt.WaitOne(100), "Action did not run on ThreadPool");
-                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                Assert.IsTrue(sawAction, "Bound action did not run");
             }
         }
 
         [TestMethod]
-        public void TestFuncCurrentSyncObjectBindAndRun()
+        public void BoundObjectsyncedFunc_Invoked_ReturnsValue()
         {
-            int sawActionThread = ~Thread.CurrentThread.ManagedThreadId;
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(true);
+                var action = context.Bind(() => { return 13; }, syncObject);
+                int result = action();
+                Assert.AreEqual(13, result, "Bound func did not return result");
+            }
+        }
+
+        [TestMethod]
+        public void BoundObjectsyncedFunc_Invoked_UsesSyncObject()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(true);
+                var action = context.Bind(() => { return 13; }, syncObject);
+                int result = action();
+                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
+            }
+        }
+
+        [TestMethod]
+        public void BoundObjectsyncedFunc_Invoked_SynchronizesWithSyncObject()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
+            {
+                var syncObject = new FakeFuncSynchronizingObject(true);
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, syncObject);
+                int result = action();
+                Assert.AreNotEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundObjectsyncedFunc_Invoked_SynchronizesWithSyncObject()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(true);
+                var action = context.Bind(() => { return 13; }, syncObject);
+                context.Reset();
+                int result = action();
+                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundObjectsyncedFunc_Invoked_DoesNotExecute()
+        {
+            int sawActionThread = Thread.CurrentThread.ManagedThreadId;
+
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(true);
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, syncObject);
+                context.Reset();
+                int result = action();
+                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was executed");
+            }
+        }
+
+        [TestMethod]
+        public void InvalidBoundObjectsyncedFunc_Invoked_ReturnsDefault()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(true);
+                var action = context.Bind(() => { return 13; }, syncObject);
+                context.Reset();
+                int result = action();
+                Assert.AreEqual(0, result, "Invalid func returned non-default value");
+            }
+        }
+
+        [TestMethod]
+        public void BoundFakesyncedFunc_Invoked_Executes()
+        {
+            bool sawAction = false;
+
+            using (CallbackContext context = new CallbackContext())
             {
                 var syncObject = new FakeFuncSynchronizingObject(false);
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); return 13; }, syncObject);
-                Assert.AreEqual(~Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
+                var action = context.Bind(() => { sawAction = true; return 13; }, syncObject);
                 int result = action();
-                Assert.AreEqual(13, result, "Func result not returned");
-                Assert.IsTrue(evt.WaitOne(0), "Action did not run synchronized");
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not synchronized");
-                Assert.IsFalse(syncObject.sawInvoke, "Bound action did run through synchronizing object");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
+                Assert.IsTrue(sawAction, "Bound action did not run");
             }
         }
 
         [TestMethod]
-        public void TestFuncSyncObjectWithReset()
+        public void BoundFakesyncedFunc_Invoked_ReturnsValue()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(false);
+                var action = context.Bind(() => { return 13; }, syncObject);
+                int result = action();
+                Assert.AreEqual(13, result, "Bound func did not return result");
+            }
+        }
+
+        [TestMethod]
+        public void BoundFakesyncedFunc_Invoked_DoesNotUseSyncObject()
+        {
+            using (CallbackContext context = new CallbackContext())
+            {
+                var syncObject = new FakeFuncSynchronizingObject(false);
+                var action = context.Bind(() => { return 13; }, syncObject);
+                int result = action();
+                Assert.IsFalse(syncObject.sawInvoke, "Bound action did run through synchronizing object");
+            }
+        }
+
+        [TestMethod]
+        public void BoundFakesyncedFunc_Invoked_DoesNotSynchronizeWithSyncObject()
         {
             int sawActionThread = Thread.CurrentThread.ManagedThreadId;
 
             using (CallbackContext context = new CallbackContext())
-            using (ManualResetEvent evt = new ManualResetEvent(false))
             {
-                var syncObject = new FakeFuncSynchronizingObject(true);
-                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; evt.Set(); return 13; }, syncObject);
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bind should not execute action");
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
-                context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
-
+                var syncObject = new FakeFuncSynchronizingObject(false);
+                var action = context.Bind(() => { sawActionThread = Thread.CurrentThread.ManagedThreadId; return 13; }, syncObject);
                 int result = action();
-                Assert.AreEqual(0, result, "Func result returned");
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was executed");
-                Assert.IsTrue(syncObject.sawInvoke, "Bound action did not run through synchronizing object");
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
-            }
-        }
-
-        [TestMethod]
-        public void TestInvalidatedProperty()
-        {
-            using (CallbackContext context = new CallbackContext())
-            {
-                context.Bind(() => { });
-                Assert.IsFalse(context.Invalidated, "Bound action should be valid");
-
-                context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound action should be invalid");
-
-                context.Bind(() => { });
-                context.Bind(() => { });
-                Assert.IsFalse(context.Invalidated, "Bound actions should be valid");
-
-                context.Reset();
-                Assert.IsTrue(context.Invalidated, "Bound actions should be invalid");
+                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, sawActionThread, "Bound action was not run inline");
             }
         }
 

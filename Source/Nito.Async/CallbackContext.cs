@@ -124,7 +124,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Synchronizes a delegate and then binds it to this context, and returns the synchronized, bound, valid delegate.
+        /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
         /// <remarks>
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
@@ -157,7 +157,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Synchronizes a delegate and then binds it to this context, and returns the synchronized, bound, valid delegate.
+        /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
         /// <remarks>
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
@@ -175,7 +175,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Synchronizes a delegate and then binds it to this context, and returns the synchronized, bound, valid delegate.
+        /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
         /// <remarks>
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
@@ -202,12 +202,12 @@ namespace Nito.Async
             // Return a synchronized wrapper for the bound delegate
             return () =>
             {
-                synchronizationContext.Post((state) => boundAction(), null);
+                synchronizationContext.Send((state) => boundAction(), null);
             };
         }
 
         /// <summary>
-        /// Synchronizes a delegate and then binds it to this context, and returns the synchronized, bound, valid delegate.
+        /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
         /// <remarks>
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
@@ -240,7 +240,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Synchronizes a delegate and then binds it to this context, and returns the synchronized, bound, valid delegate.
+        /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
         /// <remarks>
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
@@ -259,7 +259,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Synchronizes a delegate and then binds it to this context, and returns the synchronized, bound, valid delegate.
+        /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
         /// <remarks>
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
@@ -290,6 +290,56 @@ namespace Nito.Async
                 T retVal = default(T);
                 synchronizationContext.Send((state) => retVal = boundFunc(), null);
                 return retVal;
+            };
+        }
+
+        /// <summary>
+        /// Synchronizes a delegate and then binds it to this context, and returns an asynchronous, synchronized, bound, valid delegate.
+        /// </summary>
+        /// <remarks>
+        /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
+        /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
+        /// </remarks>
+        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary.</param>
+        /// <returns>A valid delegate bound to the current context.</returns>
+        /// <threadsafety>
+        /// <para>The returned delegate may be executed on any thread except the thread that owns <paramref name="synchronizationContext"/>; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
+        /// </threadsafety>
+        public Action AsyncBind(Action action, SynchronizationContext synchronizationContext)
+        {
+            return this.AsyncBind(action, synchronizationContext, true);
+        }
+
+        /// <summary>
+        /// Synchronizes a delegate and then binds it to this context, and returns an asynchronous, synchronized, bound, valid delegate.
+        /// </summary>
+        /// <remarks>
+        /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
+        /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
+        /// </remarks>
+        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="checkSynchronizationContextVerification">Whether to verify that <paramref name="synchronizationContext"/> does support <see cref="SynchronizationContextProperties.Synchronized"/>.</param>
+        /// <returns>A valid delegate bound to the current context.</returns>
+        /// <threadsafety>
+        /// <para>The returned delegate may be executed on any thread except the thread that owns <paramref name="synchronizationContext"/>; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
+        /// </threadsafety>
+        public Action AsyncBind(Action action, SynchronizationContext synchronizationContext, bool checkSynchronizationContextVerification)
+        {
+            if (checkSynchronizationContextVerification)
+            {
+                // Verify that the synchronization context provides synchronization
+                SynchronizationContextRegister.Verify(synchronizationContext.GetType(), SynchronizationContextProperties.Synchronized);
+            }
+
+            // Create the bound delegate
+            Action boundAction = this.Bind(action);
+
+            // Return a synchronized wrapper for the bound delegate
+            return () =>
+            {
+                synchronizationContext.Send((state) => boundAction(), null);
             };
         }
 
