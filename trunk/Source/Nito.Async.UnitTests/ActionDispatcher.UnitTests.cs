@@ -12,20 +12,51 @@ namespace UnitTests
     public class ActionDispatcherUnitTests
     {
         [TestMethod]
-        public void TestExitActionOnEmptyQueue()
+        public void Run_WithoutExitAction_DoesNotReturn()
         {
             using (ActionDispatcher dispatcher = new ActionDispatcher())
             {
                 Thread thread = new Thread(() => dispatcher.Run());
                 thread.Start();
-                Assert.IsFalse(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread exited before ActionDispatcher.QueueExit");
+       
+                bool threadExited = thread.Join(TimeSpan.FromMilliseconds(100));
+                Assert.IsFalse(threadExited, "Thread exited before ActionDispatcher.QueueExit");
+
                 dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
+                thread.Join();
             }
         }
 
         [TestMethod]
-        public void TestSingleAction()
+        public void ExitAction_OnEmptyQueueAfterThreadStarted_CausesRunToReturn()
+        {
+            using (ActionDispatcher dispatcher = new ActionDispatcher())
+            {
+                Thread thread = new Thread(() => dispatcher.Run());
+                thread.Start();
+                dispatcher.QueueExit();
+
+                bool threadExited = thread.Join(TimeSpan.FromMilliseconds(100));
+                Assert.IsTrue(threadExited, "Thread did not exit after ActionDispatcher.QueueExit");
+            }
+        }
+
+        [TestMethod]
+        public void ExitAction_OnEmptyQueueBeforeThreadStarted_CausesRunToReturn()
+        {
+            using (ActionDispatcher dispatcher = new ActionDispatcher())
+            {
+                dispatcher.QueueExit();
+                Thread thread = new Thread(() => dispatcher.Run());
+                thread.Start();
+
+                bool threadExited = thread.Join(TimeSpan.FromMilliseconds(100));
+                Assert.IsTrue(threadExited, "Thread did not exit after ActionDispatcher.QueueExit");
+            }
+        }
+
+        [TestMethod]
+        public void Action_QueuedToActionDispatcher_IsExecutedByRun()
         {
             bool sawAction = false;
 
@@ -34,31 +65,15 @@ namespace UnitTests
                 Thread thread = new Thread(() => dispatcher.Run());
                 thread.Start();
                 dispatcher.QueueAction(() => { sawAction = true; });
-                Assert.IsFalse(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread exited before ActionDispatcher.QueueExit");
                 dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
+                thread.Join();
+
                 Assert.IsTrue(sawAction, "ActionDispatcher did not execute action");
             }
         }
 
         [TestMethod]
-        public void TestSingleActionWithoutTimeouts()
-        {
-            bool sawAction = false;
-
-            using (ActionDispatcher dispatcher = new ActionDispatcher())
-            {
-                Thread thread = new Thread(() => dispatcher.Run());
-                thread.Start();
-                dispatcher.QueueAction(() => { sawAction = true; });
-                dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
-                Assert.IsTrue(sawAction, "ActionDispatcher did not execute action");
-            }
-        }
-
-        [TestMethod]
-        public void TestMultipleActionsInQueueBeforeThreadStart()
+        public void MultipleActions_QueuedBeforeThreadStart_AreExecutedByRun()
         {
             bool sawAction1 = false;
             bool sawAction2 = false;
@@ -69,51 +84,50 @@ namespace UnitTests
                 dispatcher.QueueAction(() => { sawAction1 = true; });
                 dispatcher.QueueAction(() => { sawAction2 = true; });
                 thread.Start();
-                Assert.IsFalse(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread exited before ActionDispatcher.QueueExit");
                 dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
+                thread.Join();
+
                 Assert.IsTrue(sawAction1, "ActionDispatcher did not execute the first action");
                 Assert.IsTrue(sawAction2, "ActionDispatcher did not execute the second action");
             }
         }
 
         [TestMethod]
-        public void TestMultipleActionsAndExitInQueueBeforeThreadStart()
+        public void Action_QueuedAfterExitAction_IsNotExecutedByRun()
         {
-            bool sawAction1 = false;
-            bool sawAction2 = false;
+            bool sawAction = false;
 
             using (ActionDispatcher dispatcher = new ActionDispatcher())
             {
                 Thread thread = new Thread(() => dispatcher.Run());
-                dispatcher.QueueAction(() => { sawAction1 = true; });
-                dispatcher.QueueAction(() => { sawAction2 = true; });
                 dispatcher.QueueExit();
+                dispatcher.QueueAction(() => { sawAction = true; });
                 thread.Start();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
-                Assert.IsTrue(sawAction1, "ActionDispatcher did not execute the first action");
-                Assert.IsTrue(sawAction2, "ActionDispatcher did not execute the second action");
+                thread.Join();
+
+                Assert.IsFalse(sawAction, "ActionDispatcher did execute the action");
             }
         }
 
         [TestMethod]
-        public void TestCurrentPropertyInsideAction()
+        public void Current_FromInsideAction_IsActionDispatcherForThatAction()
         {
-            bool currentIsOk = false;
+            ActionDispatcher innerDispatcher = null;
 
             using (ActionDispatcher dispatcher = new ActionDispatcher())
             {
                 Thread thread = new Thread(() => dispatcher.Run());
                 thread.Start();
-                dispatcher.QueueAction(() => { if (ActionDispatcher.Current == dispatcher) currentIsOk = true; });
+                dispatcher.QueueAction(() => { innerDispatcher = ActionDispatcher.Current; });
                 dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
-                Assert.IsTrue(currentIsOk, "ActionDispatcher did not set Current correctly for action");
+                thread.Join();
+
+                Assert.AreSame(dispatcher, innerDispatcher, "ActionDispatcher did not set Current correctly for action");
             }
         }
 
         [TestMethod]
-        public void TestCurrentPropertyOutsideAction()
+        public void Current_FromOutsideAction_IsNull()
         {
             using (ActionDispatcher dispatcher = new ActionDispatcher())
             {
@@ -123,28 +137,24 @@ namespace UnitTests
                 Assert.IsNull(ActionDispatcher.Current, "ActionDispatcher.Current is not null outside Run()");
 
                 dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
+                thread.Join();
             }
         }
 
         [TestMethod]
-        public void TestSynchronizationContext()
+        public void CurrentSynchronizationContext_FromInsideAction_IsActionDispatcherSynchronizationContext()
         {
-            bool contextIsOk = false;
+            SynchronizationContext innerContext = null;
 
             using (ActionDispatcher dispatcher = new ActionDispatcher())
             {
                 Thread thread = new Thread(() => dispatcher.Run());
                 thread.Start();
-                dispatcher.QueueAction(() =>
-                {
-                    if (SynchronizationContext.Current != null &&
-                        SynchronizationContext.Current.GetType() == typeof(ActionDispatcherSynchronizationContext))
-                        contextIsOk = true;
-                });
+                dispatcher.QueueAction(() => { innerContext = SynchronizationContext.Current; });
                 dispatcher.QueueExit();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "Thread did not exit after ActionDispatcher.QueueExit");
-                Assert.IsTrue(contextIsOk, "ActionDispatcher did not set SynchronizationContext.Current correctly for action");
+                thread.Join();
+
+                Assert.IsInstanceOfType(innerContext, typeof(ActionDispatcherSynchronizationContext), "ActionDispatcher did not set SynchronizationContext.Current correctly for action");
             }
         }
     }

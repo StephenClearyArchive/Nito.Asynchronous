@@ -12,7 +12,7 @@ namespace UnitTests
     public class ActionDispatcherSynchronizationContextUnitTests
     {
         [TestMethod]
-        public void TestRegisteredProperties()
+        public void ActionDispatcherSyncContext_AfterConstruction_RegistersStandardProperties()
         {
             // Just calling "typeof" isn't sufficient to invoke the static constructor, so we create one
             // Ordinarily, this isn't necessary, since Verify is normally only called on types of initialized objects
@@ -21,14 +21,17 @@ namespace UnitTests
                 new ActionDispatcherSynchronizationContext(dispatcher);
             }
 
+            // This will throw an exception if the type doesn't support all Standard properties
             SynchronizationContextRegister.Verify(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.Standard);
         }
 
         [TestMethod]
-        public void TestSend()
+        public void Send_IsSynchronous()
         {
             SynchronizationContext actionDispatcherSyncContext = null;
 
+            using (ManualResetEvent completed = new ManualResetEvent(false))
+            using (ManualResetEvent wait = new ManualResetEvent(false))
             using (ActionThread thread1 = new ActionThread())
             using (ActionThread thread2 = new ActionThread())
             {
@@ -38,36 +41,29 @@ namespace UnitTests
                 // Capture the second thread's SynchronizationContext.
                 actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current; });
 
-                // Sanity check
-                Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
-
                 // Have the first thread do a synchronous Send to the second thread and then trigger the "completed" event.
                 // The action queued to the second thread will wait for the "wait" event.
 
-                using (ManualResetEvent completed = new ManualResetEvent(false))
-                using (ManualResetEvent wait = new ManualResetEvent(false))
-                {
-                    thread1.Do(() =>
-                        {
-                            actionDispatcherSyncContext.Send((state) => { wait.WaitOne(); }, null);
-                            completed.Set();
-                        });
+                thread1.Do(() =>
+                    {
+                        actionDispatcherSyncContext.Send((state) => { wait.WaitOne(); }, null);
+                        completed.Set();
+                    });
 
-                    Assert.IsFalse(completed.WaitOne(100), "ActionDispatcherSynchronizationContext.Send is not synchronous");
+                bool completedSignalled = completed.WaitOne(100);
+                Assert.IsFalse(completedSignalled, "ActionDispatcherSynchronizationContext.Send is not synchronous");
 
-                    wait.Set();
-
-                    Assert.IsTrue(thread1.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                    Assert.IsTrue(thread2.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                }
+                wait.Set();
             }
         }
 
         [TestMethod]
-        public void TestPost()
+        public void Post_IsAsynchronous()
         {
             SynchronizationContext actionDispatcherSyncContext = null;
 
+            using (ManualResetEvent completed = new ManualResetEvent(false))
+            using (ManualResetEvent wait = new ManualResetEvent(false))
             using (ActionThread thread1 = new ActionThread())
             using (ActionThread thread2 = new ActionThread())
             {
@@ -77,36 +73,29 @@ namespace UnitTests
                 // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
                 actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current; });
 
-                // Sanity check
-                Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
-
                 // Have the first thread do an synchronous Post to the second thread and then trigger the "completed" event.
                 // The action queued to the second thread will wait for the "wait" event.
 
-                using (ManualResetEvent completed = new ManualResetEvent(false))
-                using (ManualResetEvent wait = new ManualResetEvent(false))
+                thread1.Do(() =>
                 {
-                    thread1.Do(() =>
-                    {
-                        actionDispatcherSyncContext.Post((state) => { wait.WaitOne(); }, null);
-                        completed.Set();
-                    });
+                    actionDispatcherSyncContext.Post((state) => { wait.WaitOne(); }, null);
+                    completed.Set();
+                });
 
-                    Assert.IsTrue(completed.WaitOne(100), "ActionDispatcherSynchronizationContext.Post is not asynchronous");
+                bool completedSignalled = completed.WaitOne(100);
+                Assert.IsTrue(completedSignalled, "ActionDispatcherSynchronizationContext.Post is not asynchronous");
 
-                    wait.Set();
-
-                    Assert.IsTrue(thread1.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                    Assert.IsTrue(thread2.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                }
+                wait.Set();
             }
         }
 
         [TestMethod]
-        public void TestSendToCopy()
+        public void Send_ToCopiedDispatcher_IsSynchronous()
         {
             SynchronizationContext actionDispatcherSyncContext = null;
 
+            using (ManualResetEvent completed = new ManualResetEvent(false))
+            using (ManualResetEvent wait = new ManualResetEvent(false))
             using (ActionThread thread1 = new ActionThread())
             using (ActionThread thread2 = new ActionThread())
             {
@@ -115,37 +104,30 @@ namespace UnitTests
 
                 // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
                 actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current.CreateCopy(); });
-
-                // Sanity check
-                Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
 
                 // Have the first thread do a synchronous Send to the second thread and then trigger the "completed" event.
                 // The action queued to the second thread will wait for the "wait" event.
 
-                using (ManualResetEvent completed = new ManualResetEvent(false))
-                using (ManualResetEvent wait = new ManualResetEvent(false))
+                thread1.Do(() =>
                 {
-                    thread1.Do(() =>
-                    {
-                        actionDispatcherSyncContext.Send((state) => { wait.WaitOne(); }, null);
-                        completed.Set();
-                    });
+                    actionDispatcherSyncContext.Send((state) => { wait.WaitOne(); }, null);
+                    completed.Set();
+                });
 
-                    Assert.IsFalse(completed.WaitOne(100), "ActionDispatcherSynchronizationContext.Send is not synchronous");
+                bool completedSignalled = completed.WaitOne(100);
+                Assert.IsFalse(completedSignalled, "ActionDispatcherSynchronizationContext.Send is not synchronous");
 
-                    wait.Set();
-
-                    Assert.IsTrue(thread1.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                    Assert.IsTrue(thread2.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                }
+                wait.Set();
             }
         }
 
         [TestMethod]
-        public void TestPostToCopy()
+        public void Post_ToCopiedDispatcher_IsAsynchronous()
         {
             SynchronizationContext actionDispatcherSyncContext = null;
 
+            using (ManualResetEvent completed = new ManualResetEvent(false))
+            using (ManualResetEvent wait = new ManualResetEvent(false))
             using (ActionThread thread1 = new ActionThread())
             using (ActionThread thread2 = new ActionThread())
             {
@@ -155,28 +137,19 @@ namespace UnitTests
                 // Capture the second thread's SynchronizationContext and signal this thread when it's captured.
                 actionDispatcherSyncContext = thread2.DoGet(() => { return SynchronizationContext.Current.CreateCopy(); });
 
-                // Sanity check
-                Assert.IsInstanceOfType(actionDispatcherSyncContext, typeof(ActionDispatcherSynchronizationContext), "Prerequisite failed: ActionThread is not using an ActionDispatcherSynchronizationContext");
-
                 // Have the first thread do an synchronous Post to the second thread and then trigger the "completed" event.
                 // The action queued to the second thread will wait for the "wait" event.
 
-                using (ManualResetEvent completed = new ManualResetEvent(false))
-                using (ManualResetEvent wait = new ManualResetEvent(false))
+                thread1.Do(() =>
                 {
-                    thread1.Do(() =>
-                    {
-                        actionDispatcherSyncContext.Post((state) => { wait.WaitOne(); }, null);
-                        completed.Set();
-                    });
+                    actionDispatcherSyncContext.Post((state) => { wait.WaitOne(); }, null);
+                    completed.Set();
+                });
 
-                    Assert.IsTrue(completed.WaitOne(100), "ActionDispatcherSynchronizationContext.Post is not asynchronous");
+                bool completedSignalled = completed.WaitOne(100);
+                Assert.IsTrue(completedSignalled, "ActionDispatcherSynchronizationContext.Post is not asynchronous");
 
-                    wait.Set();
-
-                    Assert.IsTrue(thread1.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                    Assert.IsTrue(thread2.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                }
+                wait.Set();
             }
         }
     }
