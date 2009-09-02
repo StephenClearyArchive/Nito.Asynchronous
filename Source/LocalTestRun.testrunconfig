@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TestRunConfiguration name="Local Test Run" id="d6b216d2-4b24-448a-95a6-90026b945199" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2006">
   <Description>This is a default test run configuration for a local test run.</Description>
+  <CodeCoverage enabled="true">
+    <Regular>
+      <CodeCoverageItem binaryFile="Nito.Async\bin\Release\Nito.Async.dll" pdbFile="Nito.Async\bin\Release\Nito.Async.pdb" instrumentInPlace="true" />
+    </Regular>
+  </CodeCoverage>
   <Timeouts runTimeout="1800000" testTimeout="3000" />
   <TestTypeSpecific />
 </TestRunConfiguration>
