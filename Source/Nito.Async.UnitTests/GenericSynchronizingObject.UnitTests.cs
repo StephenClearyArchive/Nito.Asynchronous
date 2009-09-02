@@ -241,6 +241,66 @@ namespace UnitTests
             }
         }
 
+        /// <summary>
+        /// Added for code coverage.
+        /// </summary>
+        [TestMethod]
+        public void AsyncResultWaitHandle_AfterEndInvoke_IsSignalledOnSecondWait()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                ISynchronizeInvoke test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
+                IAsyncResult result = test.BeginInvoke((MethodInvoker)(() => { }), null);
+                test.EndInvoke(result);
+                result.AsyncWaitHandle.WaitOne(0);
+
+                bool signalled = result.AsyncWaitHandle.WaitOne(0);
+                Assert.IsTrue(signalled, "AsyncWaitHandle should be signalled");
+            }
+        }
+
+        /// <summary>
+        /// Added for code coverage.
+        /// </summary>
+        [TestMethod]
+        public void AsyncResult_AfterWait_ReturnsImmediatelyFromEndInvoke()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                ISynchronizeInvoke test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
+                IAsyncResult result = test.BeginInvoke((MethodInvoker)(() => { }), null);
+                result.AsyncWaitHandle.WaitOne(100);
+                test.EndInvoke(result);
+            }
+        }
+
+        /// <summary>
+        /// Added for code coverage.
+        /// </summary>
+        [TestMethod]
+        public void AsyncResult_AfterEndInvoke_ReturnsImmediatelyFromEndInvoke()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                ISynchronizeInvoke test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
+                IAsyncResult result = test.BeginInvoke((MethodInvoker)(() => { }), null);
+                test.EndInvoke(result);
+                test.EndInvoke(result);
+            }
+        }
+
         [TestMethod]
         public void AsyncResultWaitHandle_FromBeginInvoke_IsWaitable()
         {

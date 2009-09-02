@@ -60,15 +60,15 @@ namespace Nito.Async
         /// </summary>
         public Timer()
         {
-            // Verify that the synchronization context is synchronized
-            SynchronizationContextRegister.Verify(SynchronizationContextProperties.Synchronized);
-
-            // Capture the synchronization context 
+            // Capture the synchronization context
             this.synchronizationContext = SynchronizationContext.Current;
             if (this.synchronizationContext == null)
             {
                 this.synchronizationContext = new SynchronizationContext();
             }
+
+            // Verify that the synchronization context is synchronized
+            SynchronizationContextRegister.Verify(this.synchronizationContext.GetType(), SynchronizationContextProperties.Synchronized);
 
             // Create the context for timer callbacks
             this.context = new CallbackContext();
