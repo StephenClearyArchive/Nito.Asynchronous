@@ -16,72 +16,124 @@ namespace UnitTests
     public class GenericSynchronizingObjectUnitTests
     {
         [TestMethod]
-        public void TestInvokeRequiredWithActionThread()
+        public void ActionThreadGSO_WithinActionThread_DoesNotRequireInvoke()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
 
-                // Capture GenericSynchronizingObject
-                ISynchronizeInvoke test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
-                Assert.IsTrue(test.InvokeRequired, "GenericSynchronizingObject does not require invoke for ActionThread");
-
                 // Capture InvokeRequired from the ActionThread's context
-                bool nestedInvokeRequired = thread.DoGet(() => { return test.InvokeRequired; });
+                bool nestedInvokeRequired = thread.DoGet(() => { return new GenericSynchronizingObject().InvokeRequired; });
+                
                 Assert.IsFalse(nestedInvokeRequired, "GenericSynchronizingObject does require invoke within ActionThread");
             }
         }
 
         [TestMethod]
-        public void TestInvokeWithActionThread()
+        public void ActionThreadGSO_OutsideActionThread_DoesRequireInvoke()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
 
                 // Capture GenericSynchronizingObject
-                ISynchronizeInvoke test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+                GenericSynchronizingObject test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+                
+                Assert.IsTrue(test.InvokeRequired, "GenericSynchronizingObject does not require invoke for ActionThread");
+            }
+        }
 
-                // Ensure it will invoke on the correct thread
+        [TestMethod]
+        public void Action_InvokedThroughActionThreadGSO_Runs()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                GenericSynchronizingObject test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
+                test.Invoke((MethodInvoker)(() => { sawAction = true; }), null);
+
+                Assert.AreEqual(true, sawAction, "GenericSynchronizingObject.Invoke did not execute action");
+            }
+        }
+
+        [TestMethod]
+        public void Action_InvokedThroughActionThreadGSO_RunsOnTheActionThread()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                GenericSynchronizingObject test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
                 int actionThreadId = Thread.CurrentThread.ManagedThreadId;
-                Assert.AreNotEqual(thread.ManagedThreadId, actionThreadId, "ActionThread is this thread");
-
-                using (ManualResetEvent evt = new ManualResetEvent(false))
-                {
-                    test.Invoke((MethodInvoker)(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; evt.Set(); }), null);
-                    Assert.IsTrue(evt.WaitOne(TimeSpan.FromMilliseconds(100)), "GenericSynchronizingObject.Invoke did not perform action");
-                }
+                test.Invoke((MethodInvoker)(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; }), null);
 
                 Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "GenericSynchronizingObject.Invoke did not synchronize");
             }
         }
 
         [TestMethod]
-        public void TestInvokeExceptionWithActionThread()
+        public void Action_InvokedThroughActionThreadGSO_ReceivesParameters()
+        {
+            object parameter = new object();
+            object argument = null;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                GenericSynchronizingObject test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
+                test.Invoke((Action<object>)((arg) => { argument = arg; }), new [] { parameter });
+
+                Assert.AreSame(parameter, argument, "GenericSynchronizingObject.Invoke did not pass parameter");
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TargetInvocationException))]
+        public void FailingAction_InvokedThroughActionThreadGSO_ThrowsTargetInvocationException()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
 
                 // Capture GenericSynchronizingObject
-                ISynchronizeInvoke test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+                GenericSynchronizingObject test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
 
-                // Ensure it will invoke on the correct thread
-                int actionThreadId = Thread.CurrentThread.ManagedThreadId;
-                Assert.AreNotEqual(thread.ManagedThreadId, actionThreadId, "ActionThread is this thread");
+                test.Invoke((MethodInvoker)(() => { throw new Exception(); }), null);
+            }
+        }
 
-                Exception error = null;
+        [TestMethod]
+        public void FailingAction_InvokedThroughActionThreadGSO_PreservesExceptionAsInnerException()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Capture GenericSynchronizingObject
+                GenericSynchronizingObject test = thread.DoGet(() => { return new GenericSynchronizingObject(); });
+
+                Exception errorToThrow = new MyException();
+                Exception innerErrorCaught = null;
                 try
                 {
-                    test.Invoke((MethodInvoker)(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; throw new MyException(); }), null);
+                    test.Invoke((MethodInvoker)(() => { throw errorToThrow; }), null);
                 }
                 catch (TargetInvocationException ex)
                 {
-                    error = ex;
+                    innerErrorCaught = ex.InnerException;
                 }
 
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "GenericSynchronizingObject.Invoke did not synchronize");
-                Assert.IsInstanceOfType(error.InnerException, typeof(MyException), "Exception type not preserved");
+                Assert.AreSame(errorToThrow, innerErrorCaught, "Exception not preserved");
             }
         }
 
