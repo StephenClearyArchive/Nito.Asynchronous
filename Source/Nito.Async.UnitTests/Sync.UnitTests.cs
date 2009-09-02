@@ -14,6 +14,49 @@ namespace UnitTests
     public class SyncUnitTests
     {
         [TestMethod]
+        public void Action_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction(() => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedAction_Invoked_RunsSynchronized()
+        {
+            int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action();
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
         public void TestSyncAction()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
