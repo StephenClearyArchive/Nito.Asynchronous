@@ -57,7 +57,27 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestSyncAction()
+        public void ActionWithOneArgument_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithOneArgument_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
 
@@ -66,23 +86,22 @@ namespace UnitTests
                 thread.Start();
 
                 // Have the ActionThread set "action"
-                Action action = thread.DoGet(() =>
+                Action<int> action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeAction(() => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeAction((int a1) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
                 });
 
                 // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
-                action();
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
+                action(13);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
             }
         }
 
         [TestMethod]
-        public void TestSyncAction1()
+        public void SyncedActionWithOneArgument_Invoked_ReceivesParameters()
         {
-            int actionThreadId = Thread.CurrentThread.ManagedThreadId;
             int arg1 = 0;
 
             using (ActionThread thread = new ActionThread())
@@ -92,22 +111,62 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 Action<int> action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeAction((int a) => { arg1 = a;  actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeAction((int a1) => { arg1 = a1; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
                 action(13);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreEqual(13, arg1, "Action did not receive parameter 1");
+                thread.Join();
+
+                Assert.AreEqual(13, arg1, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncAction2()
+        public void ActionWithTwoArguments_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int, int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1, int a2) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithTwoArguments_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int, int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1, int a2) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(13, 17);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithTwoArguments_Invoked_ReceivesParameters()
+        {
             int arg1 = 0;
             int arg2 = 0;
 
@@ -118,23 +177,63 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 Action<int, int> action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeAction((int a, int b) => { arg1 = a; arg2 = b; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeAction((int a1, int a2) => { arg1 = a1; arg2 = a2; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
                 action(13, 17);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreEqual(13, arg1, "Action did not receive parameter 1");
-                Assert.AreEqual(17, arg2, "Action did not receive parameter 2");
+                thread.Join();
+
+                Assert.AreEqual(13, arg1, "Action did not receive parameter");
+                Assert.AreEqual(17, arg2, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncAction3()
+        public void ActionWithThreeArguments_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int, int, int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1, int a2, int a3) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithThreeArguments_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int, int, int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1, int a2, int a3) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(13, 17, 19);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithThreeArguments_Invoked_ReceivesParameters()
+        {
             int arg1 = 0;
             int arg2 = 0;
             int arg3 = 0;
@@ -146,24 +245,64 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 Action<int, int, int> action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeAction((int a, int b, int c) => { arg1 = a; arg2 = b; arg3 = c; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeAction((int a1, int a2, int a3) => { arg1 = a1; arg2 = a2; arg3 = a3; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
                 action(13, 17, 19);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreEqual(13, arg1, "Action did not receive parameter 1");
-                Assert.AreEqual(17, arg2, "Action did not receive parameter 2");
-                Assert.AreEqual(19, arg3, "Action did not receive parameter 3");
+                thread.Join();
+
+                Assert.AreEqual(13, arg1, "Action did not receive parameter");
+                Assert.AreEqual(17, arg2, "Action did not receive parameter");
+                Assert.AreEqual(19, arg3, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncAction4()
+        public void ActionWithFourArguments_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int, int, int, int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1, int a2, int a3, int a4) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithFourArguments_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                Action<int, int, int, int> action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAction((int a1, int a2, int a3, int a4) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(13, 17, 19, 23);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedActionWithFourArguments_Invoked_ReceivesParameters()
+        {
             int arg1 = 0;
             int arg2 = 0;
             int arg3 = 0;
@@ -176,25 +315,66 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 Action<int, int, int, int> action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeAction((int a, int b, int c, int d) => { arg1 = a; arg2 = b; arg3 = c; arg4 = d; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeAction((int a1, int a2, int a3, int a4) => { arg1 = a1; arg2 = a2; arg3 = a3; arg4 = a4; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
                 action(13, 17, 19, 23);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreEqual(13, arg1, "Action did not receive parameter 1");
-                Assert.AreEqual(17, arg2, "Action did not receive parameter 2");
-                Assert.AreEqual(19, arg3, "Action did not receive parameter 3");
-                Assert.AreEqual(23, arg4, "Action did not receive parameter 4");
+                thread.Join();
+
+                Assert.AreEqual(13, arg1, "Action did not receive parameter");
+                Assert.AreEqual(17, arg2, "Action did not receive parameter");
+                Assert.AreEqual(19, arg3, "Action did not receive parameter");
+                Assert.AreEqual(23, arg4, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncAsyncCallback()
+        public void AsyncCallback_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                AsyncCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAsyncCallback((IAsyncResult a1) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedAsyncCallback_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                AsyncCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeAsyncCallback((IAsyncResult a1) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(null);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedAsyncCallback_Invoked_ReceivesParameter()
+        {
+            TestAsyncResult parameter1 = new TestAsyncResult();
             IAsyncResult arg1 = null;
 
             using (ActionThread thread = new ActionThread())
@@ -204,23 +384,63 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 AsyncCallback action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeAsyncCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeAsyncCallback((IAsyncResult a1) => { arg1 = a1; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
-                IAsyncResult param1 = new TestAsyncResult();
-                action(param1);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreSame(param1, arg1, "Action did not receive parameter 1");
+                action(parameter1);
+                thread.Join();
+
+                Assert.AreSame(parameter1, arg1, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncTimerCallback()
+        public void TimerCallback_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                TimerCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeTimerCallback((a1) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedTimerCallback_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                TimerCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeTimerCallback((a1) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(null);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedTimerCallback_Invoked_ReceivesParameter()
+        {
+            object parameter1 = new object();
             object arg1 = null;
 
             using (ActionThread thread = new ActionThread())
@@ -230,23 +450,63 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 TimerCallback action = thread.DoGet(() =>
                 {
-                   return Sync.SynchronizeTimerCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeTimerCallback((a1) => { arg1 = a1; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
-                object param1 = new object();
-                action(param1);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreSame(param1, arg1, "Action did not receive parameter 1");
+                action(parameter1);
+                thread.Join();
+
+                Assert.AreSame(parameter1, arg1, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncWaitCallback()
+        public void WaitCallback_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                WaitCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeWaitCallback((a1) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedWaitCallback_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                WaitCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeWaitCallback((a1) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(null);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedWaitCallback_Invoked_ReceivesParameter()
+        {
+            object parameter1 = new object();
             object arg1 = null;
 
             using (ActionThread thread = new ActionThread())
@@ -256,23 +516,63 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 WaitCallback action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeWaitCallback((a) => { arg1 = a; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeWaitCallback((a1) => { arg1 = a1; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
-                object param1 = new object();
-                action(param1);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreSame(param1, arg1, "Action did not receive parameter 1");
+                action(parameter1);
+                thread.Join();
+
+                Assert.AreSame(parameter1, arg1, "Action did not receive parameter");
             }
         }
 
         [TestMethod]
-        public void TestSyncWaitOrTimerCallback()
+        public void WaitOrTimerCallback_AfterSync_HasNotRun()
+        {
+            bool sawAction = false;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                WaitOrTimerCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeWaitOrTimerCallback((a1, a2) => { sawAction = true; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                Assert.IsFalse(sawAction, "Action should not have run already");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedWaitOrTimerCallback_Invoked_RunsSynchronized()
         {
             int actionThreadId = Thread.CurrentThread.ManagedThreadId;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+
+                // Have the ActionThread set "action"
+                WaitOrTimerCallback action = thread.DoGet(() =>
+                {
+                    return Sync.SynchronizeWaitOrTimerCallback((a1, a2) => { actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                });
+
+                // The action should be run in the context of the ActionThread
+                action(null, false);
+                thread.Join();
+
+                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run synchronized");
+            }
+        }
+
+        [TestMethod]
+        public void SyncedWaitOrTimerCallback_Invoked_ReceivesParameter()
+        {
+            object parameter1 = new object();
             object arg1 = null;
             bool arg2 = false;
 
@@ -283,17 +583,14 @@ namespace UnitTests
                 // Have the ActionThread set "action"
                 WaitOrTimerCallback action = thread.DoGet(() =>
                 {
-                    return Sync.SynchronizeWaitOrTimerCallback((a, b) => { arg1 = a; arg2 = b; actionThreadId = Thread.CurrentThread.ManagedThreadId; });
+                    return Sync.SynchronizeWaitOrTimerCallback((a1, a2) => { arg1 = a1; arg2 = a2; });
                 });
 
-                // The action should be run in the context of the ActionThread
-                Assert.AreEqual(Thread.CurrentThread.ManagedThreadId, actionThreadId, "Action should not have run already");
-                object param1 = new object();
-                action(param1, true);
-                Assert.IsTrue(thread.Join(TimeSpan.FromMilliseconds(100)), "ActionThread did not Join");
-                Assert.AreEqual(thread.ManagedThreadId, actionThreadId, "Action did not run on ActionThread");
-                Assert.AreSame(param1, arg1, "Action did not receive parameter 1");
-                Assert.IsTrue(arg2, "Action did not receive parameter 2");
+                action(parameter1, true);
+                thread.Join();
+
+                Assert.AreSame(parameter1, arg1, "Action did not receive parameter");
+                Assert.IsTrue(arg2, "Action did not receive parameter");
             }
         }
 
