@@ -13,73 +13,136 @@ namespace UnitTests
     public class AsyncResultEventArgsUnitTests
     {
         [TestMethod]
-        public void TestFailureResult()
+        public void CancelledProperty_ForFailedArgs_IsFalse()
+        {
+            var test = new AsyncResultEventArgs<int>(new Exception());
+            Assert.IsFalse(test.Cancelled, "Failed event args should not be cancelled");
+        }
+
+        [TestMethod]
+        public void CancelledProperty_ForFailedArgsFullConstructor_IsFalse()
+        {
+            var test = new AsyncResultEventArgs<int>(0, new Exception(), false, null);
+            Assert.IsFalse(test.Cancelled, "Failed event args should not be cancelled");
+        }
+
+        [TestMethod]
+        public void Exception_ForFailedArgs_IsPreserved()
         {
             Exception error = new Exception();
-
             var test = new AsyncResultEventArgs<int>(error);
-            Assert.IsFalse(test.Cancelled, "Failed event args should not be cancelled");
             Assert.AreSame(error, test.Error, "Failed event args did not preserve exception");
         }
 
         [TestMethod]
-        public void TestFailureResultWithUserState()
+        public void Exception_ForFailedArgsFullConstructor_IsPreserved()
         {
             Exception error = new Exception();
-            object state = new object();
-
-            var test = new AsyncResultEventArgs<int>(0, error, false, state);
-            Assert.IsFalse(test.Cancelled, "Failed event args should not be cancelled");
+            var test = new AsyncResultEventArgs<int>(0, error, false, null);
             Assert.AreSame(error, test.Error, "Failed event args did not preserve exception");
+        }
+
+        [TestMethod]
+        public void UserState_ForFailedArgsFullConstructor_IsPreserved()
+        {
+            object state = new object();
+            var test = new AsyncResultEventArgs<int>(0, new Exception(), false, state);
             Assert.AreSame(state, test.UserState, "Failed event args did not preserve user state");
         }
 
         [TestMethod]
         [ExpectedException(typeof(TargetInvocationException))]
-        public void TestFailureResultReadingResult()
+        public void ReadingResult_ForFailedArgs_ThrowsTargetInvocationException()
         {
             var test = new AsyncResultEventArgs<int>(new Exception());
             Trace.WriteLine(test.Result);
         }
 
         [TestMethod]
-        public void TestCancelledResult()
+        [ExpectedException(typeof(TargetInvocationException))]
+        public void ReadingResult_ForFailedArgsFullConstructor_ThrowsTargetInvocationException()
+        {
+            var test = new AsyncResultEventArgs<int>(0, new Exception(), false, null);
+            Trace.WriteLine(test.Result);
+        }
+
+        [TestMethod]
+        public void CancelledProperty_ForCancelledArgsFullConstructor_IsTrue()
+        {
+            var test = new AsyncResultEventArgs<int>(0, null, true, null);
+            Assert.IsTrue(test.Cancelled, "Cancelled event args should be cancelled");
+        }
+
+        [TestMethod]
+        public void Error_ForCancelledArgsFullConstructor_IsNull()
+        {
+            var test = new AsyncResultEventArgs<int>(0, null, true, null);
+            Assert.IsNull(test.Error, "Cancelled event args should not preserve exception");
+        }
+
+        [TestMethod]
+        public void UserState_ForCancelledArgsFullConstructor_IsPreserved()
         {
             object state = new object();
-
             var test = new AsyncResultEventArgs<int>(0, null, true, state);
-            Assert.IsTrue(test.Cancelled, "Cancelled event args should be cancelled");
-            Assert.IsNull(test.Error, "Cancelled event args should not preserve exception");
             Assert.AreSame(state, test.UserState, "Cancelled event args did not preserve user state");
         }
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void TestCancelledReadingResult()
+        public void ReadingResult_ForCancelledArgsFullConstructor_ThrowsInvalidOperationException()
         {
             var test = new AsyncResultEventArgs<int>(0, null, true, null);
             Trace.WriteLine(test.Result);
         }
 
         [TestMethod]
-        public void TestSuccessfulResultWithState()
+        public void CancelledProperty_ForSuccessfulArgs_IsFalse()
+        {
+            var test = new AsyncResultEventArgs<int>(13);
+            Assert.IsFalse(test.Cancelled, "Successful event args should not be cancelled");
+        }
+
+        [TestMethod]
+        public void CancelledProperty_ForSuccessfulArgsFullConstructor_IsFalse()
+        {
+            var test = new AsyncResultEventArgs<int>(13, null, false, null);
+            Assert.IsFalse(test.Cancelled, "Successful event args should not be cancelled");
+        }
+
+        [TestMethod]
+        public void Error_ForSuccessfulArgs_IsNull()
+        {
+            var test = new AsyncResultEventArgs<int>(13);
+            Assert.IsNull(test.Error, "Successful event args should not preserve exception");
+        }
+
+        [TestMethod]
+        public void Error_ForSuccessfulArgsFullConstructor_IsNull()
+        {
+            var test = new AsyncResultEventArgs<int>(13, null, false, null);
+            Assert.IsNull(test.Error, "Successful event args should not preserve exception");
+        }
+
+        [TestMethod]
+        public void UserState_ForSuccessfulArgsFullConstructor_IsPreserved()
         {
             object state = new object();
-
             var test = new AsyncResultEventArgs<int>(13, null, false, state);
-            Assert.IsFalse(test.Cancelled, "Successful event args should not be cancelled");
-            Assert.IsNull(test.Error, "Successful event args should not preserve exception");
             Assert.AreSame(state, test.UserState, "Successful event args did not preserve user state");
+        }
+
+        [TestMethod]
+        public void Result_ForSuccessfulArgs_IsPreserved()
+        {
+            var test = new AsyncResultEventArgs<int>(13);
             Assert.AreEqual(13, test.Result, "Successful event args did not preserve result");
         }
 
         [TestMethod]
-        public void TestSuccessfulResult()
+        public void Result_ForSuccessfulArgsFullConstructor_IsPreserved()
         {
-            var test = new AsyncResultEventArgs<int>(13);
-            Assert.IsFalse(test.Cancelled, "Successful event args should not be cancelled");
-            Assert.IsNull(test.Error, "Successful event args should not preserve exception");
-            Assert.IsNull(test.UserState, "Successful event args has unexpected user state");
+            var test = new AsyncResultEventArgs<int>(13, null, false, null);
             Assert.AreEqual(13, test.Result, "Successful event args did not preserve result");
         }
     }

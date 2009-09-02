@@ -68,7 +68,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Starts the invocation of a delegate on the thread that created this <see cref="GenericSynchronizingObject"/>. A corresponding call to <see cref="EndInvoke"/> is not required.
+        /// Starts the invocation of a delegate synchronized by the <see cref="SynchronizationContext"/> of the thread that created this <see cref="GenericSynchronizingObject"/>. A corresponding call to <see cref="EndInvoke"/> is not required.
         /// </summary>
         /// <param name="method">The delegate to run.</param>
         /// <param name="args">The arguments to pass to <paramref name="method"/>.</param>
@@ -123,7 +123,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Invokes a delegate on the thread that created this <see cref="GenericSynchronizingObject"/>.
+        /// Synchronously invokes a delegate synchronized with the <see cref="SynchronizationContext"/> of the thread that created this <see cref="GenericSynchronizingObject"/>.
         /// </summary>
         /// <param name="method">The delegate to invoke.</param>
         /// <param name="args">The parameters for <paramref name="method"/>.</param>
@@ -285,7 +285,7 @@ namespace Nito.Async
             /// Marks the AsyncResult object as done. Should only be called once.
             /// </summary>
             /// <remarks>
-            /// <para>This method always runs in the target thread.</para>
+            /// <para>This method always runs in the SynchronizationContext thread.</para>
             /// </remarks>
             public void Done()
             {
