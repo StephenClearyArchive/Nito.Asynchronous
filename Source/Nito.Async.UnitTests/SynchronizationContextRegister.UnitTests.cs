@@ -14,13 +14,17 @@ namespace UnitTests
     public class SynchronizationContextRegisterUnitTests
     {
         [TestMethod]
-        public void TestThreadPoolSynchronizationContextProperties()
+        public void ThreadPoolSyncContext_HasNonreentrantPost()
         {
             using (var x = new ScopedSynchronizationContext(new SynchronizationContext()))
             {
                 SynchronizationContextRegister.Verify(SynchronizationContextProperties.NonReentrantPost);
             }
+        }
 
+        [TestMethod]
+        public void NullSynchContext_HasNonreentrantPost()
+        {
             using (var x = new ScopedSynchronizationContext(null))
             {
                 SynchronizationContextRegister.Verify(SynchronizationContextProperties.NonReentrantPost);
@@ -28,7 +32,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestWindowsFormsSynchronizationContextProperties()
+        public void WindowsFormsSyncContext_HasStandard()
         {
             using (var x = new ScopedSynchronizationContext(new WindowsFormsSynchronizationContext()))
             {
@@ -37,7 +41,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestDispatcherSynchronizationContextProperties()
+        public void DispatcherSyncContext_HasStandard()
         {
             using (var x = new ScopedSynchronizationContext(new DispatcherSynchronizationContext()))
             {
@@ -46,7 +50,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestRegisteredSynchronizationContextProperties()
+        public void RegisteredSyncContext_HasRegisteredProperty()
         {
             SynchronizationContextRegister.Register(typeof(MySynchronizationContext), SynchronizationContextProperties.NonReentrantPost);
 
@@ -58,7 +62,7 @@ namespace UnitTests
 
         [TestMethod]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void TestReRegisteredSynchronizationContextPropertiesReplacesOldValue()
+        public void RegisteredSyncContext_ReregisteringProperties_DoesNotMergeWithOldValue()
         {
             SynchronizationContextRegister.Register(typeof(MyOtherSynchronizationContext), SynchronizationContextProperties.NonReentrantPost);
             SynchronizationContextRegister.Register(typeof(MyOtherSynchronizationContext), SynchronizationContextProperties.NonReentrantSend);
@@ -70,7 +74,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestReRegisteredSynchronizationContextProperties()
+        public void RegisteredSyncContext_ReregisteringProperties_ReplacesOldValue()
         {
             SynchronizationContextRegister.Register(typeof(MyThirdSynchronizationContext), SynchronizationContextProperties.NonReentrantPost);
             SynchronizationContextRegister.Register(typeof(MyThirdSynchronizationContext), SynchronizationContextProperties.NonReentrantSend);
