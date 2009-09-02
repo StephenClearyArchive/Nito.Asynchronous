@@ -156,7 +156,7 @@ namespace Nito.Async
         /// </summary>
         /// <param name="action">The work to do. This delegate may not throw an exception.</param>
         /// <remarks>
-        /// <para>This method may not be called before the thread has started (see <see cref="Start"/>) or after the thread has joined (see <see cref="Join"/>).</para>
+        /// <para>This method may not be called before the thread has started (see <see cref="Start"/>) or after the thread has joined (see <see cref="O:Nito.Async.ActionThread.Join"/>).</para>
         /// </remarks>
         public void DoSynchronously(Action action)
         {
