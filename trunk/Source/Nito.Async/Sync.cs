@@ -26,7 +26,7 @@ namespace Nito.Async
         //  When considering the generic (Action<...>) overloads, the problem only grows worse.
 
         /// <summary>
-        /// Returns an <see cref="Action"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="Action"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -44,7 +44,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="Action{T}"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T">The type of the parameter to the callback.</typeparam>
         /// <param name="callback">The callback to wrap.</param>
@@ -63,7 +63,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T1, T2}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="Action{T1, T2}"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
@@ -83,7 +83,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T1, T2, T3}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="Action{T1, T2, T3}"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
@@ -104,7 +104,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="Action{T1, T2, T3, T4}"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="Action{T1, T2, T3, T4}"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <typeparam name="T1">The type of the first parameter to the callback.</typeparam>
         /// <typeparam name="T2">The type of the second parameter to the callback.</typeparam>
@@ -126,7 +126,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="AsyncCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="AsyncCallback"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -147,7 +147,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="TimerCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="TimerCallback"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -168,7 +168,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="WaitCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="WaitCallback"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
@@ -186,7 +186,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Returns an <see cref="WaitOrTimerCallback"/> that executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
+        /// Returns an <see cref="WaitOrTimerCallback"/> that asynchronously executes in the <see cref="SynchronizationContext"/> of the thread that called this method.
         /// </summary>
         /// <param name="callback">The callback to wrap.</param>
         /// <returns>A synchronized callback.</returns>
