@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel;
-
-// Copyright 2009 by Nito Programs.
+﻿// <copyright file="SocketPacketProtocol.cs" company="Nito Programs">
+//     Copyright (c) 2009 Nito Programs.
+// </copyright>
 
 namespace Nito.Async.Sockets
 {
+    using System;
+
     /// <summary>
     /// Maintains the necessary buffers for applying a packet protocol over a stream-based socket.
     /// </summary>
@@ -18,6 +17,44 @@ namespace Nito.Async.Sockets
     /// </remarks>
     public class SocketPacketProtocol
     {
+        /// <summary>
+        /// The buffer for the length prefix; this is always 4 bytes long.
+        /// </summary>
+        private byte[] lengthBuffer;
+
+        /// <summary>
+        /// The buffer for the data; this is null if we are receiving the length prefix buffer.
+        /// </summary>
+        private byte[] dataBuffer;
+
+        /// <summary>
+        /// The number of bytes already read into the buffer (the length buffer if <see cref="dataBuffer"/> is null, otherwise the data buffer).
+        /// </summary>
+        private int bytesReceived;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SocketPacketProtocol"/> class bound to a given socket connection.
+        /// </summary>
+        /// <param name="socket">The socket used for communication.</param>
+        public SocketPacketProtocol(IAsyncTcpConnection socket)
+        {
+            this.Socket = socket;
+            this.lengthBuffer = new byte[sizeof(int)];
+        }
+
+        /// <summary>
+        /// Indicates the completion of a packet read from the socket.
+        /// </summary>
+        /// <remarks>
+        /// <para>This may be called with a null packet, indicating that the other end graciously closed the connection.</para>
+        /// </remarks>
+        public event Action<AsyncResultEventArgs<byte[]>> PacketArrived;
+
+        /// <summary>
+        /// Gets the socket used for communication.
+        /// </summary>
+        public IAsyncTcpConnection Socket { get; private set; }
+
         /// <overloads>
         /// <summary>Sends a packet to a socket.</summary>
         /// <remarks>
@@ -65,42 +102,12 @@ namespace Nito.Async.Sockets
         }
 
         /// <summary>
-        /// The socket used for communication.
-        /// </summary>
-        public IAsyncTcpConnection Socket { get; private set; }
-
-        /// <summary>
-        /// Initializes a new <see cref="SocketPacketProtocol"/> bound to a given socket connection.
-        /// </summary>
-        /// <param name="socket">The socket used for communication.</param>
-        public SocketPacketProtocol(IAsyncTcpConnection socket)
-        {
-            Socket = socket;
-            lengthBuffer = new byte[sizeof(int)];
-        }
-
-        /// <summary>
-        /// The buffer for the length prefix; this is always 4 bytes long.
-        /// </summary>
-        private byte[] lengthBuffer;
-
-        /// <summary>
-        /// The buffer for the data; this is null if we are receiving the length prefix buffer.
-        /// </summary>
-        private byte[] dataBuffer;
-
-        /// <summary>
-        /// The number of bytes already read into the buffer (the length buffer if <see cref="dataBuffer"/> is null, otherwise the data buffer).
-        /// </summary>
-        private int bytesReceived;
-
-        /// <summary>
         /// Begins reading from the socket.
         /// </summary>
         public void Start()
         {
-            Socket.ReadCompleted += SocketReadCompleted;
-            ContinueReading();
+            this.Socket.ReadCompleted += this.SocketReadCompleted;
+            this.ContinueReading();
         }
 
         /// <summary>
@@ -109,19 +116,15 @@ namespace Nito.Async.Sockets
         private void ContinueReading()
         {
             // Read into the appropriate buffer: length or data
-            if (dataBuffer != null)
-                Socket.ReadAsync(dataBuffer, bytesReceived, dataBuffer.Length - bytesReceived);
+            if (this.dataBuffer != null)
+            {
+                this.Socket.ReadAsync(this.dataBuffer, this.bytesReceived, this.dataBuffer.Length - this.bytesReceived);
+            }
             else
-                Socket.ReadAsync(lengthBuffer, bytesReceived, lengthBuffer.Length - bytesReceived);
+            {
+                this.Socket.ReadAsync(this.lengthBuffer, this.bytesReceived, this.lengthBuffer.Length - this.bytesReceived);
+            }
         }
-
-        /// <summary>
-        /// Indicates the completion of a packet read from the socket.
-        /// </summary>
-        /// <remarks>
-        /// <para>This may be called with a null packet, indicating that the other end graciously closed the connection.</para>
-        /// </remarks>
-        public event Action<AsyncResultEventArgs<byte[]>> PacketArrived;
 
         /// <summary>
         /// Called when a socket read completes. Parses the received data and calls <see cref="PacketArrived"/> if necessary.
@@ -133,77 +136,87 @@ namespace Nito.Async.Sockets
             // Pass along read errors verbatim
             if (e.Error != null)
             {
-                if (PacketArrived != null)
-                    PacketArrived(new AsyncResultEventArgs<byte[]>(e.Error));
+                if (this.PacketArrived != null)
+                {
+                    this.PacketArrived(new AsyncResultEventArgs<byte[]>(e.Error));
+                }
+
                 return;
             }
 
             // Get the number of bytes read into the buffer
-            bytesReceived += e.Result;
+            this.bytesReceived += e.Result;
 
             // If we get a zero-length read, then that indicates the remote side graciously closed the connection
             if (e.Result == 0)
             {
-                if (PacketArrived != null)
-                    PacketArrived(new AsyncResultEventArgs<byte[]>((byte[])null));
+                if (this.PacketArrived != null)
+                {
+                    this.PacketArrived(new AsyncResultEventArgs<byte[]>((byte[])null));
+                }
+
                 return;
             }
 
-            if (dataBuffer == null)
+            if (this.dataBuffer == null)
             {
-                // We're currently receiving the length buffer
-
-                if (bytesReceived != sizeof(int))
+                // (We're currently receiving the length buffer)
+                if (this.bytesReceived != sizeof(int))
                 {
                     // We haven't gotten all the length buffer yet
-                    ContinueReading();
+                    this.ContinueReading();
                 }
                 else
                 {
                     // We've gotten the length buffer
-                    int length = BitConverter.ToInt32(lengthBuffer, 0);
+                    int length = BitConverter.ToInt32(this.lengthBuffer, 0);
 
                     // Sanity check for length < 0
                     //  This check will catch 50% of transmission errors that make it past both the IP and Ethernet checksums
                     if (length < 0)
                     {
-                        if (PacketArrived != null)
-                            PacketArrived(new AsyncResultEventArgs<byte[]>(new System.IO.InvalidDataException("Packet length less than zero (corrupted message)")));
+                        if (this.PacketArrived != null)
+                        {
+                            this.PacketArrived(new AsyncResultEventArgs<byte[]>(new System.IO.InvalidDataException("Packet length less than zero (corrupted message)")));
+                        }
+
                         return;
                     }
 
                     // Zero-length packets are allowed as keepalives
                     if (length == 0)
                     {
-                        bytesReceived = 0;
-                        ContinueReading();
+                        this.bytesReceived = 0;
+                        this.ContinueReading();
                     }
                     else
                     {
                         // Create the data buffer and start reading into it
-                        dataBuffer = new byte[length];
-                        bytesReceived = 0;
-                        ContinueReading();
+                        this.dataBuffer = new byte[length];
+                        this.bytesReceived = 0;
+                        this.ContinueReading();
                     }
                 }
             }
             else
             {
-                if (bytesReceived != dataBuffer.Length)
+                if (this.bytesReceived != this.dataBuffer.Length)
                 {
                     // We haven't gotten all the data buffer yet
-                    ContinueReading();
+                    this.ContinueReading();
                 }
                 else
                 {
                     // We've gotten an entire packet
-                    if (PacketArrived != null)
-                        PacketArrived(new AsyncResultEventArgs<byte[]>(dataBuffer));
+                    if (this.PacketArrived != null)
+                    {
+                        this.PacketArrived(new AsyncResultEventArgs<byte[]>(this.dataBuffer));
+                    }
 
                     // Start reading the length buffer again
-                    dataBuffer = null;
-                    bytesReceived = 0;
-                    ContinueReading();
+                    this.dataBuffer = null;
+                    this.bytesReceived = 0;
+                    this.ContinueReading();
                 }
             }
         }
