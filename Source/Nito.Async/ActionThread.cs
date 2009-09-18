@@ -60,11 +60,15 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Gets or sets the name of this <see cref="ActionThread"/>. This property may only be set once.
+        /// Gets or sets the name of this <see cref="ActionThread"/>. This property may only be set once, before the thread is started.
         /// </summary>
+        /// <remarks>
+        /// <para>Starting the thread will set this to the value "Nito.Async.ActionThread" if it has not already been set.</para>
+        /// </remarks>
         public string Name
         {
             get { return this.thread.Name; }
+
             set { this.thread.Name = value; }
         }
 
@@ -121,6 +125,11 @@ namespace Nito.Async
         /// </remarks>
         public void Start()
         {
+            if (this.Name == null)
+            {
+                this.Name = "Nito.Async.ActionThread";
+            }
+
             this.thread.Start();
         }
 
