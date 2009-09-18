@@ -48,9 +48,10 @@ namespace FrameworkTests
         }
 
         /// <summary>
-        /// This method will fail if running Visual Studio as non-Administrator.
+        /// This method will fail if running Visual Studio as non-Administrator or if you didn't build before testing.
         /// </summary>
         [TestMethod]
+        [Timeout(20000)]
         [UrlToTest("http://localhost/")]
         [HostType("ASP.NET")]
         [AspNetDevelopmentServerHost(@"..\Test.FakeWebApplication", "/")]
@@ -74,9 +75,10 @@ namespace FrameworkTests
         }
 
         /// <summary>
-        /// This method will fail if running Visual Studio as non-Administrator.
+        /// This method will fail if running Visual Studio as non-Administrator or if you didn't build before testing.
         /// </summary>
         [TestMethod]
+        [Timeout(20000)]
         [UrlToTest("http://localhost/")]
         [HostType("ASP.NET")]
         [AspNetDevelopmentServerHost(@"..\Test.FakeWebApplication", "/")]
