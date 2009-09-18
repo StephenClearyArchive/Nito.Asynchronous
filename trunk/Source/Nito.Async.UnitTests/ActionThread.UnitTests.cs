@@ -333,23 +333,48 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void NameSet_AfterStart_RemembersValue()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NameSet_AfterStart_ThrowsInvalidOperationException()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
                 thread.Name = "Bob";
-                Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name");
             }
         }
 
         [TestMethod]
-        public void NameSet_AfterJoin_RemembersValue()
+        public void NameDefaultValue_ReadAfterStart_IsNitoActionThread()
         {
             using (ActionThread thread = new ActionThread())
             {
                 thread.Start();
+
+                bool containsNito = thread.Name.Contains("Nito");
+                bool containsActionThread = thread.Name.Contains("ActionThread");
+                Assert.IsTrue(containsNito && containsActionThread, "ActionThread did not default to a decent name when starting");
+            }
+        }
+
+        [TestMethod]
+        public void NameSet_ReadAfterStart_RemembersValue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
                 thread.Name = "Bob";
+                thread.Start();
+
+                Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name after joining");
+            }
+        }
+
+        [TestMethod]
+        public void NameSet_ReadAfterJoin_RemembersValue()
+        {
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Name = "Bob";
+                thread.Start();
                 thread.Join();
 
                 Assert.AreEqual("Bob", thread.Name, "ActionThread did not remember name after joining");
