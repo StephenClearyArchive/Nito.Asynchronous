@@ -26,7 +26,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FrameworkAssumptions",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionThreadExample", "Examples\ActionThreadExample\ActionThreadExample.csproj", "{62CA72F5-310B-4E5E-9EDC-F76C4E157602}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationExamples", "Examples\DocumentationExamples\DocumentationExamples.csproj", "{62CA72F5-310B-4E5E-9EDC-F76C4E157602}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
