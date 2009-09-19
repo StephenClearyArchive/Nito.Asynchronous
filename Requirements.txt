@@ -5,7 +5,7 @@ For the binaries:
   Visual Studio 2008 SP1: http://www.microsoft.com/express/download/
 
 For the help file:
-  Sandcastle Help File Builder, 1.8.0.1 Beta (2009-02-05): http://shfb.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=18639
+  Sandcastle Help File Builder, 1.8.0.2 Beta (2009-06-01): http://shfb.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=24422
   Sandcastle, May 2008 release (2.4.10520): http://sandcastle.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=13873
   Sandcastle Styles: Sandcastle May 2008 Patch, Rev 2 (2008-11-02): http://sandcastlestyles.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=18784
   HTML Help Workshop: http://msdn.microsoft.com/en-us/library/ms669985.aspx
