@@ -5,7 +5,26 @@
       <autoOutline />
       <para>Version history</para>
     </introduction>
-    <section address="v1.3">
+      <section address="v2.0">
+          <title>Version 2.0</title>
+          <content>
+              <list class="bullet">
+                  <listItem>
+                      Added <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference>, an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> with its own thread.
+                  </listItem>
+                  <listItem>
+                      Added <codeEntityReference>T:Nito.Async.ScopedSynchronizationContext</codeEntityReference> to temporarily override <codeEntityReference qualifyHint="true">System.Threading.SynchronizationContext.Current</codeEntityReference>.
+                  </listItem>
+                  <listItem>
+                      Added <codeEntityReference>T:Nito.Async.SynchronizationContextRegister</codeEntityReference> to store and retrieve properties of synchronization context types.
+                  </listItem>
+                  <listItem>
+                      Removed Nito.Async.AsyncTimeoutTimer.
+                  </listItem>
+              </list>
+          </content>
+      </section>
+      <section address="v1.3">
       <title>Version 1.3</title>
       <content>
         <list class="bullet">

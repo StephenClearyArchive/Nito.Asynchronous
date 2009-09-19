@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FrameworkAssumptions",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActionThreadExample", "Examples\ActionThreadExample\ActionThreadExample.csproj", "{62CA72F5-310B-4E5E-9EDC-F76C4E157602}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Nito.Async.vsmdi
@@ -51,6 +53,10 @@ Global
 		{9132CD35-A088-490C-B62F-3E6D0410A9B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9132CD35-A088-490C-B62F-3E6D0410A9B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9132CD35-A088-490C-B62F-3E6D0410A9B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62CA72F5-310B-4E5E-9EDC-F76C4E157602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62CA72F5-310B-4E5E-9EDC-F76C4E157602}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62CA72F5-310B-4E5E-9EDC-F76C4E157602}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62CA72F5-310B-4E5E-9EDC-F76C4E157602}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -59,5 +65,6 @@ Global
 		{17FC62AB-AE14-4D2E-B838-52E8A1AD88C0} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
 		{21FEE088-09EC-4848-BD49-488D7AB0669F} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
 		{9132CD35-A088-490C-B62F-3E6D0410A9B1} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
+		{62CA72F5-310B-4E5E-9EDC-F76C4E157602} = {1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}
 	EndGlobalSection
 EndGlobal

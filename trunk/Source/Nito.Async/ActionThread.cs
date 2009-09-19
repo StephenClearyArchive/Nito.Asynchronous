@@ -28,6 +28,21 @@ namespace Nito.Async
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionThread"/> class, creating a child thread waiting for commands.
         /// </summary>
+        /// <example>The following code sample shows how to create an ActionThread, start it, and then join it:
+        /// <code>
+        /// using Nito.Async;
+        /// 
+        /// class ActionThreadConstructStartJoin
+        /// {
+        ///     static void Main()
+        ///     {
+        ///         ActionThread actionThread = new ActionThread();
+        ///         actionThread.Start();
+        ///         actionThread.Join();
+        ///     }
+        /// }
+        /// </code>
+        /// </example>
         public ActionThread()
         {
             this.dispatcher = new ActionDispatcher();
@@ -43,7 +58,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ActionThread"/> is a background thread.
+        /// Gets or sets a value indicating whether this <see cref="ActionThread"/> is a background thread. This property may not be accessed after a <see cref="O:Nito.Async.ActionThread.Join"/>.
         /// </summary>
         public bool IsBackground
         {
@@ -73,7 +88,7 @@ namespace Nito.Async
         }
 
         /// <summary>
-        /// Gets or sets a value indicating the scheduling priority of this <see cref="ActionThread"/>.
+        /// Gets or sets a value indicating the scheduling priority of this <see cref="ActionThread"/>. This property may not be accessed after a <see cref="O:Nito.Async.ActionThread.Join"/>.
         /// </summary>
         public ThreadPriority Priority
         {
