@@ -4,8 +4,13 @@ class ActionThreadConstructStartJoin
 {
     static void Main()
     {
-        ActionThread actionThread = new ActionThread();
-        actionThread.Start();
-        actionThread.Join();
+        using (ActionThread actionThread = new ActionThread())
+        {
+            actionThread.Start();
+
+            // This call to Join is not strictly necessary, since Dispose
+            //  will perform an implicit Join.
+            actionThread.Join();
+        }
     }
 }

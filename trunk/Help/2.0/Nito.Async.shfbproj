@@ -36,7 +36,7 @@
     <PresentationStyle>vs2005</PresentationStyle>
     <SyntaxFilters>CSharp</SyntaxFilters>
     <ComponentConfigurations>
-      <ComponentConfig id="IntelliSense Component" enabled="True" xmlns="">
+      <ComponentConfig id="IntelliSense Component" enabled="True">
         <component id="IntelliSense Component" type="SandcastleBuilder.Components.IntelliSenseComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
           <!-- Output options (optional)
                  Attributes:
@@ -46,32 +46,19 @@
           <output includeNamespaces="false" namespacesFile="Namespaces" folder="{@OutputFolder}" />
         </component>
       </ComponentConfig>
-      <ComponentConfig id="Cached Framework Comments Index Data" enabled="True" xmlns="">
-        <component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <index name="comments" value="/doc/members/member" key="@name" cache="100">
+<ComponentConfig id="Cached Framework Comments Index Data" enabled="True"><component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><index name="comments" value="/doc/members/member" key="@name" cache="100">
 {@CachedFrameworkCommentList}
 {@CommentFileList}
-            </index>
-          <copy name="comments" source="*" target="/document/comments" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Cached MSDN URL References" enabled="True" xmlns="">
-        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <cache filename="{@AppDataFolder}Cache\MsdnUrl.cache" />
-          <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" />
-          <targets files="reflection.xml" type="{@ProjectLinks}" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Cached Reflection Index Data" enabled="True" xmlns="">
-        <component id="Cached Reflection Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <index name="reflection" value="/reflection/apis/api" key="@id" cache="10">
-            <cache base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" cacheFile="{@AppDataFolder}Cache\Reflection.cache" />
-            <data files="reflection.xml" />
-          </index>
-          <copy name="reflection" source="*" target="/document/reference" />
-        </component>
-      </ComponentConfig>
-    </ComponentConfigurations>
+            </index><copy name="comments" source="*" target="/document/comments" /></component></ComponentConfig>
+<ComponentConfig id="Cached MSDN URL References" enabled="True"><component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><cache filename="{@AppDataFolder}Cache\MsdnUrl.cache" /><targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" /><targets files="reflection.xml" type="{@ProjectLinks}" /></component></ComponentConfig>
+<ComponentConfig id="Cached Reflection Index Data" enabled="True"><component id="Cached Reflection Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><index name="reflection" value="/reflection/apis/api" key="@id" cache="10"><cache base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" cacheFile="{@AppDataFolder}Cache\Reflection.cache" /><data files="reflection.xml" /></index><copy name="reflection" source="*" target="/document/reference" /></component></ComponentConfig>
+<ComponentConfig id="Code Block Component" enabled="True"><component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+  <basePath value="{@HtmlEncProjectFolder}" />
+  <languageFilter value="true" />
+  <allowMissingSource value="false" />
+  <removeRegionMarkers value="false" />
+  <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
+</component></ComponentConfig></ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="Nito.Async.dll" />
       <DocumentationSource sourceFile="Nito.Async.xml" />

@@ -12,7 +12,7 @@
     <AssemblyName>ActionThreadExample</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>Program</StartupObject>
+    <StartupObject>ActionThreadDoGet</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,7 +47,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionThreadConstructStartJoin.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="ActionThreadWithBackgroundWorker.cs" />
+    <Compile Include="ActionThreadIsAlive.cs" />
+    <Compile Include="ActionThreadIsBackground.cs" />
+    <Compile Include="ActionThreadName.cs" />
+    <Compile Include="ActionThreadJoinWithTimeout.cs" />
+    <Compile Include="ActionThreadDo.cs" />
+    <Compile Include="ActionThreadDoSynchronously.cs" />
+    <Compile Include="ActionThreadDoSynchronouslyWithTimeout.cs" />
+    <Compile Include="ActionThreadDoGet.cs" />
+    <Compile Include="ActionThreadDispose.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
