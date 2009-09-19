@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async", "Nito.Async\Nito.Async.csproj", "{708763ED-7801-4F2C-B103-4FEBD771769A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5F70F391-A7C2-4F5B-964D-6093712F68A7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5F70F391-A7C2-4F5B-964D-6093712F68A7}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		Nito.Async.vsmdi = Nito.Async.vsmdi
@@ -23,6 +23,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FakeWebApplication", "Test.FakeWebApplication\Test.FakeWebApplication.csproj", "{21FEE088-09EC-4848-BD49-488D7AB0669F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FrameworkAssumptions", "Test.FrameworkAssumptions\Test.FrameworkAssumptions.csproj", "{9132CD35-A088-490C-B62F-3E6D0410A9B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -54,6 +56,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{C2ED13FE-8EED-41D4-9A2C-BD7D381D9758} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
+		{17FC62AB-AE14-4D2E-B838-52E8A1AD88C0} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
+		{21FEE088-09EC-4848-BD49-488D7AB0669F} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
+		{9132CD35-A088-490C-B62F-3E6D0410A9B1} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
 	EndGlobalSection
 EndGlobal
