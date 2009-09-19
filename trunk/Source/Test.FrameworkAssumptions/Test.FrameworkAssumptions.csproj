@@ -45,6 +45,12 @@
     <Compile Include="Async.FrameworkAssumptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Test.FakeWebApplication\Test.FakeWebApplication.csproj">
+      <Project>{21FEE088-09EC-4848-BD49-488D7AB0669F}</Project>
+      <Name>Test.FakeWebApplication</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

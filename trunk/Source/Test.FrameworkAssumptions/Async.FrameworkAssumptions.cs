@@ -48,7 +48,7 @@ namespace FrameworkTests
         }
 
         /// <summary>
-        /// This method will fail if running Visual Studio as non-Administrator or if you didn't build before testing.
+        /// This method will fail if running Visual Studio as non-Administrator.
         /// </summary>
         [TestMethod]
         [Timeout(20000)]
@@ -75,7 +75,7 @@ namespace FrameworkTests
         }
 
         /// <summary>
-        /// This method will fail if running Visual Studio as non-Administrator or if you didn't build before testing.
+        /// This method will fail if running Visual Studio as non-Administrator.
         /// </summary>
         [TestMethod]
         [Timeout(20000)]
