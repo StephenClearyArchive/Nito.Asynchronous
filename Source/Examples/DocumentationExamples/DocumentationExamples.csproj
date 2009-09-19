@@ -8,11 +8,11 @@
     <ProjectGuid>{62CA72F5-310B-4E5E-9EDC-F76C4E157602}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ActionThreadExample</RootNamespace>
-    <AssemblyName>ActionThreadExample</AssemblyName>
+    <RootNamespace>ExampleCode</RootNamespace>
+    <AssemblyName>Example</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>ActionThreadDoGet</StartupObject>
+    <StartupObject>ActionDispatcherQueueActionCurrent</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionDispatcher\ConstructQueueExitRun.cs" />
+    <Compile Include="ActionDispatcher\QueueActionCurrent.cs" />
     <Compile Include="ActionThread\ConstructStartJoin.cs" />
     <Compile Include="ActionThread\Dispose.cs" />
     <Compile Include="ActionThread\Do.cs" />
