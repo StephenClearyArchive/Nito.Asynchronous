@@ -46,17 +46,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActionThreadConstructStartJoin.cs" />
-    <Compile Include="ActionThreadWithBackgroundWorker.cs" />
-    <Compile Include="ActionThreadIsAlive.cs" />
-    <Compile Include="ActionThreadIsBackground.cs" />
-    <Compile Include="ActionThreadName.cs" />
-    <Compile Include="ActionThreadJoinWithTimeout.cs" />
-    <Compile Include="ActionThreadDo.cs" />
-    <Compile Include="ActionThreadDoSynchronously.cs" />
-    <Compile Include="ActionThreadDoSynchronouslyWithTimeout.cs" />
-    <Compile Include="ActionThreadDoGet.cs" />
-    <Compile Include="ActionThreadDispose.cs" />
+    <Compile Include="ActionThread\ConstructStartJoin.cs" />
+    <Compile Include="ActionThread\Dispose.cs" />
+    <Compile Include="ActionThread\Do.cs" />
+    <Compile Include="ActionThread\DoGet.cs" />
+    <Compile Include="ActionThread\DoSynchronously.cs" />
+    <Compile Include="ActionThread\DoSynchronouslyWithTimeout.cs" />
+    <Compile Include="ActionThread\IsAlive.cs" />
+    <Compile Include="ActionThread\IsBackground.cs" />
+    <Compile Include="ActionThread\JoinWithTimeout.cs" />
+    <Compile Include="ActionThread\Name.cs" />
+    <Compile Include="ActionThread\WithBackgroundWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

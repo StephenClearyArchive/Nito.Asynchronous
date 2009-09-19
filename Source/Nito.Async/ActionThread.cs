@@ -19,7 +19,7 @@ namespace Nito.Async
     /// </remarks>
     /// <example>
     /// The following code example demonstrates how ActionThreads may be used to make an event-driven Console application:
-    /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadWithBackgroundWorker.cs"/>
+    /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\WithBackgroundWorker.cs"/>
     /// The code example above produces this output:
     /// <code lang="None" title="Output">
     /// Main console thread ID is 1 and is not a threadpool thread
@@ -44,7 +44,7 @@ namespace Nito.Async
         /// Initializes a new instance of the <see cref="ActionThread"/> class, creating a child thread waiting for commands.
         /// </summary>
         /// <example>The following code sample demonstrates how to create an ActionThread, start it, and then join with it:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadConstructStartJoin.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\ConstructStartJoin.cs"/>
         /// </example>
         public ActionThread()
         {
@@ -56,7 +56,7 @@ namespace Nito.Async
         /// Gets a value indicating whether this <see cref="ActionThread"/> is still alive (has started but not yet exited).
         /// </summary>
         /// <example>The following code sample demonstrates how to read the IsAlive property:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadIsAlive.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\IsAlive.cs"/>
         /// The code example above produces this output:
         /// <code lang="None" title="Output">
         /// ActionThread.IsAlive before Start: False
@@ -73,7 +73,7 @@ namespace Nito.Async
         /// Gets or sets a value indicating whether this <see cref="ActionThread"/> is a background thread. This property may not be accessed after a <see cref="O:Nito.Async.ActionThread.Join"/>.
         /// </summary>
         /// <example>The following code sample demonstrates how to use the IsBackground property:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadIsBackground.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\IsBackground.cs"/>
         /// </example>
         public bool IsBackground
         {
@@ -96,7 +96,7 @@ namespace Nito.Async
         /// <para>Starting the thread will set this to a reasonable default value if it has not already been set.</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to use the Name property:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadName.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\Name.cs"/>
         /// </example>
         public string Name
         {
@@ -127,7 +127,7 @@ namespace Nito.Async
         /// <para>Be careful when using short timeout values; the thread may already have other work queued.</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to join with an ActionThread with a timeout:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadJoinWithTimeout.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\JoinWithTimeout.cs"/>
         /// The code example above produces this output:
         /// <code lang="None" title="Output">
         /// Thread joined: False
@@ -153,7 +153,7 @@ namespace Nito.Async
         /// <para>This method has no effect if the thread has not started or has already exited.</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to create an ActionThread, start it, and then join with it:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadConstructStartJoin.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\ConstructStartJoin.cs"/>
         /// </example>
         public void Join()
         {
@@ -171,7 +171,7 @@ namespace Nito.Async
         /// <para>Work may be queued to the thread before it starts running.</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to create an ActionThread, start it, and then join with it:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadConstructStartJoin.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\ConstructStartJoin.cs"/>
         /// </example>
         public void Start()
         {
@@ -188,7 +188,7 @@ namespace Nito.Async
         /// </summary>
         /// <param name="action">The work to do. This delegate may not throw an exception.</param>
         /// <example>The following code sample demonstrates how to queue work to an ActionThread:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadDo.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\Do.cs"/>
         /// The code example above produces this output:
         /// <code lang="None" title="Output">
         /// Console thread ID: 1
@@ -211,7 +211,7 @@ namespace Nito.Async
         /// <para>Be careful when using short timeout values; the <paramref name="action"/> delegate may not be scheduled for work immediately if the thread already has other work queued.</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to queue work synchronously to an ActionThread with a timeout:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadDoSynchronouslyWithTimeout.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\DoSynchronouslyWithTimeout.cs"/>
         /// The code example above produces this output:
         /// <code lang="None" title="Output">
         /// ActionThread completed action synchronously: False
@@ -234,7 +234,7 @@ namespace Nito.Async
         /// <para>This method may not be called before the thread has started (see <see cref="Start"/>) or after the thread has joined (see <see cref="O:Nito.Async.ActionThread.Join"/>).</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to queue work synchronously to an ActionThread:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadDoSynchronously.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\DoSynchronously.cs"/>
         /// The code example above produces this output:
         /// <code lang="None" title="Output">
         /// Console thread ID: 1
@@ -263,7 +263,7 @@ namespace Nito.Async
         /// <para>This method may only be called after the thread has been started.</para>
         /// </remarks>
         /// <example>The following code sample demonstrates how to queue work synchronously to an ActionThread:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadDoGet.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\DoGet.cs"/>
         /// The code example above produces this output:
         /// <code lang="None" title="Output">
         /// Console thread ID: 1
@@ -281,7 +281,7 @@ namespace Nito.Async
         /// Requests this <see cref="ActionThread"/> to exit, blocks the calling thread until this <see cref="ActionThread"/> exits, and then cleans up all resources.
         /// </summary>
         /// <example>The following code sample demonstrates how to dispose an ActionThread:
-        /// <code source="..\..\Source\Examples\ActionThreadExample\ActionThreadDispose.cs"/>
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\Dispose.cs"/>
         /// </example>
         public void Dispose()
         {
