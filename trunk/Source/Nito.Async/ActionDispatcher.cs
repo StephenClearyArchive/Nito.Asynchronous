@@ -31,6 +31,9 @@ namespace Nito.Async
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionDispatcher"/> class with an empty action queue.
         /// </summary>
+        /// <example>The following code sample demonstrates how to create an ActionDispatcher, queue an exit action, and run it:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\ConstructQueueExitRun.cs"/>
+        /// </example>
         public ActionDispatcher()
         {
             this.actionQueueNotEmptyEvent = new ManualResetEvent(false);
@@ -41,6 +44,9 @@ namespace Nito.Async
         /// Gets the currently active action queue. For executing actions, this is their own action queue; for other threads, this is null.
         /// </summary>
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
+        /// <example>The following code sample demonstrates how to queue an action to an ActionDispatcher and access the Current property:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\QueueActionCurrent.cs"/>
+        /// </example>
         public static ActionDispatcher Current
         {
             get
@@ -62,6 +68,9 @@ namespace Nito.Async
         /// <note class="warning">This method should not be called while a thread is executing <see cref="Run"/>.</note>
         /// <para>If there is a thread executing <see cref="Run"/>, call <see cref="QueueExit"/> and wait for the thread to exit before calling this method.</para>
         /// </threadsafety>
+        /// <example>The following code sample demonstrates how to create an ActionDispatcher, queue an exit action, and run it:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\ConstructQueueExitRun.cs"/>
+        /// </example>
         public void Dispose()
         {
             this.actionQueueNotEmptyEvent.Close();
@@ -77,6 +86,9 @@ namespace Nito.Async
         /// <threadsafety>
         /// <para>This method may only be called by one thread at a time.</para>
         /// </threadsafety>
+        /// <example>The following code sample demonstrates how to create an ActionDispatcher, queue an exit action, and run it:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\ConstructQueueExitRun.cs"/>
+        /// </example>
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.ControlEvidence | SecurityPermissionFlag.ControlPolicy)]
         public void Run()
         {
@@ -104,6 +116,9 @@ namespace Nito.Async
         /// <para>Actions may queue other actions and/or an exit action by using the <see cref="Current"/> action dispatcher.</para>
         /// </remarks>
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
+        /// <example>The following code sample demonstrates how to queue an action to an ActionDispatcher and access the Current property:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\QueueActionCurrent.cs"/>
+        /// </example>
         public void QueueAction(Action action)
         {
             lock (this.actionQueue)
@@ -127,6 +142,9 @@ namespace Nito.Async
         /// <para><see cref="Run"/> may not return immediately; the exit action is queued like any other action and must wait its turn.</para>
         /// </remarks>
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
+        /// <example>The following code sample demonstrates how to create an ActionDispatcher, queue an exit action, and run it:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\ConstructQueueExitRun.cs"/>
+        /// </example>
         public void QueueExit()
         {
             this.QueueAction(() => { throw new ExitException(); });
