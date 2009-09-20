@@ -12,7 +12,7 @@
     <AssemblyName>Example</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <StartupObject>ActionDispatcherQueueActionCurrent</StartupObject>
+    <StartupObject>ActionDispatcherWithBackgroundWorker</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionDispatcher\ConstructQueueExitRun.cs" />
+    <Compile Include="ActionDispatcher\WithBackgroundWorker.cs" />
+    <Compile Include="ActionDispatcher\WithTimer.cs" />
     <Compile Include="ActionDispatcher\QueueActionCurrent.cs" />
     <Compile Include="ActionThread\ConstructStartJoin.cs" />
     <Compile Include="ActionThread\Dispose.cs" />
