@@ -9,7 +9,7 @@ namespace Nito.Async
     using System.Threading;
 
     /// <summary>
-    /// Replaces <see cref="SynchronizationContext.Current"/> temporarily, restoring the previous synchronization context when disposed.
+    /// Replaces <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see> temporarily, restoring the previous synchronization context when disposed.
     /// </summary>
     public sealed class ScopedSynchronizationContext : IDisposable
     {

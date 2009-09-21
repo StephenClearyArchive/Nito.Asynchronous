@@ -13,8 +13,6 @@ using Nito.Async;
 
 class ActionDispatcherWithBackgroundWorker
 {
-    static ActionDispatcher actionDispatcher;
-    
     static void Main()
     {
         Console.WriteLine("Main console thread ID is " + Thread.CurrentThread.ManagedThreadId +
@@ -24,7 +22,7 @@ class ActionDispatcherWithBackgroundWorker
         //  sufficient to own objects with managed thread affinity such
         //  as those using the event-based asynchronous pattern
         //  (e.g., BackgroundWorker).
-        using (actionDispatcher = new ActionDispatcher())
+        using (ActionDispatcher actionDispatcher = new ActionDispatcher())
         {
             actionDispatcher.QueueAction(FirstAction);
             actionDispatcher.Run();

@@ -11,6 +11,9 @@
                     Nito.Async provides the <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> type, which is a thread containing an event-based message loop. It also provides a synchronization context, which means it may own classes developed using the event-based asynchronous pattern (e.g., <codeEntityReference>T:System.ComponentModel.BackgroundWorker</codeEntityReference>).
                 </para>
                 <para>
+                    There is also a non-platform-specific <codeEntityReference>T:Nito.Async.Timer</codeEntityReference>, which is a reliable timer type that may be used in cross-platform components (e.g., it works equally well with WPF and Windows Forms projects).
+                </para>
+                <para>
                     <codeEntityReference>T:Nito.Async.GenericSynchronizingObject</codeEntityReference> may be used as a bridge, allowing older asynchronous components based on the <codeEntityReference>T:System.ComponentModel.ISynchronizeInvoke</codeEntityReference> model (exposing a <codeInline>SynchronizingObject</codeInline> property) to work seamlessly with the modern <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> approach.
                 </para>
                 <para>
@@ -20,7 +23,14 @@
                     Nito.Async also provides a collection of synchronizing methods (<codeEntityReference>T:Nito.Async.Sync</codeEntityReference>) to help synchronize with asynchronous components based on <codeEntityReference>T:System.IAsyncResult</codeEntityReference> or similar free-threaded patterns.
                 </para>
                 <para>
-                    These methods may be used in conjunction with <codeEntityReference>T:Nito.Async.AsyncResultEventArgs`1</codeEntityReference> to develop components using the event-based asynchronous pattern. <!-- TODO: link? -->
+                    These methods may be used in conjunction with <codeEntityReference>T:Nito.Async.AsyncResultEventArgs`1</codeEntityReference> and <codeEntityReference>T:Nito.Async.CallbackContext</codeEntityReference> to develop components using the
+                    <externalLink>
+                        <linkText>event-based asynchronous pattern.</linkText>
+                        <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
+                    </externalLink>
+                </para>
+                <para>
+                    For advanced users, Nito.Async also provides a <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> register that keeps track of properties of different derived synchronization context types. Since the register already is aware of <codeEntityReference>T:System.Windows.Forms.WindowsFormsSynchronizationContext</codeEntityReference>, <codeEntityReference>T:System.Windows.Threading.DispatcherSynchronizationContext</codeEntityReference>, <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, and <codeInline>AspNetSynchronizationContext</codeInline>, modifying the synchronization context register should be very rare.
                 </para>
             </content>
         </section>
