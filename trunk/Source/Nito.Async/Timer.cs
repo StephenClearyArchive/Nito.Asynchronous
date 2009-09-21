@@ -18,6 +18,19 @@ namespace Nito.Async
     /// <para>A timer may be restarted by calling <see cref="Restart"/>, setting <see cref="Interval"/> to its own value, or setting <see cref="Enabled"/> to false and then back to true.</para>
     /// <para>A Timer must be used with a synchronization context that supports <see cref="SynchronizationContextProperties.Synchronized"/>.</para>
     /// </remarks>
+    /// <example>The following code sample demonstrates how to construct a periodic Timer, start it, and handle the <see cref="Elapsed"/> event:
+    /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\Periodic.cs"/>
+    /// The code example above produces this output:
+    /// <code lang="None" title="Output">
+    /// Timer has fired 1 times.
+    /// Timer has fired 2 times.
+    /// Timer has fired 3 times.
+    /// Timer has fired 4 times.
+    /// Timer has fired 5 times.
+    /// </code>
+    /// The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+    /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShot.cs"/>
+    /// </example>
     public sealed class Timer : IDisposable
     {
         /// <summary>
@@ -58,6 +71,9 @@ namespace Nito.Async
         /// <summary>
         /// Initializes a new instance of the <see cref="Timer"/> class, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
         /// </summary>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShot.cs"/>
+        /// </example>
         public Timer()
         {
             // Capture the synchronization context
@@ -85,6 +101,9 @@ namespace Nito.Async
         /// <para>If <see cref="Enabled"/> is true when <see cref="Elapsed"/> returns, then the timer is restarted.</para>
         /// <para><see cref="Elapsed"/> should not raise an exception; if it does, the exception will be passed through to the <see cref="SynchronizationContext"/>. Different <see cref="SynchronizationContext"/> implementations handle this situation differently.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShot.cs"/>
+        /// </example>
         public event Action Elapsed;
 
         /// <summary>
@@ -96,6 +115,9 @@ namespace Nito.Async
         /// <para>This may be set from within an <see cref="Elapsed"/> handler; however, a timer enabled from the callback will not start waiting until the callback returns. In other words, the time spent processing <see cref="Elapsed"/> is not considered part of <see cref="Interval"/>.</para>
         /// <para>Enabling an already-enabled timer or disabling an already-disabled timer has no effect. Note that these semantics are different than <see cref="Interval"/>.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotProperties.cs"/>
+        /// </example>
         public bool Enabled
         {
             get
@@ -161,6 +183,9 @@ namespace Nito.Async
         /// <para>Setting this property does not modify the <see cref="Enabled"/> property; to set <see cref="Interval"/>, <see cref="AutoReset"/>, and <see cref="Enabled"/> simultaneously, call <see cref="SetSingleShot"/> or <see cref="SetPeriodic"/>.</para>
         /// <para>This may be set from within an <see cref="Elapsed"/> handler, but will not have an effect until the next period has elapsed. To re-enable a timer from within an <see cref="Elapsed"/> handler, set <see cref="Enabled"/> to true.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotProperties.cs"/>
+        /// </example>
         public bool AutoReset { get; set; }
 
         /// <summary>
@@ -172,6 +197,9 @@ namespace Nito.Async
         /// <para>Setting this property does not modify the <see cref="Enabled"/> property; to set <see cref="Interval"/>, <see cref="AutoReset"/>, and <see cref="Enabled"/> simultaneously, call <see cref="SetSingleShot"/> or <see cref="SetPeriodic"/>.</para>
         /// <para>This may be set from within an <see cref="Elapsed"/> handler.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotProperties.cs"/>
+        /// </example>
         public TimeSpan Interval
         {
             get
@@ -219,6 +247,9 @@ namespace Nito.Async
         /// <para>This function cancels any previous pending timeouts.</para>
         /// <para>Calling this method from <see cref="Elapsed"/> is allowed.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShot.cs"/>
+        /// </example>
         public void SetSingleShot(TimeSpan interval)
         {
             // Only public properties are used here to allow this function to be called from Elapsed
@@ -239,6 +270,17 @@ namespace Nito.Async
         /// <para>This function cancels any previous pending timeouts.</para>
         /// <para>Calling this method from <see cref="Elapsed"/> is allowed.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a periodic Timer, start it, and handle the <see cref="Elapsed"/> event:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\Periodic.cs"/>
+        /// The code example above produces this output:
+        /// <code lang="None" title="Output">
+        /// Timer has fired 1 times.
+        /// Timer has fired 2 times.
+        /// Timer has fired 3 times.
+        /// Timer has fired 4 times.
+        /// Timer has fired 5 times.
+        /// </code>
+        /// </example>
         public void SetPeriodic(TimeSpan period)
         {
             // Only public properties are used here to allow this function to be called from Elapsed
@@ -256,6 +298,17 @@ namespace Nito.Async
         /// <para>It is not necessary to call this function before calling <see cref="Dispose"/>.</para>
         /// <para>Calling this method from <see cref="Elapsed"/> is allowed.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a periodic Timer, start it, restart it, and cancel it:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotRestartCancel.cs"/>
+        /// The code example above produces this output:
+        /// <code lang="None" title="Output">
+        /// Timer has fired 1 times.
+        /// Timer has fired 2 times.
+        /// Timer has fired 3 times.
+        /// Timer has fired 4 times.
+        /// Timer has fired 5 times.
+        /// </code>
+        /// </example>
         public void Cancel()
         {
             // Only public properties are used here to allow this function to be called from Elapsed
@@ -268,6 +321,9 @@ namespace Nito.Async
         /// <remarks>
         /// <para>Calling this method from <see cref="Elapsed"/> is allowed.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and dispose it before it elapses:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotDispose.cs"/>
+        /// </example>
         public void Dispose()
         {
             this.Enabled = false;
@@ -280,6 +336,17 @@ namespace Nito.Async
         /// <remarks>
         /// <para>Calling this method from <see cref="Elapsed"/> is allowed; in this case, it has the same effect as setting <see cref="Enabled"/> to true.</para>
         /// </remarks>
+        /// <example>The following code sample demonstrates how to construct a periodic Timer, start it, restart it, and cancel it:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotRestartCancel.cs"/>
+        /// The code example above produces this output:
+        /// <code lang="None" title="Output">
+        /// Timer has fired 1 times.
+        /// Timer has fired 2 times.
+        /// Timer has fired 3 times.
+        /// Timer has fired 4 times.
+        /// Timer has fired 5 times.
+        /// </code>
+        /// </example>
         public void Restart()
         {
             this.Enabled = false;

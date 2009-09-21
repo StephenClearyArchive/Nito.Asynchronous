@@ -24,7 +24,12 @@
           Exit actions are treated exactly like any other actions; they are executed in FIFO order and do not take precedence over existing actions in the action queue.
         </para>
         <para>
-          Because <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> has an associated <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, components written with the event-based asynchronous model <!-- TODO: link? --> will automatically synchronize their event callbacks with the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> by queueing them as actions.
+          Because <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> has an associated <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, components written with the
+            <externalLink>
+              <linkText>event-based asynchronous model</linkText>
+              <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
+            </externalLink>
+            will automatically synchronize their event callbacks with the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> by queueing them as actions.
         </para>
       </content>
     </section>
@@ -49,8 +54,7 @@
       <!-- "ActionDispatcher Compared To Dispatcher.xml" -->
       <externalLink>
         <linkText>WPF Threading Model on MSDN</linkText>
-        <linkUri>ms-help://MS.VSCC.v90/MS.MSDNQTR.v90.en/wpf_conceptual/html/02d8fd00-8d7c-4604-874c-58e40786770b.htm</linkUri>
-        <!-- TODO -->
+        <linkUri>http://msdn.microsoft.com/en-us/library/ms741870.aspx</linkUri>
       </externalLink>
       <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>
       <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference>
