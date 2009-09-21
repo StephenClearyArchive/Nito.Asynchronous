@@ -56,6 +56,7 @@
     <Compile Include="ActionDispatcher.cs" />
     <Compile Include="ActionDispatcherSynchronizationContext.cs" />
     <Compile Include="ActionThread.cs" />
+    <Compile Include="AsyncTimeoutTimer.cs" />
     <Compile Include="CallbackContext.cs" />
     <Compile Include="EventHandlers.AsyncResultEventArgs.cs" />
     <Compile Include="EventHandlers.Sync.cs" />

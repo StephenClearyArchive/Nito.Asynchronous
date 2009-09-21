@@ -10,7 +10,7 @@
         There is a Properties/AssemblyInfo.cs file underneath these directories that contains version information.
         The outputs are a triple: DLL, XML, and PDB, placed into the same subdirectory.
     -->
-    <Projects Include="Source\Nito.Async\Nito.Async.csproj"/>
+    <Projects Include="Source\Nito.Async\Nito.Async.csproj;Source\Nito.Async.Sockets\Nito.Async.Sockets.csproj"/>
 
     <!-- The certificate to use for strong-name signing (a missing file is not an error; the signing is just skipped instead) -->
     <StrongNameCertificate Include="C:\Work\Nito\Code Signing\Certificates\Microsoft Strong Name\Microsoft Strong Name Private Key.snk"/>
@@ -19,7 +19,7 @@
     <AuthenticodeCertificate Include="C:\Work\Nito\Code Signing\Certificates\GlobalSign ObjectSign Code Signing Certificate\MSCV-GlobalSign.cer"/>
 
     <!-- All sources for the library projects -->
-    <Sources Include="Source\Nito.Async\**\*.cs"/>
+    <Sources Include="Source\Nito.Async\**\*.cs;Source\Nito.Async.Sockets\**\*.cs"/>
   </ItemGroup>
 
   <PropertyGroup>
