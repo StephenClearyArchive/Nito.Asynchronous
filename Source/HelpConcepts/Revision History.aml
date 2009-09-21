@@ -5,10 +5,31 @@
       <autoOutline />
       <para>Version history</para>
     </introduction>
-      <section address="v2.0">
-          <title>Version 2.0</title>
+      <section address="v1.4">
+          <title>Version 1.4</title>
           <content>
               <list class="bullet">
+                  <listItem>
+                      Added a comprehensive suite of unit tests. In this release, there are 234 unit tests with 100% code coverage of non-obsoleted, non-Socket types.
+                  </listItem>
+                  <listItem>
+                      Began writing documentation sample code. Not all types have samples yet; in particular types that are not normally directly used (e.g., <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>), the obsolete type (Nito.Async.AsyncTimeoutTimer), and types due for re-design in .NET 4.0 (the Nito.Async.Sockets namespace) will not have documentation samples. Other types will have documentation samples added in the near future.
+                  </listItem>
+                  <listItem>
+                      Fixed some obscure bugs in <codeEntityReference>T:Nito.Async.CallbackContext</codeEntityReference> when delegates were bound with a synchronization object. These bugs were found during the development of the unit tests, and have never been seen in production code.
+                  </listItem>
+                  <listItem>
+                      Added publisher policy files to the normal distribution file for developers who wish to deploy to the GAC.
+                  </listItem>
+                  <listItem>
+                      Added source-indexed pdb files to the normal distribution file, which allows developers to dynamically pull down the correct version of the source file when debugging and stepping through Nito code.
+                  </listItem>
+                  <listItem>
+                      Brought Nito.Async.dll fully in-line with StyleCop standards. Nito.Async.Sockets.dll will not be brought to StyleCop standards, since it will be replaced with a .NET 4.0-based API when .NET 4.0 is released.
+                  </listItem>
+                  <listItem>
+                      Merged the Nito.Async.Sockets sample code with the main Nito.Async distribution, instead of having it as a separate download.
+                  </listItem>
                   <listItem>
                       Added <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference>, an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> with its own thread.
                   </listItem>
@@ -17,9 +38,6 @@
                   </listItem>
                   <listItem>
                       Added <codeEntityReference>T:Nito.Async.SynchronizationContextRegister</codeEntityReference> to store and retrieve properties of synchronization context types.
-                  </listItem>
-                  <listItem>
-                      Removed Nito.Async.AsyncTimeoutTimer.
                   </listItem>
               </list>
           </content>

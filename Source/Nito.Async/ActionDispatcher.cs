@@ -14,7 +14,7 @@ namespace Nito.Async
     /// </summary>
     /// <remarks>
     /// <para>Actions are executed in the order they are queued.</para>
-    /// <para>Each action executes within a <see cref="ActionDispatcherSynchronizationContext"/></para>
+    /// <para>Each action executes within an <see cref="ActionDispatcherSynchronizationContext"/>.</para>
     /// </remarks>
     /// <threadsafety>This class is used for thread synchronization, so see the notes on each member for thread safety information.</threadsafety>
     /// <example>The following code sample demonstrates how to use an ActionDispatcher to convert a Console application's main thread into an event-driven thread:
@@ -102,6 +102,7 @@ namespace Nito.Async
         /// <remarks>
         /// <para>This method only returns after <see cref="QueueExit"/> is called. When the action queue is empty, the thread waits for additional actions to be queued via <see cref="QueueAction"/> or <see cref="QueueExit"/>.</para>
         /// <para>Executing actions may access their own action queue via the <see cref="Current"/> property, and may queue other actions and/or an exit action.</para>
+        /// <para>This method should not be called from a thread pool thread in most cases.</para>
         /// </remarks>
         /// <threadsafety>
         /// <para>This method may only be called by one thread at a time.</para>
