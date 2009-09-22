@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Help Concepts", "Help Conce
 	ProjectSection(SolutionItems) = preProject
 		HelpConcepts\ActionDispatcher Compared To Dispatcher.aml = HelpConcepts\ActionDispatcher Compared To Dispatcher.aml
 		HelpConcepts\ActionDispatcher.aml = HelpConcepts\ActionDispatcher.aml
+		HelpConcepts\ActionThread.aml = HelpConcepts\ActionThread.aml
 		HelpConcepts\Nito.Async.aml = HelpConcepts\Nito.Async.aml
 		HelpConcepts\Revision History.aml = HelpConcepts\Revision History.aml
 	EndProjectSection

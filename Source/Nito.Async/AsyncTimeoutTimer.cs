@@ -8,10 +8,11 @@ namespace Nito.Async
     using System.Timers;
 
     /// <summary>
-    /// Provides asynchronous timeout notifications.
+    /// Obsolete. Provides asynchronous timeout notifications.
     /// </summary>
     /// <remarks>
     /// <para>This is not a general-purpose timer class; it should only be used to detect timeout situations.</para>
+    /// <para>This class has been replaced by <see cref="Nito.Async.Timer"/>; <see cref="Timeout"/> event handlers should become <see cref="Nito.Async.Timer.Elapsed"/> event handlers, calls to <see cref="Set"/> should become calls to <see cref="Nito.Async.Timer.SetSingleShot"/>, and calls to <see cref="Reset"/> should become calls to <see cref="Nito.Async.Timer.Restart"/></para>
     /// </remarks>
     [Obsolete("Nito.Async.AsyncTimeoutTimer has been replaced by Nito.Async.Timer: Timeout -> Elapsed, Set -> SetSingleShot, Reset -> Restart")]
     public sealed class AsyncTimeoutTimer : IDisposable
