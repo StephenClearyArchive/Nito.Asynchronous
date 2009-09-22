@@ -115,6 +115,7 @@
   <ItemGroup>
     <None Include="ActionDispatcher.aml" />
     <None Include="ActionDispatcher Compared To Dispatcher.aml" />
+    <None Include="ActionThread.aml" />
     <None Include="Revision History.aml" />
     <None Include="Nito.Async.aml" />
   </ItemGroup>
