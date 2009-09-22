@@ -16,6 +16,8 @@ namespace Nito.Async
     /// <para>All bound delegates are valid when they are bound to a context by calling <see cref="O:Nito.Async.CallbackContext.Bind"/>. When <see cref="Reset"/> (or <see cref="Dispose"/>) is called on the context, all previously-bound delegates are invalidated.</para>
     /// <para>The context keeps track of whether there is at least one delegate bound to it. <see cref="Invalidated"/> is true if there are no bound delegates; it is false if there is at least one. There is no way to query the validity of a particular delegate.</para>
     /// <para>If the innter delegate raises an exeption, then the bound delegate will propogate that exception.</para>
+    /// <para>Delegates may be synchronized as well as bound; if using one of the <see cref="O:Nito.Async.CallbackContext.Bind"/> overloads that takes a synchronization object, the returned delegate is both synchronized and bound. Synchronized bound delegates first synchronize before checking their own validity. Note that "synchronize" is used in a loose sense and does not necessarily imply mutual exclusion with any other code; the exact type of "synchronization" that is done is dependent on the semantics of the synchronization object passed to <see cref="O:Nito.Async.CallbackContext.Bind"/>.</para>
+    /// <para>For synchronization object types that support asynchronous invocation, delegates may also be asynchronously bound by calling one of the <see cref="O:Nito.Async.CallbackContext.AsyncBind"/> overloads. This results in an "asynchronous, synchronized bound delegate", which is a synchronized bound delegate that is asynchronously invoked.</para>
     /// </remarks>
     /// <threadsafety>
     /// <para>Instance members of this type are not thread-safe.</para>
