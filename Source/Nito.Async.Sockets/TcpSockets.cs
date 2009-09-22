@@ -517,6 +517,14 @@ namespace Nito.Async.Sockets
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ClientTcpSocket"/> class.
+        /// </summary>
+        public ClientTcpSocket()
+        {
+            SynchronizationContextRegister.Verify(SynchronizationContextProperties.Standard);
+        }
+
+        /// <summary>
         /// Gracefully or abortively closes the socket connection. See <see cref="Close"/>.
         /// </summary>
         public void Dispose()
@@ -1049,6 +1057,14 @@ namespace Nito.Async.Sockets
 
                 return Socket_;
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ServerTcpSocket"/> class.
+        /// </summary>
+        public ServerTcpSocket()
+        {
+            SynchronizationContextRegister.Verify(SynchronizationContextProperties.Standard);
         }
 
         /// <summary>
