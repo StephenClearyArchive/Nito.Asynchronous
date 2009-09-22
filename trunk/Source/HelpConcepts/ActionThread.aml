@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="0917b7ee-ad4e-4428-b315-437037e417ef" revisionNumber="1">
+    <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <introduction>
+            <para>
+                One of the most useful classes in the Nito.Async library is the <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> class, which provides a child thread with its own <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference>.
+            </para>
+        </introduction>
+        <section address="SectionIntro">
+            <title>Introducing ActionThread</title>
+            <content>
+                <para>
+                    An <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> combines an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> with a regular <codeEntityReference qualifyHint="true">T:System.Threading.Thread</codeEntityReference>. So, the <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> maintains a queue of <codeEntityReference>T:System.Action</codeEntityReference> delegates which it executes.
+                </para>
+                <para>
+                    Because <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> has an associated <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, components written with the
+                    <externalLink>
+                        <linkText>event-based asynchronous model</linkText>
+                        <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
+                    </externalLink>
+                    will automatically synchronize their event callbacks with the <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> by queueing them as actions.
+                </para>
+            </content>
+        </section>
+        <section address="SectionThread">
+            <title>Similarities and Differences with System.Threading.Thread</title>
+            <content>
+                <para>
+                    Like <codeEntityReference qualifyHint="true">T:System.Threading.Thread</codeEntityReference>, an <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> does not immediately start executing when created; it must be started by calling <codeEntityReference>M:Nito.Async.ActionThread.Start</codeEntityReference>. The <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> may be stopped by calling <codeEntityReference>Overload:Nito.Async.ActionThread.Join</codeEntityReference>, which will queue an exit action to the underlying <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> and then wait for the thread to finish its action queue. Alternatively, <codeEntityReference>P:Nito.Async.ActionThread.IsBackground</codeEntityReference> may be set to indicate this is a background thread.
+                </para>
+                <para>
+                    <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> objects do have a name, just like regular threads. However, the <codeEntityReference>P:Nito.Async.ActionThread.Name</codeEntityReference> property may only be set before the thread is started; if it has not been set by the time the thread starts, a default name will be assigned. This is done to assist debugging.
+                </para>
+                <para>
+                    <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> does not expose all <codeEntityReference qualifyHint="true">T:System.Threading.Thread</codeEntityReference> members, such as <codeEntityReference qualifyHint="true">P:System.Threading.Thread.CurrentCulture</codeEntityReference>. These are accessible from within queued actions by using the <codeEntityReference qualifyHint="true">P:System.Threading.Thread.CurrentThread</codeEntityReference> property.
+                </para>
+            </content>
+        </section>
+        <section address="SectionDispatcher">
+            <title>Similarities and Differences with Nito.Async.ActionDispatcher</title>
+            <content>
+                <para>
+                    <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> allows actions to be queued by calling <codeEntityReference>M:Nito.Async.ActionThread.Do(System.Action)</codeEntityReference>, <codeEntityReference>Overload:Nito.Async.ActionThread.DoSynchronously</codeEntityReference>, or <codeEntityReference>M:Nito.Async.ActionThread.DoGet``1(System.Func{``0})</codeEntityReference>.
+                </para>
+                <para>
+                    To cause an <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> to exit, either call <codeEntityReference>M:Nito.Async.ActionThread.Join</codeEntityReference>, or queue an action that calls <codeEntityReference qualifyHint="true">M:Nito.Async.ActionDispatcher.QueueExit</codeEntityReference> on <codeEntityReference qualifyHint="true">P:Nito.Async.ActionDispatcher.Current</codeEntityReference>.
+                </para>
+            </content>
+        </section>
+        <section address="SectionWhenToUse">
+            <title>When To Use ActionThread</title>
+            <content>
+                <para>
+                    Neither Windows Service applications nor Console applications provide a <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> that is useful to
+                    <externalLink>
+                        <linkText>event-based asynchronous components.</linkText>
+                        <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
+                    </externalLink>
+                    Windows Forms applications may use <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> to define a secondary thread that also has an event loop.
+                    The Windows Presentation Foundation <codeEntityReference qualifyHint="true">T:System.Windows.Threading.Dispatcher</codeEntityReference> class allows multiple event loop threads.
+                    ASP.NET asynchronous pages may use <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> to synchronize event results.
+                </para>
+                <para>
+                    Since <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> threads are capable of owning event-based asynchronous components, they can be used to overcome the "nesting problem". It is difficult to define a hierarchy of asynchronous components (where the "parent" component completes when its children complete), and <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> enables that kind of composition.
+                </para>
+                <para>
+                    <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> is framework-agnostic, so it may be used in any type of .NET application that can create threads.
+                </para>
+            </content>
+        </section>
+        <relatedTopics>
+            <link xlink:href="23096cb3-05f0-4fb8-95e9-2421fc25069f" />
+            <!-- "ActionDispatcher.xml" -->
+            <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference>
+            <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>
+            <codeEntityReference>T:System.Threading.Thread</codeEntityReference>
+        </relatedTopics>
+    </developerConceptualDocument>
+</topic>

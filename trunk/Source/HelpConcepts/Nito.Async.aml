@@ -30,7 +30,7 @@
                     </externalLink>
                 </para>
                 <para>
-                    For advanced users, Nito.Async also provides a <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> register that keeps track of properties of different derived synchronization context types. Since the register already is aware of <codeEntityReference>T:System.Windows.Forms.WindowsFormsSynchronizationContext</codeEntityReference>, <codeEntityReference>T:System.Windows.Threading.DispatcherSynchronizationContext</codeEntityReference>, <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, and <codeInline>AspNetSynchronizationContext</codeInline>, modifying the synchronization context register should be very rare.
+                    For advanced users, Nito.Async also provides a <codeEntityReference>T:Nito.Async.SynchronizationContextRegister</codeEntityReference> that keeps track of properties of different derived <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> types. Since the register already is aware of <codeEntityReference>T:System.Windows.Forms.WindowsFormsSynchronizationContext</codeEntityReference>, <codeEntityReference>T:System.Windows.Threading.DispatcherSynchronizationContext</codeEntityReference>, <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, and <codeInline>AspNetSynchronizationContext</codeInline>, modifying the synchronization context register should be very rare.
                 </para>
             </content>
         </section>
