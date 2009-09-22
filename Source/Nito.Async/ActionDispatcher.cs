@@ -10,7 +10,7 @@ namespace Nito.Async
     using System.Threading;
 
     /// <summary>
-    /// A thread-safe queue of actions.
+    /// A thread-safe queue of actions. Provides an event-based message loop when <see cref="Run"/>, along with a synchronization context for the executed actions.
     /// </summary>
     /// <remarks>
     /// <para>Actions are executed in the order they are queued.</para>
