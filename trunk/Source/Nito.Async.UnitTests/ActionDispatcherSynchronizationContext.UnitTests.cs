@@ -21,7 +21,7 @@ namespace UnitTests
                 new ActionDispatcherSynchronizationContext(dispatcher);
             }
 
-            // This will throw an exception if the type doesn't support all Standard properties
+            // This will throw an exception if the type doesn't support all Standard properties except SpecificAssociatedThread
             SynchronizationContextRegister.Verify(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.NonReentrantPost | SynchronizationContextProperties.NonReentrantSend | SynchronizationContextProperties.Sequential | SynchronizationContextProperties.Synchronized);
         }
 
