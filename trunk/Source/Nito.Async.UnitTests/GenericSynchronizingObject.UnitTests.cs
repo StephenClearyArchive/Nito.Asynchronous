@@ -378,12 +378,43 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void GSO_FromThreadPool_DoesNotRequireInvoke()
+        public void UnknownGSO_NeverRequiresInvoke()
+        {
+            using (ScopedSynchronizationContext x = new ScopedSynchronizationContext(new MySynchronizationContext()))
+            {
+                GenericSynchronizingObject test = new GenericSynchronizingObject();
+                Assert.IsFalse(test.InvokeRequired, "Unknown GenericSynchronizingObject does require invoke");
+            }
+        }
+
+        [TestMethod]
+        public void ThreadPoolGSO_FromThreadPool_DoesNotRequireInvoke()
         {
             using (ScopedSynchronizationContext x = new ScopedSynchronizationContext(new SynchronizationContext()))
             {
                 GenericSynchronizingObject test = new GenericSynchronizingObject();
-                Assert.IsFalse(test.InvokeRequired, "GenericSynchronizingObject does require invoke within thread pool");
+
+                bool invokeRequired = true;
+                using (ManualResetEvent evt = new ManualResetEvent(false))
+                {
+                    ThreadPool.QueueUserWorkItem(_ => { invokeRequired = test.InvokeRequired; evt.Set(); }, null);
+                    evt.WaitOne();
+                }
+
+                Assert.IsFalse(invokeRequired, "ThreadPool GenericSynchronizingObject does require invoke from within thread pool");
+            }
+        }
+
+        [TestMethod]
+        public void ThreadPoolGSO_FromChildThread_DoesRequireInvoke()
+        {
+            using (ScopedSynchronizationContext x = new ScopedSynchronizationContext(new SynchronizationContext()))
+            using (ActionThread thread = new ActionThread())
+            {
+                GenericSynchronizingObject test = new GenericSynchronizingObject();
+                thread.Start();
+                bool invokeRequired = thread.DoGet(() => test.InvokeRequired);
+                Assert.IsTrue(invokeRequired, "ThreadPool GenericSynchronizingObject does not require invoke from within a child thread");
             }
         }
 
@@ -493,6 +524,10 @@ namespace UnitTests
         }
 
         private class MyException : Exception
+        {
+        }
+
+        private class MySynchronizationContext : SynchronizationContext
         {
         }
     }
