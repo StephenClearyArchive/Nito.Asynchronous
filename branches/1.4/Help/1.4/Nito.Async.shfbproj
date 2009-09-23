@@ -1,0 +1,127 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which
+         assemblies to include from solution and project documentation
+         sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{30e93398-c624-4bf0-a706-f9d942e31279}</ProjectGuid>
+    <SHFBSchemaVersion>1.8.0.0</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
+         Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <OutputPath>.\Help\</OutputPath>
+    <HtmlHelpName>Nito.Async</HtmlHelpName>
+    <ProjectSummary>Nito.Async is a collection of classes to assist asynchronous programming in .NET, particularly the development of classes adhering to the event-based asynchronous pattern.</ProjectSummary>
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter</MissingTags>
+    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath>
+    </HtmlHelp1xCompilerPath>
+    <HtmlHelp2xCompilerPath>
+    </HtmlHelp2xCompilerPath>
+    <SandcastlePath>
+    </SandcastlePath>
+    <WorkingPath>
+    </WorkingPath>
+    <BuildLogFile>
+    </BuildLogFile>
+    <FrameworkVersion>3.5</FrameworkVersion>
+    <HelpTitle>Nito.Async Documentation</HelpTitle>
+    <CopyrightText>Copyright 2009 Nito Programs</CopyrightText>
+    <FooterText>For project updates and news, see &amp;lt%3ba href=&amp;quot%3bhttp://www.codeplex.com/NitoAsync&amp;quot%3b&amp;gt%3bhttp://www.codeplex.com/NitoAsync&amp;lt%3b/a&amp;gt%3b.</FooterText>
+    <PresentationStyle>vs2005</PresentationStyle>
+    <SyntaxFilters>CSharp</SyntaxFilters>
+    <ComponentConfigurations>
+      <ComponentConfig id="IntelliSense Component" enabled="True">
+        <component id="IntelliSense Component" type="SandcastleBuilder.Components.IntelliSenseComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <!-- Output options (optional)
+                 Attributes:
+                    Include Namespaces (false by default)
+                    Namespaces filename ("Namespaces" if not specified or empty)
+                    Directory (current folder if not specified or empty) -->
+          <output includeNamespaces="false" namespacesFile="Namespaces" folder="{@OutputFolder}" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Cached Framework Comments Index Data" enabled="True">
+        <component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <index name="comments" value="/doc/members/member" key="@name" cache="100">
+{@CachedFrameworkCommentList}
+{@CommentFileList}
+            </index>
+          <copy name="comments" source="*" target="/document/comments" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Cached MSDN URL References" enabled="True">
+        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <cache filename="{@AppDataFolder}Cache\MsdnUrl.cache" />
+          <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" />
+          <targets files="reflection.xml" type="{@ProjectLinks}" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Cached Reflection Index Data" enabled="True">
+        <component id="Cached Reflection Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <index name="reflection" value="/reflection/apis/api" key="@id" cache="10">
+            <cache base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" cacheFile="{@AppDataFolder}Cache\Reflection.cache" />
+            <data files="reflection.xml" />
+          </index>
+          <copy name="reflection" source="*" target="/document/reference" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Code Block Component" enabled="True">
+        <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <basePath value="{@HtmlEncProjectFolder}" />
+          <languageFilter value="true" />
+          <allowMissingSource value="false" />
+          <removeRegionMarkers value="false" />
+          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
+        </component>
+      </ComponentConfig>
+    </ComponentConfigurations>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="Nito.Async.dll" />
+      <DocumentationSource sourceFile="Nito.Async.xml" />
+      <DocumentationSource sourceFile="Nito.Async.Sockets.dll" />
+      <DocumentationSource sourceFile="Nito.Async.Sockets.xml" />
+    </DocumentationSources>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="(global)" isDocumented="False" xmlns="" />
+      <NamespaceSummaryItem name="Nito.Async" isDocumented="True" xmlns="">Provides types and methods useful for asynchronous programming, especially regarding the event-based asynchronous pattern.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Nito.Async.Sockets" isDocumented="True" xmlns="">Provides socket classes that use the event-based asynchronous pattern.</NamespaceSummaryItem>
+    </NamespaceSummaries>
+    <PlugInConfigurations>
+      <PlugInConfig id="Version Builder" enabled="True">
+        <configuration>
+          <currentProject label="Nito.Async" version="1.4" />
+          <versions>
+            <version label="Nito.Async" version="1.0" helpFileProject="..\(old)\1.0\Nito.Async.shfbproj" />
+            <version label="Nito.Async" version="1.1" helpFileProject="..\(old)\1.1\Nito.Async.shfbproj" />
+            <version label="Nito.Async" version="1.2" helpFileProject="..\(old)\1.2\Nito.Async.shfbproj" />
+            <version label="Nito.Async" version="1.3" helpFileProject="..\(old)\1.3\Nito.Async.shfbproj" />
+          </versions>
+        </configuration>
+      </PlugInConfig>
+    </PlugInConfigurations>
+  </PropertyGroup>
+  <!-- There are no properties for these two groups but they need to appear in
+       order for Visual Studio to perform the build. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="ActionDispatcher.aml" />
+    <None Include="ActionDispatcher Compared To Dispatcher.aml" />
+    <None Include="ActionThread.aml" />
+    <None Include="Revision History.aml" />
+    <None Include="Nito.Async.aml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ContentLayout Include="Nito.Async.content" />
+  </ItemGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>

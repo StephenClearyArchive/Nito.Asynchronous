@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="1dded144-e470-46d3-8fe8-f5a667f883b8" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <autoOutline />
+      <para>Version history</para>
+    </introduction>
+      <section address="v1.4">
+          <title>Version 1.4</title>
+          <content>
+              <list class="bullet">
+                  <listItem>
+                      Added a comprehensive suite of unit tests. In this release, there are 234 unit tests with 100% code coverage of non-obsoleted, non-Socket types.
+                  </listItem>
+                  <listItem>
+                      Began writing documentation sample code. Not all types have samples yet; in particular types that are not normally directly used (e.g., <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>), the obsolete type (Nito.Async.AsyncTimeoutTimer), and types due for re-design in .NET 4.0 (the Nito.Async.Sockets namespace) will not have documentation samples. Other types will have documentation samples added in the near future.
+                  </listItem>
+                  <listItem>
+                      Fixed some obscure bugs in <codeEntityReference>T:Nito.Async.CallbackContext</codeEntityReference> when delegates were bound with a synchronization object. These bugs were found during the development of the unit tests, and have never been seen in production code.
+                  </listItem>
+                  <listItem>
+                      Added publisher policy files to the normal distribution file for developers who wish to deploy to the GAC.
+                  </listItem>
+                  <listItem>
+                      Added source-indexed pdb files to the normal distribution file, which allows developers to dynamically pull down the correct version of the source file when debugging and stepping through Nito code.
+                  </listItem>
+                  <listItem>
+                      Brought Nito.Async.dll fully in-line with StyleCop standards. Nito.Async.Sockets.dll will not be brought to StyleCop standards, since it will be replaced with a .NET 4.0-based API when .NET 4.0 is released.
+                  </listItem>
+                  <listItem>
+                      Merged the Nito.Async.Sockets sample code with the main Nito.Async distribution, instead of having it as a separate download.
+                  </listItem>
+                  <listItem>
+                      Added <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference>, an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> with its own thread.
+                  </listItem>
+                  <listItem>
+                      Added <codeEntityReference>T:Nito.Async.ScopedSynchronizationContext</codeEntityReference> to temporarily override <codeEntityReference qualifyHint="true">P:System.Threading.SynchronizationContext.Current</codeEntityReference>.
+                  </listItem>
+                  <listItem>
+                      Added <codeEntityReference>T:Nito.Async.SynchronizationContextRegister</codeEntityReference> to store and retrieve properties of synchronization context types.
+                  </listItem>
+              </list>
+          </content>
+      </section>
+      <section address="v1.3">
+      <title>Version 1.3</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            Added <codeEntityReference>T:Nito.Async.Timer</codeEntityReference> and deprecated Nito.Async.AsyncTimeoutTimer.
+          </listItem>
+          <listItem>
+            Added synchronization overloads for <codeEntityReference qualifyHint="true">Overload:Nito.Async.CallbackContext.Bind</codeEntityReference> to ensure synchronization is performed before binding.
+          </listItem>
+        </list>
+      </content>
+    </section>
+    <section address="v1.2">
+      <title>Version 1.2</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            Added <codeEntityReference>T:Nito.Async.CallbackContext</codeEntityReference>.
+          </listItem>
+          <listItem>
+            Fixed bug in <codeEntityReference>T:Nito.Async.AsyncTimeoutTimer</codeEntityReference> that could cause a timer callback to be invoked after the <codeEntityReference>T:Nito.Async.AsyncTimeoutTimer</codeEntityReference> had been disposed. This bug also affects the <codeEntityReference>T:Nito.Async.Sockets.SimpleClientTcpSocket</codeEntityReference> and <codeEntityReference>T:Nito.Async.Sockets.SimpleServerTcpSocket</codeEntityReference> classes.
+          </listItem>
+        </list>
+      </content>
+    </section>
+    <section address="v1.1">
+      <title>Version 1.1</title>
+      <content>
+        <list class="bullet">
+          <listItem>
+            Added <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>.
+          </listItem>
+          <listItem>
+            Added <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>.
+          </listItem>
+          <listItem>Added HTML help documentation.</listItem>
+          <listItem>
+            Fixed bug in <codeEntityReference>T:Nito.Async.GenericSynchronizingObject</codeEntityReference>; it now will propogate exceptions to the caller.
+          </listItem>
+          <listItem>
+            Fixed bug in all socket classes that prevented them from performing an actual hard close when AbortiveClose() was called.
+          </listItem>
+        </list>
+      </content>
+    </section>
+    <section address="v1.0">
+      <title>Version 1.0</title>
+      <content>
+        <para>Initial release.</para>
+      </content>
+    </section>
+  </developerConceptualDocument>
+</topic>

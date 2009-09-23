@@ -1,0 +1,448 @@
+<Project ToolsVersion="3.5" DefaultTargets="BuildLibraries" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\ExtensionPack\MSBuild.ExtensionPack.tasks" />
+
+  <!-- We do not do automatic SCC checkins or "get latest"; this allows rebuilding previous releases. -->
+  <!-- Also, the entire build process is x86-based. -->
+
+  <ItemGroup>
+    <!--
+      The DLLs to build; these assumptions are made:
+        There is a Properties/AssemblyInfo.cs file underneath these directories that contains version information.
+        The outputs are a triple: DLL, XML, and PDB, placed into the same subdirectory.
+    -->
+    <Projects Include="Source\Nito.Async\Nito.Async.csproj;Source\Nito.Async.Sockets\Nito.Async.Sockets.csproj"/>
+
+    <!-- The certificate to use for strong-name signing (a missing file is not an error; the signing is just skipped instead) -->
+    <StrongNameCertificate Include="C:\Work\Nito\_\Code Signing\Certificates\Microsoft Strong Name\Microsoft Strong Name Private Key.snk"/>
+
+    <!-- The certificate to use for authenticode signing (a missing file is not an error; the signing is just skipped instead) -->
+    <AuthenticodeCertificate Include="C:\Work\Nito\_\Code Signing\Certificates\GlobalSign ObjectSign Code Signing Certificate\MSCV-GlobalSign.cer"/>
+
+    <!-- All sources for the library projects -->
+    <Sources Include="Source\Nito.Async\**\*.cs;Source\Nito.Async.Sockets\**\*.cs"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- The SrcSrv directory from Debugging Tools for Windows -->
+    <SrcSrv Condition="Exists('$(ProgramFiles)\Debugging Tools for Windows (x86)\srcsrv\')">$(ProgramFiles)\Debugging Tools for Windows (x86)\srcsrv\</SrcSrv>
+  </PropertyGroup>
+  
+  
+  <!-- Defines the steps necessary to build a release -->
+  <Target Name="BuildRelease"
+          DependsOnTargets="UpdateVersions;BuildLibraries;BuildPublisherPolicies;BuildHelp"
+          >
+  </Target>
+
+	
+  <!-- Ensures $(Version) is as expected, and defines @(MajorVersion), @(MinorVersion), $(FullVersion), $(PreviousMinorVersion), and @(PreviousMinorVersions) -->
+  <Target Name="CalculateVersion">
+    <!-- Ensure $(Version) is defined -->
+    <Error Condition="'$(Version)' == ''" Text="Version must be defined, e.g., /p:Version=3.0" />
+    
+    <!-- Split out $(Version) into two parts -->
+    <MSBuild.ExtensionPack.Framework.MSBuildHelper TaskAction="StringToItemCol"
+                                                   ItemString="$(Version)"
+                                                   Separator="."
+                                                   >
+      <Output TaskParameter="OutputItems" ItemName="VersionDetail"/>
+      <Output TaskParameter="ItemCount" PropertyName="VersionDetailCount"/>
+    </MSBuild.ExtensionPack.Framework.MSBuildHelper>
+    <Error Condition="'$(VersionDetailCount)' != '2'" Text="Version must consist of two numbers, e.g., /p:Version=3.0" />
+    
+    <!-- Set @(MajorVersion) -->
+    <MSBuild.ExtensionPack.Framework.MSBuildHelper TaskAction="GetItem"
+                                                   InputItems1="@(VersionDetail)"
+                                                   Position="0">
+      <Output TaskParameter="OutputItems" ItemName="MajorVersion"/>
+    </MSBuild.ExtensionPack.Framework.MSBuildHelper>
+    
+    <!-- Set @(MinorVersion) -->
+    <MSBuild.ExtensionPack.Framework.MSBuildHelper TaskAction="GetItem"
+                                                   InputItems1="@(VersionDetail)"
+                                                   Position="1">
+      <Output TaskParameter="OutputItems" ItemName="MinorVersion"/>
+    </MSBuild.ExtensionPack.Framework.MSBuildHelper>
+    
+    <!-- Set $(FullVersion) -->
+    <PropertyGroup>
+      <FullVersion>$(Version).0.0</FullVersion>
+    </PropertyGroup>
+
+		<!-- Create a list of previous minor versions, unless @(MinorVersion) is 0 -->
+		<MSBuild.ExtensionPack.Science.Maths Condition="'@(MinorVersion)' != '0'"
+																				 TaskAction="Subtract"
+																				 Numbers="@(MinorVersion);1">
+			<Output TaskParameter="Result" PropertyName="PreviousMinorVersion"/>
+		</MSBuild.ExtensionPack.Science.Maths>
+		<MSBuild Condition="'@(MinorVersion)' != '0'"
+						 Projects="$(MSBuildProjectFile)"
+						 Targets="MakeVersionList"
+						 Properties="Input=$(PreviousMinorVersion)">
+			<Output TaskParameter="TargetOutputs" ItemName="PreviousMinorVersions"/>
+		</MSBuild>
+	</Target>
+  
+	
+  <!-- Updates the version declarations in the source -->
+  <Target Name="UpdateVersions" DependsOnTargets="CalculateVersion">
+    <Message Text="Updating to Version: $(Version)" />
+
+    <!-- Find the AssemblyInfo.cs files to update -->
+    <ItemGroup>
+      <AssemblyInfos Include="@(Projects->'%(RelativeDir)Properties\AssemblyInfo.cs')" />
+    </ItemGroup>
+
+    <!-- Remove AssemblyFileVersion statements -->
+    <MSBuild.ExtensionPack.FileSystem.File TaskAction="FilterByContent"
+                                           RegexPattern="\[assembly: AssemblyFileVersion\(%22.*%22\)\]"
+                                           Files="@(AssemblyInfos)"
+                                           >
+      <Output TaskParameter="IncludedFiles" ItemName="AssemblyInfosWithAssemblyFileVersion"/>
+    </MSBuild.ExtensionPack.FileSystem.File>
+    <MSBuild.ExtensionPack.FileSystem.File Condition="'@(AssemblyInfosWithAssemblyFileVersion)' != ''"
+                                           TaskAction="Replace"
+                                           RegexPattern="\[assembly: AssemblyFileVersion\(%22.*%22\)\]"
+                                           Replacement=""
+                                           Files="@(AssemblyInfosWithAssemblyFileVersion)"
+                                           />
+    
+    <!-- Ignore any AssemblyInfo files that already have the correct version (this avoids unnecessary builds due to updating files with the same data) -->
+    <MSBuild.ExtensionPack.FileSystem.File TaskAction="FilterByContent"
+                                           RegexPattern="\[assembly: AssemblyVersion\(%22$(FullVersion)%22\)\]"
+                                           Files="@(AssemblyInfos)"
+                                           >
+      <Output TaskParameter="ExcludedFiles" ItemName="AssemblyInfosWithWrongVersion"/>
+    </MSBuild.ExtensionPack.FileSystem.File>
+    
+    <!-- Do the actual version update -->
+    <MSBuild.ExtensionPack.FileSystem.File Condition="'@(AssemblyInfosWithWrongVersion)' != ''"
+                                           TaskAction="Replace"
+                                           RegexPattern="\[assembly: AssemblyVersion\(%22.*%22\)\]"
+                                           Replacement="[assembly: AssemblyVersion(%22$(FullVersion)%22)]"
+                                           Files="@(AssemblyInfosWithWrongVersion)"
+                                           />
+  </Target>
+
+	
+  <!-- This task should be run *after* UpdateVersions, if UpdateVersions is required
+    1) Builds all .csproj files under Source (with strong-name signing if possible)
+    2) Authenticode-signs the dlls if possible
+    3) Corrects the xml documentation files so that referring to method overload pages is possible
+    4) Copies output to appropriate directories
+  -->
+  <ItemGroup>
+    <BuildLibrariesInputs Include="@(Projects)"/>
+    <BuildLibrariesInputs Include="@(Sources)"/>
+    <BuildLibrariesInputs Include="Source\Nito.FxCop"/>
+  </ItemGroup>
+  <ItemGroup>
+    <BuildLibrariesOutputs Include="@(Projects->'release\%(Filename).dll')"/>
+    <BuildLibrariesOutputs Include="@(Projects->'release\%(Filename).pdb')"/>
+    <BuildLibrariesOutputs Include="@(Projects->'staging\xml\%(Filename).xml')"/>
+  </ItemGroup>
+  <Target Name="BuildLibraries"
+          Inputs="@(BuildLibrariesInputs)"
+          Outputs="@(BuildLibrariesOutputs)"
+          >
+    <!-- Build the actual DLLs, strong-name signing if possible -->
+    <PropertyGroup Condition="Exists(@(StrongNameCertificate))">
+      <BuildProperties>Configuration=Release;SignAssembly=true;AssemblyOriginatorKeyFile=@(StrongNameCertificate)</BuildProperties>
+    </PropertyGroup>
+    <PropertyGroup Condition="!Exists(@(StrongNameCertificate))">
+      <BuildProperties>Configuration=Release;SignAssembly=false</BuildProperties>
+    </PropertyGroup>
+    <MSBuild Projects="@(Projects)" Targets="Rebuild" Properties="$(BuildProperties)" StopOnFirstFailure="true">
+      <Output TaskParameter="TargetOutputs" ItemName="BuildOutputs"/>
+    </MSBuild>
+    
+    <!-- Run FxCop -->
+    <MSBuild.ExtensionPack.CodeQuality.FxCop TaskAction="Analyse"
+                                             Project="Source\Nito.FxCop"
+                                             OutputFile="FxCopLog.xml">
+      <Output TaskParameter="AnalysisFailed" PropertyName="FxCopResult"/>
+      <Output TaskParameter="OutputText" PropertyName="FxCopErrorMessage"/>
+    </MSBuild.ExtensionPack.CodeQuality.FxCop>
+    <Warning Condition="'$(FxCopResult)' == 'true'" Text="FxCop failed: $(OutputText) See FxCopLog.xml for details."/>
+    
+    <!-- Correct XML documentation using XSL -->
+    <PropertyGroup>
+      <CorrectXMLDocumentation>
+        <![CDATA[<?xml version='1.0'?>
+					<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>
+	          <xsl:output method="xml" indent="yes"/>
+
+	          <!-- Copy all documentation as-is except for what matches other rules -->
+	          <xsl:template match="@* | node()">
+	            <xsl:copy>
+	              <xsl:apply-templates select="@* | node()"/>
+	            </xsl:copy>
+	          </xsl:template>
+
+	          <!-- Convert "cref" references that start with "O:" to starting with "Overload:". -->
+	          <xsl:template match="@cref[starts-with(., 'O:')]">
+	            <xsl:attribute name="cref">
+	              <xsl:value-of select="concat('Overload:', substring-after(., 'O:'))"/>
+	            </xsl:attribute>
+	          </xsl:template>
+	        </xsl:stylesheet>
+				]]>
+      </CorrectXMLDocumentation>
+    </PropertyGroup>
+    <ItemGroup>
+      <XmlOutputs Include="@(BuildOutputs->'%(RelativeDir)%(Filename).xml')"/>
+    </ItemGroup>
+    <MakeDir Directories="staging\xml"/>
+    <MSBuild.ExtensionPack.Xml.XmlTask TaskAction="TransForm"
+                                       XmlFile="%(XmlOutputs.Identity)"
+                                       OutputFile="@(XmlOutputs->'staging\xml\%(Filename).xml')"
+                                       XslTransform="$(CorrectXMLDocumentation)"
+                                       />
+
+    <!-- Authenticode-sign the DLLs if possible -->
+    <SignFile Condition="Exists(@(AuthenticodeCertificate))"
+              CertificateThumbprint="1c3a940eeefbd34c073282c2efbfe7acf08cc8a1"
+              SigningTarget="%(BuildOutputs.Identity)"
+              TimestampUrl="http://timestamp.globalsign.com/scripts/timstamp.dll"
+              />
+
+    <!-- Copy PDB files to staging directory -->
+    <Copy SourceFiles="@(BuildOutputs->'%(RootDir)%(Directory)%(Filename).pdb')"
+					DestinationFolder="staging\pdb"
+					/>
+    
+    <!-- Source index the PDB files -->
+    <Exec Condition="'$(SrcSrv)' != ''"
+          Command="&quot;$(SrcSrv)SSIndex.cmd&quot; -SYSTEM=SVN -SYMBOLS=staging"
+          />
+
+    <!-- Copy DLL files and PDB files to binary output folders -->
+    <Copy SourceFiles="@(BuildOutputs)"
+					DestinationFolder="release"
+					/>
+    <Copy SourceFiles="@(BuildOutputs->'%(RootDir)%(Directory)%(Filename).pdb')"
+					DestinationFolder="release"
+					/>
+  </Target>
+
+	
+  <!-- Build the help file -->
+  <ItemGroup>
+    <HelpConceptFiles Include="Source\**\*.aml"/>
+  </ItemGroup>
+  <ItemGroup>
+    <BuildHelpInputs Include="Help\$(Version)\Nito.Async.shfbproj"/>
+    <BuildHelpInputs Include="@(BuildLibrariesOutputs)"/>
+    <BuildHelpInputs Include="@(HelpConceptFiles)"/>
+  </ItemGroup>
+  <ItemGroup>
+    <BuildHelpOutputs Include="release\Nito.Async.chm"/>
+    <BuildHelpOutputs Include="@(Projects->'release\%(Filename).xml')"/>
+  </ItemGroup>
+  <Target Name="BuildHelp"
+          Inputs="@(BuildHelpInputs)"
+          Outputs="@(BuildHelpOutputs)"
+          >
+    <!-- Ensure help folder exists for this release -->
+    <PropertyGroup>
+      <HelpFolder>Help\$(Version)\</HelpFolder>
+    </PropertyGroup>
+    <Error Condition="!Exists($(HelpFolder))" Text="Help folder does not exist for version $(Version)"/>
+    
+    <!-- Copy DLL and xml files to help folder -->
+    <Copy SourceFiles="@(Projects->'release\%(Filename).dll')"
+					DestinationFolder="$(HelpFolder)"
+					SkipUnchangedFiles="true"
+					/>
+    <Copy SourceFiles="@(Projects->'staging\xml\%(Filename).xml')"
+					DestinationFolder="$(HelpFolder)"
+					SkipUnchangedFiles="true"
+					/>
+    
+    <!-- Copy all help concept files to help folder (flattening directory hierarchy) -->
+    <Copy SourceFiles="@(HelpConceptFiles)"
+					DestinationFolder="$(HelpFolder)"
+					SkipUnchangedFiles="true"
+					/>
+    
+    <!-- Build help file -->
+    <MSBuild Projects="$(HelpFolder)Nito.Async.shfbproj"
+						 Properties="Configuration=Release"
+						 />
+    
+    <!-- Copy help file and updated xml files to release folder -->
+    <Copy SourceFiles="$(HelpFolder)Help\Nito.Async.chm;@(Projects->'$(HelpFolder)Help\%(Filename).xml')"
+					DestinationFolder="release"
+					/>
+  </Target>
+
+	
+	<!-- Build the publisher policy dlls -->
+	<!-- Note: when @(MinorVersion) is 0, @(BuildPublisherPoliciesOutputs) is empty, which causes BuildPublisherPolicies to be skipped. -->
+	<ItemGroup>
+		<BuildPublisherPoliciesInputs Include="@(Projects->'Source\PublisherPolicies\%(Filename).config')"/>
+	</ItemGroup>
+  <Target Name="BuildPublisherPolicies"
+					Condition="Exists(@(StrongNameCertificate))"
+					DependsOnTargets="PreparePublisherPolicyConfigFiles"
+					Inputs="@(BuildPublisherPoliciesInputs)"
+					Outputs="@(BuildPublisherPoliciesOutputs)"
+          >
+		<!-- Build the actual publisher policy dlls -->
+		<MSBuild.ExtensionPack.Framework.DateAndTime TaskAction="Get"
+																								 Format="yyyy">
+			<Output TaskParameter="Result" PropertyName="CurrentYear"/>
+		</MSBuild.ExtensionPack.Framework.DateAndTime>
+		<AL OutputAssembly="%(BuildPublisherPoliciesOutputs.Identity)"
+				LinkResources="Source\PublisherPolicies\%(BuildPublisherPoliciesOutputs.BaseFilename).config"
+				CompanyName="Nito Programs"
+				ProductName="Nito Libraries"
+				Title="Helper classes for asynchronous programming"
+				Copyright="Copyright (c) Nito Programs $(CurrentYear)"
+				Version="$(FullVersion)"
+				KeyFile="@(StrongNameCertificate)"
+				/>
+	</Target>
+	
+
+	<!-- Determine which publisher policy dlls are necessary for this version -->
+	<Target Name="CalculateBuildPublisherPoliciesOutputs"
+					DependsOnTargets="CalculateVersion"
+					>
+		<!-- This code performs a cross-product between @(Projects) and @(PreviousMinorVersions) -->
+		<ItemGroup Condition="'@(MinorVersion)' != '0'">
+			<RequiredPublisherPolicies Include="@(Projects)">
+				<MajorVersion>@(MajorVersion)</MajorVersion>
+				<MinorVersion>%(PreviousMinorVersions.Identity)</MinorVersion>
+			</RequiredPublisherPolicies>
+			<BuildPublisherPoliciesOutputs Include="@(RequiredPublisherPolicies->'release\policy.%(MajorVersion).%(MinorVersion).%(Filename).dll')">
+				<BaseFilename>%(RequiredPublisherPolicies.Filename)</BaseFilename>
+			</BuildPublisherPoliciesOutputs>
+		</ItemGroup>
+	</Target>
+
+
+	<!-- Modify the publisher policy .config files if necessary to support the current version -->
+	<Target Name="PreparePublisherPolicyConfigFiles"
+					DependsOnTargets="CalculateBuildPublisherPoliciesOutputs"
+					>
+		<CallTarget Condition="'@(BuildPublisherPoliciesOutputs)' != ''" Targets="PreparePublisherPolicyConfigFilesCore" />
+	</Target>
+	
+	<Target Name="PreparePublisherPolicyConfigFilesCore">
+		<!-- Create the publisher policy directory if it doesn't exist -->
+		<MakeDir Directories="Source\PublisherPolicies"/>
+
+		<!-- Create them if they don't exist -->
+		<PropertyGroup>
+			<PublisherPolicyText>
+				<![CDATA[
+					<configuration>
+						<runtime>
+							<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+								<dependentAssembly>
+									<assemblyIdentity name="ReplaceName"
+										publicKeyToken="3206e950277c1912"
+										culture="neutral"
+										/>
+									<bindingRedirect oldVersion="ReplaceOldVersion"
+										newVersion="ReplaceNewVersion"/>
+										/>
+								</dependentAssembly>
+							</assemblyBinding>
+						</runtime>
+					</configuration>
+				]]>
+			</PublisherPolicyText>
+		</PropertyGroup>
+		<WriteLinesToFile Condition="!Exists(%(BuildPublisherPoliciesInputs.Identity))"
+											File="@(BuildPublisherPoliciesInputs)"
+											Lines="$(PublisherPolicyText)"
+											/>
+
+		<!-- Determine what the oldVersion property should be -->
+		<PropertyGroup>
+			<PublisherPolicyOldVersion>@(MajorVersion).0.0.0-@(MajorVersion).$(PreviousMinorVersion).65535.65535</PublisherPolicyOldVersion>
+		</PropertyGroup>
+
+		<!-- If the version numbers in the .config files are not correct, update them -->
+		<MSBuild.ExtensionPack.FileSystem.File TaskAction="FilterByContent"
+                                           RegexPattern="newVersion=%22$(FullVersion)%22"
+                                           Files="@(BuildPublisherPoliciesInputs)"
+                                           >
+			<Output TaskParameter="ExcludedFiles" ItemName="PublisherPoliciesWithWrongVersion"/>
+		</MSBuild.ExtensionPack.FileSystem.File>
+
+		<!-- Do the actual name and version updates -->
+		<MSBuild.ExtensionPack.FileSystem.File Condition="'%(PublisherPoliciesWithWrongVersion.Identity)' != ''"
+                                           TaskAction="Replace"
+                                           RegexPattern="name=%22.*%22"
+                                           Replacement="name=%22%(PublisherPoliciesWithWrongVersion.Filename).dll%22"
+                                           Files="@(PublisherPoliciesWithWrongVersion)"
+                                           />
+		<MSBuild.ExtensionPack.FileSystem.File Condition="'@(PublisherPoliciesWithWrongVersion)' != ''"
+                                           TaskAction="Replace"
+                                           RegexPattern="oldVersion=%22.*%22"
+                                           Replacement="oldVersion=%22$(PublisherPolicyOldVersion)%22"
+                                           Files="@(PublisherPoliciesWithWrongVersion)"
+                                           />
+		<MSBuild.ExtensionPack.FileSystem.File Condition="'@(PublisherPoliciesWithWrongVersion)' != ''"
+                                           TaskAction="Replace"
+                                           RegexPattern="newVersion=%22.*%22"
+                                           Replacement="newVersion=%22$(FullVersion)%22"
+                                           Files="@(PublisherPoliciesWithWrongVersion)"
+                                           />
+	</Target>
+	
+	
+	<!-- The MakeVersionList target uses MakeVersionListCore to do the calculation, storing the result in VersionList -->
+	<Target Name="MakeVersionList"
+					DependsOnTargets="MakeVersionListCore"
+					Outputs="@(VersionList)"
+					/>
+	
+	<Target Name="MakeVersionListCore">
+		<!-- If the input is 0, then the result is 0 by itself -->
+		<ItemGroup Condition="'$(Input)' == '0'">
+			<VersionList Include="0"/>
+		</ItemGroup>
+
+		<!-- If we don't know the result yet (i.e., the input is not 0), then calculate the list -->
+		<CallTarget Condition="'@(VersionList)' == ''"
+								Targets="MakeVersionListCoreImpl"
+								/>
+	</Target>
+
+	<Target Name="MakeVersionListCoreImpl">
+		<!-- Subtract 1 from $(Input) -->
+		<MSBuild.ExtensionPack.Science.Maths TaskAction="Subtract"
+																				 Numbers="$(Input);1">
+			<Output TaskParameter="Result" PropertyName="InputMinus1"/>
+		</MSBuild.ExtensionPack.Science.Maths>
+
+		<!-- Determine the list of $(Input) - 1 -->
+		<MSBuild Projects="$(MSBuildProjectFile)"
+						 Targets="MakeVersionList"
+						 Properties="Input=$(InputMinus1)">
+			<Output TaskParameter="TargetOutputs" ItemName="SubResult"/>
+		</MSBuild>
+
+		<!-- Concatenate !($(Input) - 1) with $(Input) to get the result-->
+		<ItemGroup>
+			<VersionList Include="@(SubResult)"/>
+			<VersionList Include="$(Input)"/>
+		</ItemGroup>
+	</Target>
+	
+<!--
+
+TODO:
+. Package into zip (?)
+. Run unit tests on compiled code
+. CheckCopyrights
+. Consider StyleCop
+. Have a "clean" command (and "rebuild")
+
+-->
+
+</Project>
