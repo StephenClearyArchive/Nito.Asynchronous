@@ -34,7 +34,7 @@
                       Added <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference>, an <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> with its own thread.
                   </listItem>
                   <listItem>
-                      Added <codeEntityReference>T:Nito.Async.ScopedSynchronizationContext</codeEntityReference> to temporarily override <codeEntityReference qualifyHint="true">System.Threading.SynchronizationContext.Current</codeEntityReference>.
+                      Added <codeEntityReference>T:Nito.Async.ScopedSynchronizationContext</codeEntityReference> to temporarily override <codeEntityReference qualifyHint="true">P:System.Threading.SynchronizationContext.Current</codeEntityReference>.
                   </listItem>
                   <listItem>
                       Added <codeEntityReference>T:Nito.Async.SynchronizationContextRegister</codeEntityReference> to store and retrieve properties of synchronization context types.

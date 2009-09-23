@@ -40,6 +40,9 @@
             <title>Similarities and Differences with Nito.Async.ActionDispatcher</title>
             <content>
                 <para>
+                    For safety reasons, <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> does not directly expose its underlying <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>.
+                </para>
+                <para>
                     <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> allows actions to be queued by calling <codeEntityReference>M:Nito.Async.ActionThread.Do(System.Action)</codeEntityReference>, <codeEntityReference>Overload:Nito.Async.ActionThread.DoSynchronously</codeEntityReference>, or <codeEntityReference>M:Nito.Async.ActionThread.DoGet``1(System.Func{``0})</codeEntityReference>.
                 </para>
                 <para>
@@ -53,11 +56,12 @@
                 <para>
                     Neither Windows Service applications nor Console applications provide a <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> that is useful to
                     <externalLink>
-                        <linkText>event-based asynchronous components.</linkText>
+                        <linkText>event-based asynchronous components,</linkText>
                         <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
                     </externalLink>
-                    Windows Forms applications may use <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> to define a secondary thread that also has an event loop.
-                    The Windows Presentation Foundation <codeEntityReference qualifyHint="true">T:System.Windows.Threading.Dispatcher</codeEntityReference> class allows multiple event loop threads.
+                    so <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> is useful for those types of applications if they wish to own such components.
+                    Windows Forms applications may use <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> to define a secondary thread that also has an event loop, in addition to the main GUI thread.
+                    The Windows Presentation Foundation <codeEntityReference qualifyHint="true">T:System.Windows.Threading.Dispatcher</codeEntityReference> class allows multiple event loop threads, so WPF applications seldomly require an <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> (though they may use the class if they desire).
                     ASP.NET asynchronous pages may use <codeEntityReference>T:Nito.Async.ActionThread</codeEntityReference> to synchronize event results.
                 </para>
                 <para>

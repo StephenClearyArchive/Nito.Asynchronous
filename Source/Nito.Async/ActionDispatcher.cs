@@ -106,6 +106,7 @@ namespace Nito.Async
         /// </remarks>
         /// <threadsafety>
         /// <para>This method may only be called by one thread at a time.</para>
+        /// <para>If event-based asynchronous components are owned by this ActionDispatcher (or if any actions access <see cref="SynchronizationContext.Current"/>), then this method may only be called by one thread.</para>
         /// </threadsafety>
         /// <example>The following code sample demonstrates how to create an ActionDispatcher, queue an exit action, and run it:
         /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\ConstructQueueExitRun.cs"/>
