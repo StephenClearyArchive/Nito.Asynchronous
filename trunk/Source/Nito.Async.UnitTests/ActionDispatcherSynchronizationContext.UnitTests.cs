@@ -12,7 +12,7 @@ namespace UnitTests
     public class ActionDispatcherSynchronizationContextUnitTests
     {
         [TestMethod]
-        public void ActionDispatcherSyncContext_AfterConstruction_RegistersStandardProperties()
+        public void ActionDispatcherSyncContext_AfterConstruction_RegistersStandardPropertiesExceptSpecificAssociatedThread()
         {
             // Just calling "typeof" isn't sufficient to invoke the static constructor, so we create one
             // Ordinarily, this isn't necessary, since Verify is normally only called on types of initialized objects
@@ -22,7 +22,7 @@ namespace UnitTests
             }
 
             // This will throw an exception if the type doesn't support all Standard properties
-            SynchronizationContextRegister.Verify(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.Standard);
+            SynchronizationContextRegister.Verify(typeof(ActionDispatcherSynchronizationContext), SynchronizationContextProperties.NonReentrantPost | SynchronizationContextProperties.NonReentrantSend | SynchronizationContextProperties.Sequential | SynchronizationContextProperties.Synchronized);
         }
 
         [TestMethod]

@@ -10,8 +10,8 @@ namespace Nito.Async
     /// Provides a synchronization context for a thread running an <see cref="Nito.Async.ActionDispatcher"/>.
     /// </summary>
     /// <remarks>
-    /// <para>Note that most users will not use this class directly. Instances of this class are provided by <see cref="ActionDispatcher"/> and <see cref="ActionThread"/>. This class is consumed by the .NET standard types <see cref="System.ComponentModel.AsyncOperation"/> and <see cref="System.ComponentModel.AsyncOperationManager"/>.</para>
-    /// <para>If only one thread ever runs <see cref="Nito.Async.ActionDispatcher.Run"/> for an <see cref="Nito.Async.ActionDispatcherSynchronizationContext"/>'s <see cref="Nito.Async.ActionDispatcherSynchronizationContext.ActionDispatcher"/>, then that object satisfies all the guarantees specified by <see cref="SynchronizationContextProperties.Standard"/>. This makes it suitable for use with asynchronous objects requiring thread affinity, as long as those objects don't require an STA thread. <see cref="ActionThread"/> satisfies these requirements, so it is capable of owning objects developed with the event-based asynchronous pattern.</para>
+    /// <para>Note that most users will not use this class directly. Instances of this class are provided by <see cref="Nito.Async.ActionDispatcher"/> and <see cref="Nito.Async.ActionThread"/>. This class is consumed by the .NET standard types <see cref="System.ComponentModel.AsyncOperation"/> and <see cref="System.ComponentModel.AsyncOperationManager"/>.</para>
+    /// <para>This type registers itself with <see cref="SynchronizationContextRegister"/> as supporting all of the <see cref="SynchronizationContextProperties.Standard"/> properties. Technically, this is only true if only one thread ever calls <see cref="Nito.Async.ActionDispatcher.Run"/> on its <see cref="Nito.Async.ActionDispatcher"/>.</para>
     /// </remarks>
     public sealed class ActionDispatcherSynchronizationContext : SynchronizationContext
     {

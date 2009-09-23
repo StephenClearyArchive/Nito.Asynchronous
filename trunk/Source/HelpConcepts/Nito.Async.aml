@@ -34,6 +34,40 @@
                 </para>
             </content>
         </section>
+        <section address="UsingNitoAsync">
+            <title>Using Nito.Async</title>
+            <content>
+                <para>
+                    The Nito.Async.dll and Nito.Async.Sockets.dll libraries may be added as references to any .NET project using the .NET framework 3.5 (client subset) or greater. The Nito.Async.xml and Nito.Async.Sockets.xml files provide IntelliSense support for these libraries.
+                </para>
+                <para>
+                    Both libraries may be added to the GAC as well, and referenced from there.
+                </para>
+            </content>
+        </section>
+        <section address="DeployingNitoAsync">
+            <title>Deploying with Nito.Async</title>
+            <content>
+                <para>
+                    If you have a symbol server, the dll and pdb files should be stored in your local symbol server. The pdb files are source indexed to the CodePlex site, so they should be able to pull down the correct source file versions automagically. For more information about setting up a symbol server, see John Robbins' article "Bugslayer: Symbols and Crash Dumps" in MSDN Magazine, June 2002. For more information about source indexing pdbs, see John Robbins' article "Source Server Helps You Kill Bugs Dead...", MSDN Magazine, August 2006. For excellent, detailed coverage of both topics, read John Robbins' book,
+                    <externalLink>
+                        <linkText>Debugging Microsoft .NET 2.0 Applications (Amazon)</linkText>
+                        <linkUri>http://www.amazon.com/gp/product/0735622027?ie=UTF8&amp;tag=stepheclearys-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0735622027</linkUri>
+                    </externalLink>
+                    which is an essential resource for modern .NET developers in spite of the "2.0" in the title.
+                </para>
+                <para>
+                    If you deploy the Nito.Async dll(s) to the GAC, then you should also deploy all the matching dlls starting with "policy", placing them into the GAC. These are publisher policy files, informing the .NET framework that the Nito.Async and Nito.Async.Socket dlls are backwards-compatible. For more information about publisher policy files, see
+                    <externalLink>
+                        <linkText>Redirecting Assembly Versions (MSDN).</linkText>
+                        <linkUri>http://msdn.microsoft.com/en-us/library/7wd6ex19.aspx</linkUri>
+                    </externalLink>
+                </para>
+                <para>
+                    The Nito.Async dlls are both strong-named and Authenticode signed. If you wish to speed startup time and are not deploying to the GAC, you may remove the Authenticode and strong-name signatures.
+                </para>
+            </content>
+        </section>
         <relatedTopics>
         </relatedTopics>
     </developerConceptualDocument>

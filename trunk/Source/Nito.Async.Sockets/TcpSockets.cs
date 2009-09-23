@@ -521,7 +521,7 @@ namespace Nito.Async.Sockets
         /// </summary>
         public ClientTcpSocket()
         {
-            SynchronizationContextRegister.Verify(SynchronizationContextProperties.Standard);
+            SynchronizationContextRegister.Verify(SynchronizationContextProperties.NonReentrantPost | SynchronizationContextProperties.NonReentrantSend | SynchronizationContextProperties.Sequential | SynchronizationContextProperties.Synchronized);
         }
 
         /// <summary>
@@ -1064,7 +1064,7 @@ namespace Nito.Async.Sockets
         /// </summary>
         public ServerTcpSocket()
         {
-            SynchronizationContextRegister.Verify(SynchronizationContextProperties.Standard);
+            SynchronizationContextRegister.Verify(SynchronizationContextProperties.NonReentrantPost | SynchronizationContextProperties.NonReentrantSend | SynchronizationContextProperties.Sequential | SynchronizationContextProperties.Synchronized);
         }
 
         /// <summary>

@@ -138,11 +138,6 @@
     <Modules>
      <Module Name="nito.async.sockets.dll">
       <Messages>
-       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2009-08-29 13:29:18Z">
-        <Issue Name="NoStrongName">
-         <Item>'Nito.Async.Sockets.dll'</Item>
-        </Issue>
-       </Message>
        <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:43:57Z">
         <Issue Name="Assembly">
          <Item>Nito</Item>
@@ -807,11 +802,6 @@
     <Modules>
      <Module Name="nito.async.dll">
       <Messages>
-       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2009-08-29 13:29:18Z">
-        <Issue Name="NoStrongName">
-         <Item>'Nito.Async.dll'</Item>
-        </Issue>
-       </Message>
        <Message Id="Nito" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2009-01-20 19:39:58Z">
         <Issue Name="Assembly">
          <Item>Nito</Item>
@@ -1194,9 +1184,6 @@
    </User>
   </Notes>
   <Rules>
-   <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
-    <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
-   </Rule>
    <Rule TypeName="CallGCSuppressFinalizeCorrectly" Category="Microsoft.Usage" CheckId="CA1816">
     <Resolution Name="NotCalled">Change {0} to call {1}. This will prevent unnecessary finalization of the object once it has been disposed and it has fallen out of scope.</Resolution>
    </Rule>
