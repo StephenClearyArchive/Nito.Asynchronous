@@ -1,63 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <topic id="23096cb3-05f0-4fb8-95e9-2421fc25069f" revisionNumber="1">
-  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <introduction>
-      <para>
-        Nito.Async includes the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> class, which is useful for providing a <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> for non-GUI threads.
-      </para>
-    </introduction>
-    <section address="SectionIntro">
-      <title>Introducing ActionDispatcher</title>
-      <content>
-        <para>
-          An <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> maintains a queue of <codeEntityReference>T:System.Action</codeEntityReference> delegates.
-        </para>
-        <para>
-          A thread may run the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> by calling <codeEntityReference>M:Nito.Async.ActionDispatcher.Run</codeEntityReference>.
-          While running, the thread removes the actions from the action queue, in FIFO order, and executes them one at a time.
-          When the action queue is empty, the thread waits for more actions to be queued; while waiting, the thread is still considered to be "running" the action queue.
-          <codeEntityReference>M:Nito.Async.ActionDispatcher.Run</codeEntityReference> will not return until an <newTerm>exit action</newTerm> is executed.
-        </para>
-        <para>
-          An exit action may be queued to an action queue by calling <codeEntityReference>M:Nito.Async.ActionDispatcher.QueueExit</codeEntityReference>.
-          The exit action may be queued by any thread, including the thread running the queue (i.e., an action can queue the exit action to its own <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>).
-          Exit actions are treated exactly like any other actions; they are executed in FIFO order and do not take precedence over existing actions in the action queue.
-        </para>
-        <para>
-          Because <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> has an associated <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, components written with the
+    <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <introduction>
+            <para>
+                Nito.Async includes the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> class, which is useful for providing a <codeEntityReference>T:System.Threading.SynchronizationContext</codeEntityReference> for non-GUI threads.
+            </para>
+        </introduction>
+        <section address="SectionIntro">
+            <title>Introducing ActionDispatcher</title>
+            <content>
+                <para>
+                    An <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> maintains a queue of <codeEntityReference>T:System.Action</codeEntityReference> delegates.
+                </para>
+                <para>
+                    A thread may run the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> by calling <codeEntityReference>M:Nito.Async.ActionDispatcher.Run</codeEntityReference>.
+                    While running, the thread removes the actions from the action queue, in FIFO order, and executes them one at a time.
+                    When the action queue is empty, the thread waits for more actions to be queued; while waiting, the thread is still considered to be "running" the action queue.
+                    <codeEntityReference>M:Nito.Async.ActionDispatcher.Run</codeEntityReference> will not return until an <newTerm>exit action</newTerm> is executed.
+                </para>
+                <para>
+                    An exit action may be queued to an action queue by calling <codeEntityReference>M:Nito.Async.ActionDispatcher.QueueExit</codeEntityReference>.
+                    The exit action may be queued by any thread, including the thread running the queue (i.e., an action can queue the exit action to its own <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>).
+                    Exit actions are treated exactly like any other actions; they are executed in FIFO order and do not take precedence over existing actions in the action queue.
+                </para>
+                <para>
+                    Because <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> has an associated <codeEntityReference>T:Nito.Async.ActionDispatcherSynchronizationContext</codeEntityReference>, components written with the
+                    <externalLink>
+                        <linkText>event-based asynchronous model</linkText>
+                        <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
+                    </externalLink>
+                    will automatically synchronize their event callbacks with the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> by queueing them as actions.
+                    When the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is used in this manner, only one thread should ever call <codeEntityReference>M:Nito.Async.ActionDispatcher.Run</codeEntityReference>.
+                </para>
+            </content>
+        </section>
+        <section address="SectionWhenToUse">
+            <title>When To Use ActionDispatcher</title>
+            <content>
+                <para>
+                    An <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> should be used whenever a thread needs to respond to events and run an event loop, and an event loop is not already provided.
+                    The Windows Forms framework provides an event loop only for the main thread, and WPF provides event loops for any number of threads.
+                </para>
+                <para>
+                    Windows Services are one area where <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is useful.
+                    It may also be used for child threads of Windows Forms or WPF applications.
+                </para>
+                <para>
+                    <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is framework-agnostic, so it may be used in any type of .NET application that can create threads.
+                </para>
+            </content>
+        </section>
+        <relatedTopics>
+            <link xlink:href="d7dfd17f-4c20-4278-b1bc-f67556965fb7" />
+            <!-- "ActionDispatcher Compared To Dispatcher.xml" -->
             <externalLink>
-              <linkText>event-based asynchronous model</linkText>
-              <linkUri>http://msdn.microsoft.com/en-us/library/wewwczdw.aspx</linkUri>
+                <linkText>WPF Threading Model on MSDN</linkText>
+                <linkUri>http://msdn.microsoft.com/en-us/library/ms741870.aspx</linkUri>
             </externalLink>
-            will automatically synchronize their event callbacks with the <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> by queueing them as actions.
-        </para>
-      </content>
-    </section>
-    <section address="SectionWhenToUse">
-      <title>When To Use ActionDispatcher</title>
-      <content>
-        <para>
-          An <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> should be used whenever a thread needs to respond to events and run an event loop, and an event loop is not already provided.
-          The Windows Forms framework provides an event loop only for the main thread, and WPF provides event loops for any number of threads.
-        </para>
-        <para>
-          Windows Services are one area where <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is useful.
-          It may also be used for child threads of Windows Forms or WPF applications.
-        </para>
-        <para>
-          <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference> is framework-agnostic, so it may be used in any type of .NET application that can create threads.
-        </para>
-      </content>
-    </section>
-    <relatedTopics>
-      <link xlink:href="d7dfd17f-4c20-4278-b1bc-f67556965fb7" />
-      <!-- "ActionDispatcher Compared To Dispatcher.xml" -->
-      <externalLink>
-        <linkText>WPF Threading Model on MSDN</linkText>
-        <linkUri>http://msdn.microsoft.com/en-us/library/ms741870.aspx</linkUri>
-      </externalLink>
-      <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>
-      <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference>
-    </relatedTopics>
-  </developerConceptualDocument>
+            <codeEntityReference>T:Nito.Async.ActionDispatcher</codeEntityReference>
+            <codeEntityReference>T:System.Windows.Threading.Dispatcher</codeEntityReference>
+        </relatedTopics>
+    </developerConceptualDocument>
 </topic>
