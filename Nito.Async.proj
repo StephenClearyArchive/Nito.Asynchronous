@@ -13,10 +13,10 @@
     <Projects Include="Source\Nito.Async\Nito.Async.csproj;Source\Nito.Async.Sockets\Nito.Async.Sockets.csproj"/>
 
     <!-- The certificate to use for strong-name signing (a missing file is not an error; the signing is just skipped instead) -->
-    <StrongNameCertificate Include="C:\Work\Nito\Code Signing\Certificates\Microsoft Strong Name\Microsoft Strong Name Private Key.snk"/>
+    <StrongNameCertificate Include="C:\Work\Nito\_\Code Signing\Certificates\Microsoft Strong Name\Microsoft Strong Name Private Key.snk"/>
 
     <!-- The certificate to use for authenticode signing (a missing file is not an error; the signing is just skipped instead) -->
-    <AuthenticodeCertificate Include="C:\Work\Nito\Code Signing\Certificates\GlobalSign ObjectSign Code Signing Certificate\MSCV-GlobalSign.cer"/>
+    <AuthenticodeCertificate Include="C:\Work\Nito\_\Code Signing\Certificates\GlobalSign ObjectSign Code Signing Certificate\MSCV-GlobalSign.cer"/>
 
     <!-- All sources for the library projects -->
     <Sources Include="Source\Nito.Async\**\*.cs;Source\Nito.Async.Sockets\**\*.cs"/>
@@ -201,7 +201,7 @@
 
     <!-- Authenticode-sign the DLLs if possible -->
     <SignFile Condition="Exists(@(AuthenticodeCertificate))"
-              CertificateThumbprint="47217be8be4e7ae0aba1cce53a704222c216eead"
+              CertificateThumbprint="1c3a940eeefbd34c073282c2efbfe7acf08cc8a1"
               SigningTarget="%(BuildOutputs.Identity)"
               TimestampUrl="http://timestamp.globalsign.com/scripts/timstamp.dll"
               />
