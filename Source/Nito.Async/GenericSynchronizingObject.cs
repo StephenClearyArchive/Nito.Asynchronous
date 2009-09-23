@@ -60,7 +60,13 @@ namespace Nito.Async
                     return this.synchronizationContextThreadId != Thread.CurrentThread.ManagedThreadId;
                 }
 
-                // Unfortunately, there is no way to determine InvokeRequired for contexts without specific associated threads.
+                string name = this.synchronizationContext.GetType().Name;
+                if (name == "SynchronizationContext")
+                {
+                    return !Thread.CurrentThread.IsThreadPoolThread;
+                }
+
+                // Unfortunately, there is no way to determine InvokeRequired for arbitrary contexts without specific associated threads.
                 // So, we just return false. This will result in correct behavior on all existing SynchronizationContext implementations,
                 //  but may cause a cross-threading exception if some weird new SynchronizationContext is invented in the future.
                 return false;
