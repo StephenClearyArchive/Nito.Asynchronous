@@ -12,9 +12,19 @@ namespace Nito.Async
     /// Allows objects that use <see cref="ISynchronizeInvoke"/> (usually using a property named SynchronizingObject) to synchronize to a generic <see cref="SynchronizationContext"/>.
     /// </summary>
     /// <remarks>
+    /// <para>.NET framework types that use <see cref="ISynchronizeInvoke"/> include <see cref="System.Timers.Timer">System.Timers.Timer</see>, <see cref="System.Diagnostics.EventLog">System.Diagnostics.EventLog</see>, <see cref="System.Diagnostics.Process">System.Diagnostics.Process</see>, and <see cref="System.IO.FileSystemWatcher">System.IO.FileSystemWatcher</see>.</para>
     /// <para>This class does not invoke <see cref="SynchronizationContext.OperationStarted"/> or <see cref="SynchronizationContext.OperationCompleted"/>, so for some synchronization contexts, these may need to be called explicitly in addition to using this class. ASP.NET do require them to be called; Windows Forms, WPF, free threads, and <see cref="ActionDispatcher"/> do not.</para>
     /// </remarks>
     /// <threadsafety static="true" instance="true"/>
+    /// <example>
+    /// The following code example demonstrates how GenericSynchronizingObject may be used to redirect FileSystemWatcher events to an ActionThread:
+    /// <code source="..\..\Source\Examples\DocumentationExamples\GenericSynchronizingObject\WithFileSystemWatcher.cs"/>
+    /// The code example above produces this output:
+    /// <code lang="None" title="Output">
+    /// ActionThread thread ID is 3
+    /// FileSystemWriter.Created thread ID is 3
+    /// </code>
+    /// </example>
     public sealed class GenericSynchronizingObject : ISynchronizeInvoke
     {
         /// <summary>
@@ -30,6 +40,15 @@ namespace Nito.Async
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericSynchronizingObject"/> class, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
         /// </summary>
+        /// <example>
+        /// The following code example demonstrates how GenericSynchronizingObject may be used to redirect FileSystemWatcher events to an ActionThread:
+        /// <code source="..\..\Source\Examples\DocumentationExamples\GenericSynchronizingObject\WithFileSystemWatcher.cs"/>
+        /// The code example above produces this output:
+        /// <code lang="None" title="Output">
+        /// ActionThread thread ID is 3
+        /// FileSystemWriter.Created thread ID is 3
+        /// </code>
+        /// </example>
         public GenericSynchronizingObject()
         {
             // (This method is always invoked from a SynchronizationContext thread)
