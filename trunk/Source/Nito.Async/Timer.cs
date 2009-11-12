@@ -189,14 +189,15 @@ namespace Nito.Async
         public bool AutoReset { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating the approximate time the timer will wait before invoking <see cref="Elapsed"/>.
+        /// Gets or sets a value indicating the approximate time the timer will wait before invoking <see cref="Elapsed"/>. The interval must be equal to a positive number of milliseconds in the range [0, <see cref="Int32.MaxValue" qualifyHint="true"/>].
         /// </summary>
         /// <remarks>
-        /// <para>The interval may be 0 milliseconds; in this case, the timer will immediately queue <see cref="Elapsed"/> to be run.</para>
+        /// <para>The interval may be 0; in this case, the timer will immediately queue <see cref="Elapsed"/> to be run.</para>
         /// <para>Setting this property will cancel any pending timeouts and restart the timer with the new interval. This is true even if the new value is the same as the old value.</para>
         /// <para>Setting this property does not modify the <see cref="Enabled"/> property; to set <see cref="Interval"/>, <see cref="AutoReset"/>, and <see cref="Enabled"/> simultaneously, call <see cref="SetSingleShot"/> or <see cref="SetPeriodic"/>.</para>
         /// <para>This may be set from within an <see cref="Elapsed"/> handler.</para>
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">When setting this property, the new interval value is either negative or greater than <see cref="Int32.MaxValue" qualifyHint="true"/> milliseconds.</exception>
         /// <example>The following code sample demonstrates how to construct a single-shot Timer, start it, and handle the <see cref="Elapsed"/> event:
         /// <code source="..\..\Source\Examples\DocumentationExamples\Timer\SingleShotProperties.cs"/>
         /// </example>
@@ -216,6 +217,12 @@ namespace Nito.Async
 
             set
             {
+                // Ensure the interval is in the correct range
+                if (value < TimeSpan.Zero || value > TimeSpan.FromMilliseconds(int.MaxValue))
+                {
+                    throw new ArgumentOutOfRangeException("Interval", "Interval must be equal to a number of milliseconds in the range [0, Int32.MaxValue].");
+                }
+
                 // If we are in the callback, just save the value and return (it will be applied after the callback returns)
                 if (this.inElapsed)
                 {
