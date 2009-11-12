@@ -46,6 +46,60 @@ namespace UnitTests
         }
 
         [TestMethod]
+        public void Timer_SetNegativeInterval_IsRejected()
+        {
+            Exception ex = null;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.DoSynchronously(() =>
+                {
+                    try
+                    {
+                        using (Timer timer = new Timer())
+                        {
+                            timer.Interval = TimeSpan.FromMilliseconds(-1);
+                        }
+                    }
+                    catch (Exception error)
+                    {
+                        ex = error;
+                    }
+                });
+            }
+
+            Assert.IsNotNull(ex, "Timer.Interval should reject negative intervals");
+        }
+
+        [TestMethod]
+        public void Timer_SetTooBigInterval_IsRejected()
+        {
+            Exception ex = null;
+
+            using (ActionThread thread = new ActionThread())
+            {
+                thread.Start();
+                thread.DoSynchronously(() =>
+                {
+                    try
+                    {
+                        using (Timer timer = new Timer())
+                        {
+                            timer.Interval = TimeSpan.FromMilliseconds(((double)int.MaxValue) + 1);
+                        }
+                    }
+                    catch (Exception error)
+                    {
+                        ex = error;
+                    }
+                });
+            }
+
+            Assert.IsNotNull(ex, "Timer.Interval should reject intervals larger than int.MaxValue");
+        }
+
+        [TestMethod]
         public void Timer_AfterSetSingleShot_IsEnabled()
         {
             bool enabled = false;
