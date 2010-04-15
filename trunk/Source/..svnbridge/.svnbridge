@@ -7,4 +7,10 @@ StyleCop.Cache
 PublisherPolicies
 StyleCop.Cache
 TestResults
+</Value></Property><Property><Name>svn:ignore</Name><Value>*.suo
+PublisherPolicies
+StyleCop.Cache
+TestResults
+_ReSharper.Nito.Async
+*.user
 </Value></Property></Properties></ItemProperties>

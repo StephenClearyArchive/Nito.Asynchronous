@@ -1,8 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async", "Nito.Async\Nito.Async.csproj", "{708763ED-7801-4F2C-B103-4FEBD771769A}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{5F70F391-A7C2-4F5B-964D-6093712F68A7}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
@@ -19,19 +17,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Help Concepts", "Help Conce
 		HelpConcepts\Revision History.aml = HelpConcepts\Revision History.aml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sockets", "Sockets", "{413BBD3C-6070-43F7-8C71-80BB00F8A561}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serial Port", "Serial Port", "{701040F3-4784-4CEF-8F7A-09AF306E78A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async", "Nito.Async\Nito.Async.csproj", "{708763ED-7801-4F2C-B103-4FEBD771769A}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.UnitTests", "Nito.Async.UnitTests\Nito.Async.UnitTests.csproj", "{17FC62AB-AE14-4D2E-B838-52E8A1AD88C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FakeWebApplication", "Test.FakeWebApplication\Test.FakeWebApplication.csproj", "{21FEE088-09EC-4848-BD49-488D7AB0669F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FrameworkAssumptions", "Test.FrameworkAssumptions\Test.FrameworkAssumptions.csproj", "{9132CD35-A088-490C-B62F-3E6D0410A9B1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationExamples", "Examples\DocumentationExamples\DocumentationExamples.csproj", "{62CA72F5-310B-4E5E-9EDC-F76C4E157602}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.Sockets", "Nito.Async.Sockets\Nito.Async.Sockets.csproj", "{B412B766-BEC2-407C-A7A1-0E5257511515}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sockets", "Sockets", "{413BBD3C-6070-43F7-8C71-80BB00F8A561}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LowerLevelClient", "Examples\Sockets\LowerLevel\Client\LowerLevelClient.csproj", "{18DBA9C7-0CD8-4733-9789-FC1419AA55D9}"
 EndProject
@@ -44,8 +46,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleServer", "Examples\Sockets\Simple\Server\SimpleServer.csproj", "{18BF051A-9237-48AE-9A35-28B71C1B48BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.SerialPort", "Nito.Async.SerialPort\Nito.Async.SerialPort.csproj", "{5D128DDA-3453-48DA-A30F-7A5A2D8F05F7}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serial Port", "Serial Port", "{701040F3-4784-4CEF-8F7A-09AF306E78A7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "Examples\Serial Port\Chat\Chat.csproj", "{A8E1D99E-89AF-4EDC-A107-B693AA4DAADC}"
 EndProject
@@ -118,9 +118,9 @@ Global
 		{17FC62AB-AE14-4D2E-B838-52E8A1AD88C0} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
 		{21FEE088-09EC-4848-BD49-488D7AB0669F} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
 		{9132CD35-A088-490C-B62F-3E6D0410A9B1} = {5F70F391-A7C2-4F5B-964D-6093712F68A7}
-		{62CA72F5-310B-4E5E-9EDC-F76C4E157602} = {1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}
 		{413BBD3C-6070-43F7-8C71-80BB00F8A561} = {1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}
 		{701040F3-4784-4CEF-8F7A-09AF306E78A7} = {1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}
+		{62CA72F5-310B-4E5E-9EDC-F76C4E157602} = {1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}
 		{18DBA9C7-0CD8-4733-9789-FC1419AA55D9} = {413BBD3C-6070-43F7-8C71-80BB00F8A561}
 		{231998AD-B114-490E-B140-D057515EECF2} = {413BBD3C-6070-43F7-8C71-80BB00F8A561}
 		{82AECF1C-1889-44AD-B96E-8CD44798882E} = {413BBD3C-6070-43F7-8C71-80BB00F8A561}
