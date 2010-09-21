@@ -49,6 +49,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.SerialPort", "Ni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "Examples\Serial Port\Chat\Chat.csproj", "{A8E1D99E-89AF-4EDC-A107-B693AA4DAADC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nito.Communication", "Nito.Communication", "{62CC5324-BE28-4405-B34F-34617AD9F18A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop3", "Desktop3\Desktop3.csproj", "{FD298E34-7EEF-4D87-B35F-708DCB202CA7}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Nito.Async.vsmdi
@@ -110,6 +114,10 @@ Global
 		{A8E1D99E-89AF-4EDC-A107-B693AA4DAADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8E1D99E-89AF-4EDC-A107-B693AA4DAADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8E1D99E-89AF-4EDC-A107-B693AA4DAADC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD298E34-7EEF-4D87-B35F-708DCB202CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD298E34-7EEF-4D87-B35F-708DCB202CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD298E34-7EEF-4D87-B35F-708DCB202CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD298E34-7EEF-4D87-B35F-708DCB202CA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,5 +135,6 @@ Global
 		{AB693CF0-54B8-4E5B-807F-1BDD99C63410} = {413BBD3C-6070-43F7-8C71-80BB00F8A561}
 		{18BF051A-9237-48AE-9A35-28B71C1B48BF} = {413BBD3C-6070-43F7-8C71-80BB00F8A561}
 		{A8E1D99E-89AF-4EDC-A107-B693AA4DAADC} = {701040F3-4784-4CEF-8F7A-09AF306E78A7}
+		{FD298E34-7EEF-4D87-B35F-708DCB202CA7} = {62CC5324-BE28-4405-B34F-34617AD9F18A}
 	EndGlobalSection
 EndGlobal
