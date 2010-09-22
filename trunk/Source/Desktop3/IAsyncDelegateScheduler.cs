@@ -2,7 +2,7 @@
 
 namespace Nito.Communication
 {
-    public interface IAsyncDelegateScheduler : IDisposable
+    public interface IAsyncDelegateScheduler
     {
         void Schedule(Action action);
     }

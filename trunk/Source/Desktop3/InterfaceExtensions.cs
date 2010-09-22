@@ -17,7 +17,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Multiple write operations may be active at the same time.</para>
-        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="IAsyncTcpConnection.Close"/>), or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
         /// <para>Write operations are never cancelled.</para>
         /// </remarks>
         /// <param name="connection">The connection to which to write.</param>
@@ -32,7 +32,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Multiple write operations may be active at the same time.</para>
-        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="IAsyncTcpConnection.Close"/>), or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
         /// <para>Write operations are never cancelled.</para>
         /// <para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
         /// </remarks>
@@ -49,7 +49,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Multiple write operations may be active at the same time.</para>
-        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="IAsyncTcpConnection.Close"/>), or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
         /// <para>Write operations are never cancelled.</para>
         /// </remarks>
         /// <param name="connection">The connection to which to write.</param>
@@ -78,7 +78,7 @@ namespace Nito.Communication
         /// Abortively closes the socket. Once this method is called, no operations will complete.
         /// </summary>
         /// <remarks>
-        /// <para>This method provides the fastest way to reclaim socket resources; however, its use is not generally recommended; <see cref="Close"/> should usually be used instead of this method.</para>
+        /// <para>This method provides the fastest way to reclaim socket resources; however, its use is not generally recommended; <see cref="Close(IAsyncTcpConnection)"/> should usually be used instead of this method.</para>
         /// </remarks>
         public static void AbortiveClose(this IAsyncTcpConnection connection)
         {
@@ -91,7 +91,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>There may be only one connect operation for a client socket, and it must be the first operation performed.</para>
-        /// <para>The connect operation will complete by invoking <see cref="IAsyncClientTcpSocket.ConnectCompleted"/>, unless the socket is closed (<see cref="Close"/>) or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>The connect operation will complete by invoking <see cref="IAsyncClientTcpSocket.ConnectCompleted"/>, unless the socket is closed (<see cref="Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="AbortiveClose"/>).</para>
         /// <para>Connect operations are never cancelled.</para>
         /// </remarks>
         /// <param name="socket">The socket on which to initiate the connect operation.</param>

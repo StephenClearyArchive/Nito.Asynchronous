@@ -20,9 +20,5 @@ namespace Nito.Communication
         {
             this.context.Post(_ => action(), null);
         }
-
-        public void Dispose()
-        {
-        }
     }
 }

@@ -28,7 +28,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>There may be only one accept operation at a time for a listening socket.</para>
-        /// <para>The accept operation will complete by invoking <see cref="AcceptCompleted"/> unless the socket is closed (<see cref="Close"/>).</para>
+        /// <para>The accept operation will complete by invoking <see cref="AcceptCompleted"/> unless the socket is closed (<see cref="InterfaceExtensions.Close(IAsyncServerTcpSocket)"/>).</para>
         /// <para>Accept operations are never cancelled.</para>
         /// </remarks>
         void AcceptAsync();
@@ -38,7 +38,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Accept operations are never cancelled.</para>
-        /// <para>Accept operations will not complete if the socket is closed (<see cref="Close"/>).</para>
+        /// <para>Accept operations will not complete if the socket is closed (<see cref="InterfaceExtensions.Close(IAsyncServerTcpSocket)"/>).</para>
         /// <para>The result of the accept operation is a new socket connection.</para>
         /// <para>Generally, a handler of this event will call <see cref="AcceptAsync"/> to continue accepting other connections.</para>
         /// <para>If an accept operation completes with error, no action is necessary other than continuing to accept other connections.</para>
