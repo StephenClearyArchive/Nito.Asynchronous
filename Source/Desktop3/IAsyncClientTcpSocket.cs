@@ -27,7 +27,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>There may be only one connect operation for a client socket, and it must be the first operation performed.</para>
-        /// <para>The connect operation will complete by invoking <see cref="ConnectCompleted"/>, unless the socket is closed (<see cref="IAsyncTcpConnection.Close"/>) or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>The connect operation will complete by invoking <see cref="ConnectCompleted"/>, unless the socket is closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Connect operations are never cancelled.</para>
         /// </remarks>
         /// <param name="server">The address and port of the server to connect to.</param>
@@ -38,9 +38,9 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Connect operations are never cancelled.</para>
-        /// <para>Connect operations will not complete if the socket is closed (<see cref="IAsyncTcpConnection.Close"/>) or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>Connect operations will not complete if the socket is closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Generally, a handler of this event will call <see cref="IAsyncTcpConnection.ReadAsync"/> to start a read operation immediately.</para>
-        /// <para>If a connect operation completes with error, the socket should be closed (<see cref="IAsyncTcpConnection.Close"/>) or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>If a connect operation completes with error, the socket should be closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// </remarks>
         event Action<AsyncCompletedEventArgs> ConnectCompleted;
     }

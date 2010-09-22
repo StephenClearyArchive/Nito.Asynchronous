@@ -41,6 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncDelegateSchedulerFactory.cs" />
+    <Compile Include="AsyncSocketFactory.cs" />
+    <Compile Include="BeginEndAsyncClientTcpSocket.cs" />
+    <Compile Include="BeginEndAsyncServerChildTcpSocket.cs" />
+    <Compile Include="BeginEndAsyncServerTcpSocket.cs" />
     <Compile Include="CallbackOnErrorsOnly.cs" />
     <Compile Include="IAsyncClientTcpSocket.cs" />
     <Compile Include="IAsyncServerTcpSocket.cs" />

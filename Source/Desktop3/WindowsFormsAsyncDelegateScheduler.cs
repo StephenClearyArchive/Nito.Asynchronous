@@ -17,10 +17,5 @@
         {
             this.control.BeginInvoke(action);
         }
-
-        public void Dispose()
-        {
-            this.control.Dispose();
-        }
     }
 }

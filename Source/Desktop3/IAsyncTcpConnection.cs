@@ -46,7 +46,7 @@ namespace Nito.Communication
         /// If and how long a graceful shutdown will be performed in the background.
         /// </summary>
         /// <remarks>
-        /// <para>Setting LingerState to enabled with a 0 timeout will make all calls to <see cref="Close"/> act as though <see cref="AbortiveClose"/> was called. Generally, this should be left to its default value.</para>
+        /// <para>Setting LingerState to enabled with a 0 timeout will make all calls to <see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/> act as though <see cref="InterfaceExtensions.AbortiveClose"/> was called. Generally, this should be left to its default value.</para>
         /// </remarks>
         LingerOption LingerState { get; set; }
 
@@ -58,7 +58,7 @@ namespace Nito.Communication
         /// <param name="size">The maximum number of bytes that may be written into <paramref name="buffer"/> at <paramref name="offset"/>.</param>
         /// <remarks>
         /// <para>There may be only one active read operation at any time.</para>
-        /// <para>The read operation will complete by invoking <see cref="ReadCompleted"/>, unless the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="Close"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>The read operation will complete by invoking <see cref="ReadCompleted"/>, unless the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Read operations are never cancelled.</para>
         /// </remarks>
         void ReadAsync(byte[] buffer, int offset, int size);
@@ -68,7 +68,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Multiple write operations may be active at the same time.</para>
-        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="IAsyncTcpConnection.Close"/>), or abortively closed (<see cref="IAsyncTcpConnection.AbortiveClose"/>).</para>
+        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Write operations are never cancelled.</para>
         /// <para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
         /// </remarks>
@@ -92,12 +92,12 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Read operations are never cancelled.</para>
-        /// <para>Read operations will not complete if the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="Close"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>Read operations will not complete if the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Generally, a handler of this event will call <see cref="ReadAsync"/> to start another read operation immediately.</para>
-        /// <para>If a read operation completes with error, the socket should be closed (<see cref="Close"/>) or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>If a read operation completes with error, the socket should be closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>The result of a read operation is the number of bytes read from the socket.</para>
         /// <para>Note that a successful read operation may complete even though it only read part of the buffer.</para>
-        /// <para>A successful read operation may also complete with a 0-length read; this indicates the remote side has gracefully closed. The appropriate response to a 0-length read is to <see cref="Close"/> the socket.</para>
+        /// <para>A successful read operation may also complete with a 0-length read; this indicates the remote side has gracefully closed. The appropriate response to a 0-length read is to <see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/> the socket.</para>
         /// </remarks>
         event Action<AsyncResultEventArgs<int>> ReadCompleted;
 
@@ -106,9 +106,9 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Write operations are never cancelled.</para>
-        /// <para>Write operations will not complete if the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="Close"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>Write operations will not complete if the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Note that even though a write operation completes, the data may not have been received by the remote end. However, it is still important to handle <see cref="WriteCompleted"/>, because errors may be reported.</para>
-        /// <para>If a write operation completes with error, the socket should be closed (<see cref="Close"/>) or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>If a write operation completes with error, the socket should be closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// </remarks>
         event Action<AsyncCompletedEventArgs> WriteCompleted;
 
@@ -117,7 +117,7 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Shutdown operations are never cancelled.</para>
-        /// <para>Generally, a shutdown completing with error is handled the same as a shutdown completing successfully: the normal response in both situations is to <see cref="Close"/> the socket.</para>
+        /// <para>Generally, a shutdown completing with error is handled the same as a shutdown completing successfully: the normal response in both situations is to <see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/> the socket.</para>
         /// </remarks>
         event Action<AsyncCompletedEventArgs> ShutdownCompleted;
     }
