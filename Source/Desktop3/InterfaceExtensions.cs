@@ -71,6 +71,7 @@
             connection.Dispose();
         }
 
+#if !SILVERLIGHT
         /// <summary>
         /// Abortively closes the socket. Once this method is called, no operations will complete.
         /// </summary>
@@ -82,6 +83,7 @@
             connection.LingerState = new LingerOption(true, 0);
             connection.Dispose();
         }
+#endif
 
         /// <summary>
         /// Initiates a connect operation.

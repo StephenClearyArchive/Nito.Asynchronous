@@ -36,10 +36,12 @@
             this.state = new SocketStateMachine();
         }
 
+#if !SILVERLIGHT
         public EndPoint LocalEndPoint
         {
             get { return this.socket.LocalEndPoint; }
         }
+#endif
 
         public EndPoint RemoteEndPoint
         {
@@ -52,12 +54,15 @@
             set { this.socket.NoDelay = value; }
         }
 
+#if !SILVERLIGHT
         public LingerOption LingerState
         {
             get { return this.socket.LingerState; }
             set { this.socket.LingerState = value; }
         }
+#endif
 
+#if !SILVERLIGHT
         /// <summary>
         /// Binds to a local endpoint before connecting. This method is not normally used.
         /// </summary>
@@ -69,6 +74,7 @@
         {
             this.socket.Bind(bindTo);
         }
+#endif
 
         public void ConnectAsync(EndPoint server)
         {
@@ -143,6 +149,7 @@
             }
         }
 
+#if !SILVERLIGHT
         public void ShutdownAsync()
         {
             this.state.Close();
@@ -164,13 +171,16 @@
             };
             this.socket.DisconnectAsync(args);
         }
+#endif
 
         public void Dispose()
         {
             this.ConnectCompleted = null;
             this.ReadCompleted = null;
             this.WriteCompleted = null;
+#if !SILVERLIGHT
             this.ShutdownCompleted = null;
+#endif
             this.state.Close();
             this.socket.Close();
         }
@@ -201,6 +211,7 @@
             }
         }
 
+#if !SILVERLIGHT
         private void OnShutdownComplete(Exception ex = null)
         {
             if (this.ShutdownCompleted != null)
@@ -208,6 +219,7 @@
                 this.ShutdownCompleted(new AsyncCompletedEventArgs(ex, false, null));
             }
         }
+#endif
 
         private void Write(byte[] buffer, int offset, int size, object state)
         {
@@ -309,6 +321,8 @@
 
         public event Action<AsyncCompletedEventArgs> WriteCompleted;
 
+#if !SILVERLIGHT
         public event Action<AsyncCompletedEventArgs> ShutdownCompleted;
+#endif
     }
 }

@@ -12,6 +12,7 @@
     /// </remarks>
     public interface IAsyncClientTcpSocket : IAsyncTcpConnection
     {
+#if !SILVERLIGHT
         /// <summary>
         /// Binds to a local endpoint. This method is not normally used.
         /// </summary>
@@ -20,6 +21,7 @@
         /// </remarks>
         /// <param name="bindTo">The local endpoint.</param>
         void Bind(EndPoint bindTo);
+#endif
 
         /// <summary>
         /// Initiates a connect operation.
