@@ -5,7 +5,6 @@
 namespace Nito.Async
 {
     using System;
-    using System.Security.Permissions;
     using System.Threading;
 
     /// <summary>
@@ -17,7 +16,6 @@ namespace Nito.Async
         /// Initializes a new instance of the <see cref="ScopedSynchronizationContext"/> class, replacing the current synchronization context with <paramref name="replacementContext"/>.
         /// </summary>
         /// <param name="replacementContext">The context to temporarily install as the current synchronization context. This may ne null.</param>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.ControlEvidence | SecurityPermissionFlag.ControlPolicy)]
         public ScopedSynchronizationContext(SynchronizationContext replacementContext)
         {
             this.PreviousContext = SynchronizationContext.Current;
