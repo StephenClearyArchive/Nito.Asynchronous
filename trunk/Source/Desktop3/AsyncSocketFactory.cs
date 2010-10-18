@@ -2,14 +2,13 @@
 {
     public static class AsyncSocketFactory
     {
+#if !SILVERLIGHT
         public static IAsyncServerTcpSocket CreateServer()
         {
-#if SILVERLIGHT
             return new EventArgsAsyncServerTcpSocket(AsyncDelegateSchedulerFactory.Create());
-#else
             return new BeginEndAsyncServerTcpSocket(AsyncDelegateSchedulerFactory.Create());
-#endif
         }
+#endif
 
         public static IAsyncClientTcpSocket CreateClient()
         {

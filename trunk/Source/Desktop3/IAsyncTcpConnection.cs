@@ -24,10 +24,12 @@
     /// </remarks>
     public interface IAsyncTcpConnection : IDisposable
     {
+#if !SILVERLIGHT
         /// <summary>
         /// Gets the endpoint on this side of the connection.
         /// </summary>
         EndPoint LocalEndPoint { get; }
+#endif
 
         /// <summary>
         /// Gets the endpoint on the remote side of the connection.
@@ -42,6 +44,7 @@
         /// </remarks>
         bool NoDelay { get; set; }
 
+#if !SILVERLIGHT
         /// <summary>
         /// Gets or sets a value indicating whether (and how long) a graceful shutdown will be performed in the background.
         /// </summary>
@@ -49,6 +52,7 @@
         /// <para>Setting LingerState to enabled with a 0 timeout will make all calls to <see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/> act as though <see cref="InterfaceExtensions.AbortiveClose"/> was called. Generally, this should be left to its default value.</para>
         /// </remarks>
         LingerOption LingerState { get; set; }
+#endif
 
         /// <summary>
         /// Initiates a read operation.
@@ -102,6 +106,7 @@
         /// </remarks>
         void WriteAsync(IList<ArraySegment<byte>> buffers, object state = null);
 
+#if !SILVERLIGHT
         /// <summary>
         /// Initiates a shutdown operation. Once a shutdown operation is initiated, only the shutdown operation will complete.
         /// </summary>
@@ -110,6 +115,7 @@
         /// <para>Shutdown operations are never cancelled.</para>
         /// </remarks>
         void ShutdownAsync();
+#endif
 
         /// <summary>
         /// Indicates the completion of a read operation, either successfully or with error.
@@ -136,6 +142,7 @@
         /// </remarks>
         event Action<AsyncCompletedEventArgs> WriteCompleted;
 
+#if !SILVERLIGHT
         /// <summary>
         /// Indicates the completion of a shutdown operation, either successfully or with error.
         /// </summary>
@@ -144,5 +151,6 @@
         /// <para>Generally, a shutdown completing with error is handled the same as a shutdown completing successfully: the normal response in both situations is to <see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/> the socket.</para>
         /// </remarks>
         event Action<AsyncCompletedEventArgs> ShutdownCompleted;
+#endif
     }
 }
