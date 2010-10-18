@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace Nito.Communication
 {
@@ -7,12 +10,12 @@ namespace Nito.Communication
 
     using Async;
 
-    public sealed class BeginEndAsyncServerTcpSocket : IAsyncServerTcpSocket
+    public sealed class EventArgsAsyncServerTcpSocket : IAsyncServerTcpSocket
     {
         private readonly IAsyncDelegateScheduler scheduler;
         private readonly Socket socket;
 
-        public BeginEndAsyncServerTcpSocket(IAsyncDelegateScheduler scheduler)
+        public EventArgsAsyncServerTcpSocket(IAsyncDelegateScheduler scheduler)
         {
             this.scheduler = scheduler;
             this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -37,18 +40,19 @@ namespace Nito.Communication
 
         public void AcceptAsync()
         {
-            this.socket.BeginAccept(asyncResult =>
+            var args = new SocketAsyncEventArgs();
+            args.Completed += (_, __) =>
             {
-                try
+                var error = args.GetError();
+                if (error == null)
                 {
-                    var socket = this.socket.EndAccept(asyncResult);
-                    this.scheduler.Schedule(() => this.OnAcceptComplete(result:new BeginEndAsyncServerChildTcpSocket(this.scheduler, socket)));
+                    this.scheduler.Schedule(() => this.OnAcceptComplete(result: new EventArgsAsyncServerChildTcpSocket(this.scheduler, args.AcceptSocket)));
                 }
-                catch (Exception ex)
+                else
                 {
-                    this.scheduler.Schedule(() => this.OnAcceptComplete(ex:ex));
+                    this.scheduler.Schedule(() => this.OnAcceptComplete(ex: error));
                 }
-            }, null);
+            };
         }
 
         private void OnAcceptComplete(Exception ex = null, IAsyncTcpConnection result = null)
