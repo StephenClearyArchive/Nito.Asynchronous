@@ -5,7 +5,6 @@
 #if !SILVERLIGHT
         public static IAsyncServerTcpSocket CreateServer()
         {
-            return new EventArgsAsyncServerTcpSocket(AsyncDelegateSchedulerFactory.Create());
             return new BeginEndAsyncServerTcpSocket(AsyncDelegateSchedulerFactory.Create());
         }
 #endif
