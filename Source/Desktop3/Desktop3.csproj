@@ -47,6 +47,7 @@
     <Compile Include="BeginEndAsyncServerChildTcpSocket.cs" />
     <Compile Include="BeginEndAsyncServerTcpSocket.cs" />
     <Compile Include="CallbackOnErrorsOnly.cs" />
+    <Compile Include="AsyncTcpConnectionBase.cs" />
     <Compile Include="IAsyncClientTcpSocket.cs" />
     <Compile Include="IAsyncServerTcpSocket.cs" />
     <Compile Include="IAsyncTcpConnection.cs" />
@@ -55,6 +56,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SynchronizationContextAsyncDelegateScheduler.cs" />
     <Compile Include="WindowsFormsAsyncDelegateScheduler.cs" />
+    <Compile Include="SocketStateMachine.cs" />
+    <Compile Include="WriteRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nito.Async\Nito.Async.csproj">

@@ -1,14 +1,14 @@
 ﻿
 namespace Nito.Communication
 {
+    using System;
     using System.Net;
     using System.Net.Sockets;
 
     public static class InterfaceExtensions
     {
         /// <summary>
-        /// The traditional maximum value was 5, according to Stevens' TCP/IP vol 1; the current default is several hundred, but this is rarely
-        /// necessary, so we use a value of 2.
+        /// The traditional maximum value was 5, according to Stevens' TCP/IP vol 1; the current maximum is several hundred, but this is rarely necessary, so we use a value of 2.
         /// </summary>
         private const int DefaultBacklog = 2;
 
@@ -47,18 +47,16 @@ namespace Nito.Communication
         /// <summary>
         /// Initiates a write operation.
         /// </summary>
-        /// <remarks>
-        /// <para>Multiple write operations may be active at the same time.</para>
-        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="AbortiveClose"/>).</para>
-        /// <para>Write operations are never cancelled.</para>
-        /// </remarks>
         /// <param name="connection">The connection to which to write.</param>
-        /// <param name="buffer">The buffer containing the data to write to the socket.</param>
-        /// <param name="offset">The offset of the data within <paramref name="buffer"/>.</param>
-        /// <param name="size">The number of bytes of data, at <paramref name="offset"/> within <paramref name="buffer"/>.</param>
-        public static void WriteAsync(this IAsyncTcpConnection connection, byte[] buffer, int offset, int size)
+        /// <param name="buffers">The buffers containing the data to write to the socket.</param>
+        /// <remarks>
+        /// 	<para>Multiple write operations may be active at the same time.</para>
+        /// 	<para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// 	<para>Write operations are never cancelled.</para>
+        /// </remarks>
+        public static void WriteAsync(this IAsyncTcpConnection connection, params ArraySegment<byte>[] buffers)
         {
-            connection.WriteAsync(buffer, offset, size, null);
+            connection.WriteAsync(buffers, null);
         }
 
         /// <summary>
