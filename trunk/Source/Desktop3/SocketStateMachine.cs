@@ -6,7 +6,7 @@ namespace Nito.Communication
     /// <summary>
     /// A state machine for an asynchronous TCP/IP socket.
     /// </summary>
-    public sealed class SocketStateMachine
+    internal sealed class SocketStateMachine
     {
         /// <summary>
         /// The write request queue.

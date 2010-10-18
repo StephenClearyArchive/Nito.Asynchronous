@@ -6,7 +6,7 @@
     /// <summary>
     /// A write request for a socket.
     /// </summary>
-    public sealed class WriteRequest
+    internal sealed class WriteRequest
     {
         private readonly IList<ArraySegment<byte>> buffers;
         private readonly byte[] buffer;

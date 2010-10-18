@@ -8,18 +8,59 @@ namespace Nito.Communication
     using System.Net;
     using System.Net.Sockets;
 
+    using Async;
+
     /// <summary>
     /// An asynchronous client TCP/IP socket that uses the <c>Begin*/End*</c> socket functions to work asynchronously.
     /// </summary>
-    public sealed class BeginEndAsyncClientTcpSocket : AsyncTcpConnectionBase
+    public sealed class BeginEndAsyncClientTcpSocket : IAsyncTcpConnection
     {
+        /// <summary>
+        /// The delegate scheduler used to synchronize callbacks.
+        /// </summary>
+        private readonly IAsyncDelegateScheduler scheduler;
+
+        /// <summary>
+        /// The underlying socket.
+        /// </summary>
+        private readonly Socket socket;
+
+        /// <summary>
+        /// The state machine for the socket.
+        /// </summary>
+        private readonly SocketStateMachine state;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BeginEndAsyncClientTcpSocket"/> class with the specified delegate scheduler.
         /// </summary>
         /// <param name="scheduler">The delegate scheduler used to synchronize callbacks.</param>
         public BeginEndAsyncClientTcpSocket(IAsyncDelegateScheduler scheduler)
-            : base(scheduler, new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
         {
+            this.scheduler = scheduler;
+            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            this.state = new SocketStateMachine();
+        }
+
+        public IPEndPoint LocalEndPoint
+        {
+            get { return (IPEndPoint)this.socket.LocalEndPoint; }
+        }
+
+        public IPEndPoint RemoteEndPoint
+        {
+            get { return (IPEndPoint)this.socket.RemoteEndPoint; }
+        }
+
+        public bool NoDelay
+        {
+            get { return this.socket.NoDelay; }
+            set { this.socket.NoDelay = value; }
+        }
+
+        public LingerOption LingerState
+        {
+            get { return this.socket.LingerState; }
+            set { this.socket.LingerState = value; }
         }
 
         /// <summary>
@@ -32,14 +73,6 @@ namespace Nito.Communication
         public void Bind(IPEndPoint bindTo)
         {
             this.socket.Bind(bindTo);
-        }
-
-        private void OnConnectComplete(Exception ex = null)
-        {
-            if (this.ConnectCompleted != null)
-            {
-                this.ConnectCompleted(new AsyncCompletedEventArgs(ex, false, null));
-            }
         }
 
         /// <summary>
@@ -81,7 +114,7 @@ namespace Nito.Communication
         /// 	<para>The read operation will complete by invoking <see cref="ReadCompleted"/>, unless the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// 	<para>Read operations are never cancelled.</para>
         /// </remarks>
-        public override void ReadAsync(byte[] buffer, int offset, int size)
+        public void ReadAsync(byte[] buffer, int offset, int size)
         {
             this.state.Read();
             this.socket.BeginReceive(
@@ -102,6 +135,123 @@ namespace Nito.Communication
                     }
                 },
                 null);
+        }
+
+        /// <summary>
+        /// Initiates a write operation.
+        /// </summary>
+        /// <param name="buffer">The buffer containing the data to write to the socket.</param>
+        /// <param name="offset">The offset of the data within <paramref name="buffer"/>.</param>
+        /// <param name="size">The number of bytes of data, at <paramref name="offset"/> within <paramref name="buffer"/>.</param>
+        /// <param name="state">The context, which is passed to <see cref="WriteCompleted"/> as <c>e.UserState</c>.</param>
+        /// <remarks>
+        /// 	<para>Multiple write operations may be active at the same time.</para>
+        /// 	<para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// 	<para>Write operations are never cancelled.</para>
+        /// 	<para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
+        /// </remarks>
+        public void WriteAsync(byte[] buffer, int offset, int size, object state)
+        {
+            if (this.state.Write(new WriteRequest(buffer, offset, size, state)))
+            {
+                this.Write(buffer, offset, size, state);
+            }
+        }
+
+        /// <summary>
+        /// Initiates a write operation.
+        /// </summary>
+        /// <param name="buffers">The buffers containing the data to write to the socket.</param>
+        /// <param name="state">The context, which is passed to <see cref="WriteCompleted"/> as <c>e.UserState</c>.</param>
+        /// <remarks>
+        /// 	<para>Multiple write operations may be active at the same time.</para>
+        /// 	<para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// 	<para>Write operations are never cancelled.</para>
+        /// 	<para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
+        /// </remarks>
+        public void WriteAsync(IList<ArraySegment<byte>> buffers, object state = null)
+        {
+            if (this.state.Write(new WriteRequest(buffers, state)))
+            {
+                this.Write(buffers, state);
+            }
+        }
+
+        /// <summary>
+        /// Initiates a shutdown operation. Once a shutdown operation is initiated, only the shutdown operation will complete.
+        /// </summary>
+        /// <remarks>
+        /// 	<para>The shutdown operation will complete by invoking <see cref="ShutdownCompleted"/>.</para>
+        /// 	<para>Shutdown operations are never cancelled.</para>
+        /// </remarks>
+        public void ShutdownAsync()
+        {
+            this.state.Close();
+            this.ConnectCompleted = null;
+            this.ReadCompleted = null;
+            this.WriteCompleted = null;
+            this.socket.BeginDisconnect(false, asyncResult =>
+            {
+                try
+                {
+                    this.socket.EndDisconnect(asyncResult);
+                    this.scheduler.Schedule(() => this.OnShutdownComplete());
+                }
+                catch (Exception ex)
+                {
+                    this.scheduler.Schedule(() => this.OnShutdownComplete(ex));
+                }
+            }, null);
+        }
+
+        /// <summary>
+        /// Closes the listening socket immediately and frees all resources.
+        /// </summary>
+        /// <remarks>
+        /// <para>No events will be raised once this method is called.</para>
+        /// </remarks>
+        public void Dispose()
+        {
+            this.ConnectCompleted = null;
+            this.ReadCompleted = null;
+            this.WriteCompleted = null;
+            this.ShutdownCompleted = null;
+            this.state.Close();
+            this.socket.Close();
+        }
+
+        private void OnConnectComplete(Exception ex = null)
+        {
+            if (this.ConnectCompleted != null)
+            {
+                this.ConnectCompleted(new AsyncCompletedEventArgs(ex, false, null));
+            }
+        }
+
+        private void OnReadComplete(Exception ex = null, int result = 0)
+        {
+            this.state.ReadComplete();
+            if (this.ReadCompleted != null)
+            {
+                this.ReadCompleted(ex == null ? new AsyncResultEventArgs<int>(result) : new AsyncResultEventArgs<int>(ex));
+            }
+        }
+
+        private void OnWriteComplete(object state, Exception ex = null)
+        {
+            this.ContinueWriting();
+            if (this.WriteCompleted != null)
+            {
+                this.WriteCompleted(new AsyncCompletedEventArgs(ex, false, state));
+            }
+        }
+
+        private void OnShutdownComplete(Exception ex = null)
+        {
+            if (this.ShutdownCompleted != null)
+            {
+                this.ShutdownCompleted(new AsyncCompletedEventArgs(ex, false, null));
+            }
         }
 
         private void Write(byte[] buffer, int offset, int size, object state)
@@ -154,13 +304,21 @@ namespace Nito.Communication
                     try
                     {
                         var result = this.socket.EndSend(asyncResult);
-                        if (result < buffers.Sum(x => x.Count))
+                        var remainingBuffers = SocketHelpers.RemainingBuffers(buffers, result);
+                        if (remainingBuffers.Count != 0)
                         {
-                            // TODO: retry with unsent buffers
-                            List<ArraySegment<byte>> remainingBuffers;
-
-
-
+                            this.scheduler.Schedule(
+                                () =>
+                                {
+                                    try
+                                    {
+                                        this.Write(remainingBuffers, state);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        this.OnWriteComplete(state, ex);
+                                    }
+                                });
                         }
                         else
                         {
@@ -175,7 +333,7 @@ namespace Nito.Communication
                 state);
         }
 
-        protected override void ContinueWriting()
+        private void ContinueWriting()
         {
             var nextWrite = this.state.WriteComplete();
             if (nextWrite == null)
@@ -194,83 +352,6 @@ namespace Nito.Communication
         }
 
         /// <summary>
-        /// Initiates a write operation.
-        /// </summary>
-        /// <param name="buffer">The buffer containing the data to write to the socket.</param>
-        /// <param name="offset">The offset of the data within <paramref name="buffer"/>.</param>
-        /// <param name="size">The number of bytes of data, at <paramref name="offset"/> within <paramref name="buffer"/>.</param>
-        /// <param name="state">The context, which is passed to <see cref="WriteCompleted"/> as <c>e.UserState</c>.</param>
-        /// <remarks>
-        /// 	<para>Multiple write operations may be active at the same time.</para>
-        /// 	<para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
-        /// 	<para>Write operations are never cancelled.</para>
-        /// 	<para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
-        /// </remarks>
-        public override void WriteAsync(byte[] buffer, int offset, int size, object state)
-        {
-            if (this.state.Write(new WriteRequest(buffer, offset, size, state)))
-            {
-                this.Write(buffer, offset, size, state);
-            }
-        }
-
-        /// <summary>
-        /// Initiates a write operation.
-        /// </summary>
-        /// <param name="buffers">The buffers containing the data to write to the socket.</param>
-        /// <param name="state">The context, which is passed to <see cref="WriteCompleted"/> as <c>e.UserState</c>.</param>
-        /// <remarks>
-        /// 	<para>Multiple write operations may be active at the same time.</para>
-        /// 	<para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
-        /// 	<para>Write operations are never cancelled.</para>
-        /// 	<para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
-        /// </remarks>
-        public override void WriteAsync(IList<ArraySegment<byte>> buffers, object state = null)
-        {
-            if (this.state.Write(new WriteRequest(buffers, state)))
-            {
-                this.Write(buffers, state);
-            }
-        }
-
-        /// <summary>
-        /// Initiates a shutdown operation. Once a shutdown operation is initiated, only the shutdown operation will complete.
-        /// </summary>
-        /// <remarks>
-        /// 	<para>The shutdown operation will complete by invoking <see cref="ShutdownCompleted"/>.</para>
-        /// 	<para>Shutdown operations are never cancelled.</para>
-        /// </remarks>
-        public override void ShutdownAsync()
-        {
-            this.ConnectCompleted = null;
-            this.PrepareForShutdown();
-            this.socket.BeginDisconnect(false, asyncResult =>
-            {
-                try
-                {
-                    this.socket.EndDisconnect(asyncResult);
-                    this.scheduler.Schedule(() => this.OnShutdownComplete());
-                }
-                catch (Exception ex)
-                {
-                    this.scheduler.Schedule(() => this.OnShutdownComplete(ex));
-                }
-            }, null);
-        }
-
-        /// <summary>
-        /// Closes the listening socket immediately and frees all resources.
-        /// </summary>
-        /// <remarks>
-        /// <para>No events will be raised once this method is called.</para>
-        /// </remarks>
-        public override void Dispose()
-        {
-            this.ConnectCompleted = null;
-            base.Dispose();
-        }
-
-        /// <summary>
         /// Indicates the completion of a connect operation, either successfully or with error.
         /// </summary>
         /// <remarks>
@@ -280,5 +361,11 @@ namespace Nito.Communication
         /// 	<para>If a connect operation completes with error, the socket should be closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// </remarks>
         public event Action<AsyncCompletedEventArgs> ConnectCompleted;
+
+        public event Action<AsyncResultEventArgs<int>> ReadCompleted;
+
+        public event Action<AsyncCompletedEventArgs> WriteCompleted;
+
+        public event Action<AsyncCompletedEventArgs> ShutdownCompleted;
     }
 }

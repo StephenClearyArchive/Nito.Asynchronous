@@ -42,27 +42,23 @@ namespace Nito.Communication
                 try
                 {
                     var socket = this.socket.EndAccept(asyncResult);
-                    this.scheduler.Schedule(() =>
-                    {
-                        if (this.AcceptCompleted != null)
-                        {
-                            this.AcceptCompleted(new AsyncResultEventArgs<IAsyncTcpConnection>(new BeginEndAsyncServerChildTcpSocket(this.scheduler, socket)));
-                        }
-                    });
+                    this.scheduler.Schedule(() => this.OnAcceptComplete(result:new BeginEndAsyncServerChildTcpSocket(this.scheduler, socket)));
                 }
                 catch (Exception ex)
                 {
-                    this.scheduler.Schedule(() =>
-                    {
-                        if (this.AcceptCompleted != null)
-                        {
-                            this.AcceptCompleted(new AsyncResultEventArgs<IAsyncTcpConnection>(ex));
-                        }
-                    });
+                    this.scheduler.Schedule(() => this.OnAcceptComplete(ex:ex));
                 }
             }, null);
         }
 
         public event Action<AsyncResultEventArgs<IAsyncTcpConnection>> AcceptCompleted;
+
+        private void OnAcceptComplete(Exception ex = null, IAsyncTcpConnection result = null)
+        {
+            if (this.AcceptCompleted != null)
+            {
+                this.AcceptCompleted(ex == null ? new AsyncResultEventArgs<IAsyncTcpConnection>(result) : new AsyncResultEventArgs<IAsyncTcpConnection>(ex));
+            }
+        }
     }
 }
