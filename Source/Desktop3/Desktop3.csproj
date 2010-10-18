@@ -47,7 +47,7 @@
     <Compile Include="BeginEndAsyncServerChildTcpSocket.cs" />
     <Compile Include="BeginEndAsyncServerTcpSocket.cs" />
     <Compile Include="CallbackOnErrorsOnly.cs" />
-    <Compile Include="AsyncTcpConnectionBase.cs" />
+    <Compile Include="SocketHelpers.cs" />
     <Compile Include="IAsyncClientTcpSocket.cs" />
     <Compile Include="IAsyncServerTcpSocket.cs" />
     <Compile Include="IAsyncTcpConnection.cs" />
