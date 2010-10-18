@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
+    using System;
+
     /// <summary>
     /// A type that asynchronously schedules a delegate to execute in a different context.
     /// </summary>

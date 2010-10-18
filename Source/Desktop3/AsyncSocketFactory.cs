@@ -1,17 +1,23 @@
-﻿using System;
-
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
     public static class AsyncSocketFactory
     {
         public static IAsyncServerTcpSocket CreateServer()
         {
-            throw new NotImplementedException();
+#if SILVERLIGHT
+            return new EventArgsAsyncServerTcpSocket(AsyncDelegateSchedulerFactory.Create());
+#else
+            return new BeginEndAsyncServerTcpSocket(AsyncDelegateSchedulerFactory.Create());
+#endif
         }
 
         public static IAsyncClientTcpSocket CreateClient()
         {
-            throw new NotImplementedException();
+#if SILVERLIGHT
+            return new EventArgsAsyncClientTcpSocket(AsyncDelegateSchedulerFactory.Create());
+#else
+            return new BeginEndAsyncClientTcpSocket(AsyncDelegateSchedulerFactory.Create());
+#endif
         }
     }
 }

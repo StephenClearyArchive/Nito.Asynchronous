@@ -1,5 +1,4 @@
-﻿
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
     using System;
     using System.Net;
