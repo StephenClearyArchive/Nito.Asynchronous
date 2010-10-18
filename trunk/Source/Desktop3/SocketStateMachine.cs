@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
+    using System;
+    using System.Collections.Generic;
+
     /// <summary>
     /// A state machine for an asynchronous TCP/IP socket.
     /// </summary>

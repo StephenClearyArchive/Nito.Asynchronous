@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
+    using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Net;
     using System.Net.Sockets;

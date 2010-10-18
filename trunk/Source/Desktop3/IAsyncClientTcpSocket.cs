@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
+    using System;
     using System.ComponentModel;
     using System.Net;
 

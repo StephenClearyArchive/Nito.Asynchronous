@@ -1,5 +1,4 @@
-﻿
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
     /// <summary>
     /// A factory class for <see cref="IAsyncDelegateScheduler"/> types.

@@ -1,13 +1,9 @@
-﻿using System;
-
-namespace Nito.Communication
+﻿namespace Nito.Communication
 {
+    using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Linq;
-    using System.Net;
     using System.Net.Sockets;
-    using Async;
 
     internal static class SocketHelpers
     {
