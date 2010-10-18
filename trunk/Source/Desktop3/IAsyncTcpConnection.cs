@@ -2,6 +2,7 @@
 
 namespace Nito.Communication
 {
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.Net;
     using System.Net.Sockets;
@@ -14,7 +15,7 @@ namespace Nito.Communication
     /// <remarks>
     /// <para>No operations are ever cancelled. During a socket shutdown, some operations may not complete; see below for details.</para>
     /// <para>Only one read operation should be active on a data socket at any time.</para>
-    /// <para>Multiple write operations may be active on a data socket; the data will be written to the socket in order.</para>
+    /// <para>Multiple write operations may be active at the same time.</para>
     /// <para>Disconnecting a socket may be done one of three ways: shutting down a socket, closing a socket, and abortively closing a socket.
     /// <para>Shutting down a socket performs a graceful disconnect. Once a socket starts shutting down, no read or write operations will complete; only the shutting down operation will complete.</para>
     /// <para>Closing a socket performs a graceful disconnect in the background. Once a socket is closed, no operations will complete.</para>
@@ -25,17 +26,17 @@ namespace Nito.Communication
     public interface IAsyncTcpConnection : IDisposable
     {
         /// <summary>
-        /// Returns the IP address and port on this side of the connection.
+        /// Gets the IP address and port on this side of the connection.
         /// </summary>
         IPEndPoint LocalEndPoint { get; }
 
         /// <summary>
-        /// Returns the IP address and port on the remote side of the connection.
+        /// Gets the IP address and port on the remote side of the connection.
         /// </summary>
         IPEndPoint RemoteEndPoint { get; }
 
         /// <summary>
-        /// True if the Nagle algorithm has been disabled.
+        /// Gets or sets a value indicating the Nagle algorithm has been disabled.
         /// </summary>
         /// <remarks>
         /// <para>The default is false. Generally, this should be left to its default value.</para>
@@ -43,7 +44,7 @@ namespace Nito.Communication
         bool NoDelay { get; set; }
 
         /// <summary>
-        /// If and how long a graceful shutdown will be performed in the background.
+        /// Gets or sets a value indicating whether (and how long) a graceful shutdown will be performed in the background.
         /// </summary>
         /// <remarks>
         /// <para>Setting LingerState to enabled with a 0 timeout will make all calls to <see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/> act as though <see cref="InterfaceExtensions.AbortiveClose"/> was called. Generally, this should be left to its default value.</para>
@@ -68,15 +69,28 @@ namespace Nito.Communication
         /// </summary>
         /// <remarks>
         /// <para>Multiple write operations may be active at the same time.</para>
-        /// <para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// <para>The write operation will complete by invoking <see cref="WriteCompleted"/>, unless the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
         /// <para>Write operations are never cancelled.</para>
-        /// <para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
+        /// <para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
         /// </remarks>
         /// <param name="buffer">The buffer containing the data to write to the socket.</param>
         /// <param name="offset">The offset of the data within <paramref name="buffer"/>.</param>
         /// <param name="size">The number of bytes of data, at <paramref name="offset"/> within <paramref name="buffer"/>.</param>
         /// <param name="state">The context, which is passed to <see cref="WriteCompleted"/> as <c>e.UserState</c>.</param>
-        void WriteAsync(byte[] buffer, int offset, int size, object state);
+        void WriteAsync(byte[] buffer, int offset, int size, object state = null);
+
+        /// <summary>
+        /// Initiates a write operation.
+        /// </summary>
+        /// <param name="buffers">The buffers containing the data to write to the socket.</param>
+        /// <param name="state">The context, which is passed to <see cref="WriteCompleted"/> as <c>e.UserState</c>.</param>
+        /// <remarks>
+        /// 	<para>Multiple write operations may be active at the same time.</para>
+        /// 	<para>The write operation will complete by invoking <see cref="IAsyncTcpConnection.WriteCompleted"/>, unless the socket is shut down (<see cref="IAsyncTcpConnection.ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// 	<para>Write operations are never cancelled.</para>
+        /// 	<para>If <paramref name="state"/> is an instance of <see cref="CallbackOnErrorsOnly"/>, then <see cref="IAsyncTcpConnection.WriteCompleted"/> is only invoked in an error situation; it is not invoked if the write completes successfully.</para>
+        /// </remarks>
+        void WriteAsync(IList<ArraySegment<byte>> buffers, object state = null);
 
         /// <summary>
         /// Initiates a shutdown operation. Once a shutdown operation is initiated, only the shutdown operation will complete.

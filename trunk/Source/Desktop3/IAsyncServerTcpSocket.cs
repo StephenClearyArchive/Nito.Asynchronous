@@ -9,7 +9,7 @@ namespace Nito.Communication
     public interface IAsyncServerTcpSocket : IDisposable
     {
         /// <summary>
-        /// Returns the IP address and port of the listening socket.
+        /// Gets the IP address and port of the listening socket.
         /// </summary>
         IPEndPoint LocalEndPoint { get; }
 
