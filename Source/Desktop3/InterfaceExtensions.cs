@@ -100,6 +100,24 @@ namespace Nito.Communication
             socket.ConnectAsync(new IPEndPoint(address, port));
         }
 
+#if DESKTOP4 || SILVERLIGHT3 || SILVERLIGHT4
+        /// <summary>
+        /// Initiates a connect operation.
+        /// </summary>
+        /// <remarks>
+        /// <para>There may be only one connect operation for a client socket, and it must be the first operation performed.</para>
+        /// <para>The connect operation will complete by invoking <see cref="IAsyncClientTcpSocket.ConnectCompleted"/>, unless the socket is closed (<see cref="Close(IAsyncTcpConnection)"/>) or abortively closed (<see cref="AbortiveClose"/>).</para>
+        /// <para>Connect operations are never cancelled.</para>
+        /// </remarks>
+        /// <param name="socket">The socket on which to initiate the connect operation.</param>
+        /// <param name="host">The hostname of the server to connect to.</param>
+        /// <param name="port">The port of the server to connect to.</param>
+        public static void ConnectAsync(this IAsyncClientTcpSocket socket, string host, int port)
+        {
+            socket.ConnectAsync(new DnsEndPoint(host, port));
+        }
+#endif
+
         /// <summary>
         /// Closes the listening socket immediately and frees all resources.
         /// </summary>

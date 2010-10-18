@@ -39,14 +39,14 @@ namespace Nito.Communication
             this.state = new SocketStateMachine();
         }
 
-        public IPEndPoint LocalEndPoint
+        public EndPoint LocalEndPoint
         {
-            get { return (IPEndPoint)this.socket.LocalEndPoint; }
+            get { return this.socket.LocalEndPoint; }
         }
 
-        public IPEndPoint RemoteEndPoint
+        public EndPoint RemoteEndPoint
         {
-            get { return (IPEndPoint)this.socket.RemoteEndPoint; }
+            get { return this.socket.RemoteEndPoint; }
         }
 
         public bool NoDelay
@@ -68,12 +68,12 @@ namespace Nito.Communication
         /// <remarks>
         /// This method may not be called after <see cref="O:Nito.Communication.BeginEndAsyncClientTcpSocket.ConnectAsync"/>.
         /// </remarks>
-        public void Bind(IPEndPoint bindTo)
+        public void Bind(EndPoint bindTo)
         {
             this.socket.Bind(bindTo);
         }
 
-        public void ConnectAsync(IPEndPoint server)
+        public void ConnectAsync(EndPoint server)
         {
             var args = new SocketAsyncEventArgs { RemoteEndPoint = server };
             args.Completed += (_, __) =>

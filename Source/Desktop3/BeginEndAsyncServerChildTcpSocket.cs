@@ -30,14 +30,14 @@ namespace Nito.Communication
             this.state = new SocketStateMachine();
         }
 
-        public IPEndPoint LocalEndPoint
+        public EndPoint LocalEndPoint
         {
-            get { return (IPEndPoint)this.socket.LocalEndPoint; }
+            get { return this.socket.LocalEndPoint; }
         }
 
-        public IPEndPoint RemoteEndPoint
+        public EndPoint RemoteEndPoint
         {
-            get { return (IPEndPoint)this.socket.RemoteEndPoint; }
+            get { return this.socket.RemoteEndPoint; }
         }
 
         public bool NoDelay

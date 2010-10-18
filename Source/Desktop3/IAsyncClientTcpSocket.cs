@@ -20,7 +20,7 @@ namespace Nito.Communication
         /// <para>This method may not be called after <see cref="O:Nito.Communication.IAsyncClientTcpSocket.ConnectAsync"/>.</para>
         /// </remarks>
         /// <param name="bindTo">The local endpoint.</param>
-        void Bind(IPEndPoint bindTo);
+        void Bind(EndPoint bindTo);
 
         /// <summary>
         /// Initiates a connect operation.
@@ -31,7 +31,7 @@ namespace Nito.Communication
         /// <para>Connect operations are never cancelled.</para>
         /// </remarks>
         /// <param name="server">The address and port of the server to connect to.</param>
-        void ConnectAsync(IPEndPoint server);
+        void ConnectAsync(EndPoint server);
 
         /// <summary>
         /// Indicates the completion of a connect operation, either successfully or with error. 
