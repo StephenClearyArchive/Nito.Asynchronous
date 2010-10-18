@@ -13,7 +13,7 @@ namespace Nito.Communication
     /// <summary>
     /// An asynchronous client TCP/IP socket that uses the <c>Begin*/End*</c> socket functions to work asynchronously.
     /// </summary>
-    public sealed class BeginEndAsyncClientTcpSocket : IAsyncTcpConnection
+    public sealed class BeginEndAsyncClientTcpSocket : IAsyncClientTcpSocket
     {
         /// <summary>
         /// The delegate scheduler used to synchronize callbacks.

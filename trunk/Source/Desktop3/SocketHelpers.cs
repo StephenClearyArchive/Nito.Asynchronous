@@ -9,7 +9,7 @@ namespace Nito.Communication
     using System.Net.Sockets;
     using Async;
 
-    public static class SocketHelpers
+    internal static class SocketHelpers
     {
         public static IList<ArraySegment<byte>> RemainingBuffers(IList<ArraySegment<byte>> buffers, int bytesWritten)
         {
@@ -31,6 +31,23 @@ namespace Nito.Communication
 
             ret.AddRange(buffers.Skip(index));
             return ret;
+        }
+
+        public static Exception GetError(this SocketAsyncEventArgs @this)
+        {
+#if DESKTOP4 || SILVERLIGHT3 || SILVERLIGHT4
+            if (@this.ConnectByNameError != null)
+            {
+                return @this.ConnectByNameError;
+            }
+#endif
+
+            if (@this.SocketError != SocketError.Success)
+            {
+                return new SocketException((int)@this.SocketError);
+            }
+
+            return null;
         }
     }
 }
