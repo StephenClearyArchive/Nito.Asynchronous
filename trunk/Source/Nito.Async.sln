@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop3", "Desktop3\Deskto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop4", "Desktop4\Desktop4.csproj", "{531740A7-8399-4C21-9CA4-9FDFE1FDB7C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.Silverlight3", "Nito.Async.Silverlight3\Nito.Async.Silverlight3.csproj", "{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Nito.Async.vsmdi
@@ -124,6 +126,10 @@ Global
 		{531740A7-8399-4C21-9CA4-9FDFE1FDB7C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{531740A7-8399-4C21-9CA4-9FDFE1FDB7C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{531740A7-8399-4C21-9CA4-9FDFE1FDB7C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

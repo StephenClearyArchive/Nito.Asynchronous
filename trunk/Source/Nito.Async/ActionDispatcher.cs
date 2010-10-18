@@ -6,7 +6,6 @@ namespace Nito.Async
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Permissions;
     using System.Threading;
 
     /// <summary>
@@ -111,7 +110,6 @@ namespace Nito.Async
         /// <example>The following code sample demonstrates how to create an ActionDispatcher, queue an exit action, and run it:
         /// <code source="..\..\Source\Examples\DocumentationExamples\ActionDispatcher\ConstructQueueExitRun.cs"/>
         /// </example>
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.ControlEvidence | SecurityPermissionFlag.ControlPolicy)]
         public void Run()
         {
             try

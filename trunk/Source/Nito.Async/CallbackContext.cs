@@ -125,6 +125,7 @@ namespace Nito.Async
                 };
         }
 
+#if !SILVERLIGHT
         /// <summary>
         /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
@@ -157,6 +158,7 @@ namespace Nito.Async
                     }
                 };
         }
+#endif
 
         /// <summary>
         /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
@@ -208,6 +210,7 @@ namespace Nito.Async
             };
         }
 
+#if !SILVERLIGHT
         /// <summary>
         /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.
         /// </summary>
@@ -240,6 +243,7 @@ namespace Nito.Async
                     }
                 };
         }
+#endif
 
         /// <summary>
         /// Synchronizes a delegate and then binds it to this context, and returns a synchronous, synchronized, bound, valid delegate.

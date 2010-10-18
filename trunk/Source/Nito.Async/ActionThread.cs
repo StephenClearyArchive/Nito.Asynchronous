@@ -105,6 +105,7 @@ namespace Nito.Async
             set { this.thread.Name = value; }
         }
 
+#if !SILVERLIGHT
         /// <summary>
         /// Gets or sets a value indicating the scheduling priority of this <see cref="ActionThread"/>. This property may not be accessed after a <see cref="O:Nito.Async.ActionThread.Join"/>.
         /// </summary>
@@ -116,6 +117,7 @@ namespace Nito.Async
             get { return this.thread.Priority; }
             set { this.thread.Priority = value; }
         }
+#endif
 
         /// <summary>
         /// Requests this <see cref="ActionThread"/> to exit and then blocks the calling thread until either this <see cref="ActionThread"/> exits or a timeout occurs.
@@ -138,7 +140,7 @@ namespace Nito.Async
             if (this.IsAlive)
             {
                 this.dispatcher.QueueExit();
-                return this.thread.Join(timeout);
+                return this.thread.Join((int)timeout.TotalMilliseconds);
             }
             else
             {
