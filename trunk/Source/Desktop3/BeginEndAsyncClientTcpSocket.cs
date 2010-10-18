@@ -138,6 +138,36 @@ namespace Nito.Communication
         }
 
         /// <summary>
+        /// Initiates a read operation.
+        /// </summary>
+        /// <param name="buffers">The buffers to receive the data.</param>
+        /// <remarks>
+        /// 	<para>There may be only one active read operation at any time.</para>
+        /// 	<para>The read operation will complete by invoking <see cref="ReadCompleted"/>, unless the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// 	<para>Read operations are never cancelled.</para>
+        /// </remarks>
+        public void ReadAsync(IList<ArraySegment<byte>> buffers)
+        {
+            this.state.Read();
+            this.socket.BeginReceive(
+                buffers,
+                SocketFlags.None,
+                asyncResult =>
+                {
+                    try
+                    {
+                        var result = this.socket.EndReceive(asyncResult);
+                        this.scheduler.Schedule(() => this.OnReadComplete(result: result));
+                    }
+                    catch (Exception ex)
+                    {
+                        this.scheduler.Schedule(() => this.OnReadComplete(ex: ex));
+                    }
+                },
+                null);
+        }
+
+        /// <summary>
         /// Initiates a write operation.
         /// </summary>
         /// <param name="buffer">The buffer containing the data to write to the socket.</param>
