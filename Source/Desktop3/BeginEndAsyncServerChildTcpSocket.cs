@@ -75,6 +75,27 @@ namespace Nito.Communication
                 null);
         }
 
+        public void ReadAsync(IList<ArraySegment<byte>> buffers)
+        {
+            this.state.Read();
+            this.socket.BeginReceive(
+                buffers,
+                SocketFlags.None,
+                asyncResult =>
+                {
+                    try
+                    {
+                        var result = this.socket.EndReceive(asyncResult);
+                        this.scheduler.Schedule(() => this.OnReadComplete(result: result));
+                    }
+                    catch (Exception ex)
+                    {
+                        this.scheduler.Schedule(() => this.OnReadComplete(ex: ex));
+                    }
+                },
+                null);
+        }
+
         public void WriteAsync(byte[] buffer, int offset, int size, object state)
         {
             if (this.state.Write(new WriteRequest(buffer, offset, size, state)))

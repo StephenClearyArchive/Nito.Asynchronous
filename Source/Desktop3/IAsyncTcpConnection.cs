@@ -65,6 +65,17 @@ namespace Nito.Communication
         void ReadAsync(byte[] buffer, int offset, int size);
 
         /// <summary>
+        /// Initiates a read operation.
+        /// </summary>
+        /// <param name="buffers">The buffers containing the data to receive the data.</param>
+        /// <remarks>
+        /// <para>There may be only one active read operation at any time.</para>
+        /// <para>The read operation will complete by invoking <see cref="ReadCompleted"/>, unless the socket is shut down (<see cref="ShutdownAsync"/>), closed (<see cref="InterfaceExtensions.Close(IAsyncTcpConnection)"/>), or abortively closed (<see cref="InterfaceExtensions.AbortiveClose"/>).</para>
+        /// <para>Read operations are never cancelled.</para>
+        /// </remarks>
+        void ReadAsync(IList<ArraySegment<byte>> buffers);
+
+        /// <summary>
         /// Initiates a write operation.
         /// </summary>
         /// <remarks>
