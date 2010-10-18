@@ -9,9 +9,9 @@ namespace Nito.Communication
     public interface IAsyncServerTcpSocket : IDisposable
     {
         /// <summary>
-        /// Gets the IP address and port of the listening socket.
+        /// Gets the endpoint of the listening socket.
         /// </summary>
-        IPEndPoint LocalEndPoint { get; }
+        EndPoint LocalEndPoint { get; }
 
         /// <summary>
         /// Binds to a local endpoint and begins listening.
@@ -21,7 +21,7 @@ namespace Nito.Communication
         /// </remarks>
         /// <param name="bindTo">The local endpoint.</param>
         /// <param name="backlog">The number of backlog connections for listening.</param>
-        void Bind(IPEndPoint bindTo, int backlog);
+        void Bind(EndPoint bindTo, int backlog);
 
         /// <summary>
         /// Initiates an accept operation.

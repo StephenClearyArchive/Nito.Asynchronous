@@ -26,14 +26,14 @@ namespace Nito.Communication
     public interface IAsyncTcpConnection : IDisposable
     {
         /// <summary>
-        /// Gets the IP address and port on this side of the connection.
+        /// Gets the endpoint on this side of the connection.
         /// </summary>
-        IPEndPoint LocalEndPoint { get; }
+        EndPoint LocalEndPoint { get; }
 
         /// <summary>
-        /// Gets the IP address and port on the remote side of the connection.
+        /// Gets the endpoint on the remote side of the connection.
         /// </summary>
-        IPEndPoint RemoteEndPoint { get; }
+        EndPoint RemoteEndPoint { get; }
 
         /// <summary>
         /// Gets or sets a value indicating the Nagle algorithm has been disabled.

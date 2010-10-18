@@ -18,12 +18,12 @@ namespace Nito.Communication
             this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
-        public IPEndPoint LocalEndPoint
+        public EndPoint LocalEndPoint
         {
-            get { return (IPEndPoint)this.socket.LocalEndPoint; }
+            get { return this.socket.LocalEndPoint; }
         }
 
-        public void Bind(IPEndPoint bindTo, int backlog)
+        public void Bind(EndPoint bindTo, int backlog)
         {
             this.socket.Bind(bindTo);
             this.socket.Listen(backlog);
