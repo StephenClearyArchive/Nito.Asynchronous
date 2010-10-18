@@ -84,6 +84,9 @@
     <Compile Include="..\Desktop3\InterfaceExtensions.cs">
       <Link>InterfaceExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Desktop3\SerialPort.cs">
+      <Link>SerialPort.cs</Link>
+    </Compile>
     <Compile Include="..\Desktop3\SocketHelpers.cs">
       <Link>SocketHelpers.cs</Link>
     </Compile>

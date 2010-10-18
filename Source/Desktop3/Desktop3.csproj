@@ -50,6 +50,7 @@
     <Compile Include="EventArgsAsyncClientTcpSocket.cs" />
     <Compile Include="EventArgsAsyncServerChildTcpSocket.cs" />
     <Compile Include="EventArgsAsyncServerTcpSocket.cs" />
+    <Compile Include="SerialPort.cs" />
     <Compile Include="SocketHelpers.cs" />
     <Compile Include="IAsyncClientTcpSocket.cs" />
     <Compile Include="IAsyncServerTcpSocket.cs" />
