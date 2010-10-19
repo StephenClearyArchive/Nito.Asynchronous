@@ -58,34 +58,34 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Nito.Async\ActionDispatcher.cs">
+    <Compile Include="..\Desktop3\ActionDispatcher.cs">
       <Link>ActionDispatcher.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\ActionDispatcherSynchronizationContext.cs">
+    <Compile Include="..\Desktop3\ActionDispatcherSynchronizationContext.cs">
       <Link>ActionDispatcherSynchronizationContext.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\ActionThread.cs">
+    <Compile Include="..\Desktop3\ActionThread.cs">
       <Link>ActionThread.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\CallbackContext.cs">
+    <Compile Include="..\Desktop3\CallbackContext.cs">
       <Link>CallbackContext.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\EventHandlers.AsyncResultEventArgs.cs">
+    <Compile Include="..\Desktop3\EventHandlers.AsyncResultEventArgs.cs">
       <Link>EventHandlers.AsyncResultEventArgs.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\EventHandlers.Sync.cs">
+    <Compile Include="..\Desktop3\EventHandlers.Sync.cs">
       <Link>EventHandlers.Sync.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\ScopedSynchronizationContext.cs">
+    <Compile Include="..\Desktop3\ScopedSynchronizationContext.cs">
       <Link>ScopedSynchronizationContext.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\Sync.cs">
+    <Compile Include="..\Desktop3\Sync.cs">
       <Link>Sync.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\SynchronizationContextRegister.cs">
+    <Compile Include="..\Desktop3\SynchronizationContextRegister.cs">
       <Link>SynchronizationContextRegister.cs</Link>
     </Compile>
-    <Compile Include="..\Nito.Async\Timer.cs">
+    <Compile Include="..\Desktop3\Timer.cs">
       <Link>Timer.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
