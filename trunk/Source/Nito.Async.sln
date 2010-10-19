@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Help Concepts", "Help Conce
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{1FDE6C44-2A09-4587-A0D1-1BBE860C8D9F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async", "Nito.Async\Nito.Async.csproj", "{708763ED-7801-4F2C-B103-4FEBD771769A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop3", "Nito.Async\Desktop3.csproj", "{708763ED-7801-4F2C-B103-4FEBD771769A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.UnitTests", "Nito.Async.UnitTests\Nito.Async.UnitTests.csproj", "{17FC62AB-AE14-4D2E-B838-52E8A1AD88C0}"
 EndProject
@@ -29,7 +29,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.FrameworkAssumptions",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentationExamples", "Examples\DocumentationExamples\DocumentationExamples.csproj", "{62CA72F5-310B-4E5E-9EDC-F76C4E157602}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nito.Async.Silverlight3", "Nito.Async.Silverlight3\Nito.Async.Silverlight3.csproj", "{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silverlight3", "Nito.Async.Silverlight3\Silverlight3.csproj", "{FB8C6E8B-E3BB-4C43-9202-45515BF15D38}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

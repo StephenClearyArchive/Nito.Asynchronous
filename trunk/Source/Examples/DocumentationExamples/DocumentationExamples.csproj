@@ -74,9 +74,9 @@
     <Compile Include="Timer\SingleShotProperties.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Nito.Async\Nito.Async.csproj">
+    <ProjectReference Include="..\..\Nito.Async\Desktop3.csproj">
       <Project>{708763ED-7801-4F2C-B103-4FEBD771769A}</Project>
-      <Name>Nito.Async</Name>
+      <Name>Desktop3</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
