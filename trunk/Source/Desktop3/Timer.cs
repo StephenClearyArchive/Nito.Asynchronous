@@ -5,6 +5,7 @@
 namespace Nito.Async
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -36,7 +37,7 @@ namespace Nito.Async
         /// <summary>
         /// The captured <see cref="SynchronizationContext"/>.
         /// </summary>
-        private SynchronizationContext synchronizationContext;
+        private readonly SynchronizationContext synchronizationContext;
 
         /// <summary>
         /// The underlying timer. This is null if the timer is disabled.
@@ -46,7 +47,7 @@ namespace Nito.Async
         /// <summary>
         /// The context for underlying timer callbacks.
         /// </summary>
-        private CallbackContext context;
+        private readonly CallbackContext context;
 
         /// <summary>
         /// Whether or not this timer class is currently executing <see cref="Elapsed"/>.
@@ -77,11 +78,7 @@ namespace Nito.Async
         public Timer()
         {
             // Capture the synchronization context
-            this.synchronizationContext = SynchronizationContext.Current;
-            if (this.synchronizationContext == null)
-            {
-                this.synchronizationContext = new SynchronizationContext();
-            }
+            this.synchronizationContext = SynchronizationContext.Current ?? new SynchronizationContext();
 
             // Verify that the synchronization context is synchronized
             SynchronizationContextRegister.Verify(this.synchronizationContext.GetType(), SynchronizationContextProperties.Synchronized);
@@ -122,6 +119,10 @@ namespace Nito.Async
         {
             get
             {
+                // If {!this.inElapsed}, then [{result == true} ==> {this.timer != null}]
+                Contract.Ensures((this.inElapsed || !Contract.Result<bool>()) || this.timer != null);
+                // If {!this.inElapsed}, then [{result == false} ==> {this.timer == null}]
+                Contract.Ensures((this.inElapsed || Contract.Result<bool>()) || this.timer == null);
                 if (this.inElapsed)
                 {
                     return this.enabledAfterElapsed;
@@ -152,12 +153,12 @@ namespace Nito.Async
                     // Start the timer
 
                     // Bind the callback to our context and synchronization context
-                    Action boundOnTimer = this.context.AsyncBind(this.OnTimer, this.synchronizationContext, false);
+                    var boundOnTimer = this.context.AsyncBind(this.OnTimer, this.synchronizationContext, false);
 
                     // The underlying timer delegate (raised on a ThreadPool thread) will first synchronize with the original thread
                     //  using the captured SynchronizationContext. Then it will determine if its binding is still valid and call OnTimer
                     //  if it's OK. OnTimer only handles the user callback logic.
-                    this.timer = new System.Threading.Timer((state) => boundOnTimer(), null, this.interval, TimeSpan.FromMilliseconds(-1));
+                    this.timer = new System.Threading.Timer(_ => boundOnTimer(), null, this.interval, TimeSpan.FromMilliseconds(-1));
 
                     // Inform the synchronization context that there is an active asynchronous operation
                     this.synchronizationContext.OperationStarted();
@@ -242,6 +243,13 @@ namespace Nito.Async
                 // The timer is not already running, so we can just directly set the value.
                 this.interval = value;
             }
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(this.synchronizationContext != null);
+            Contract.Invariant(this.context != null);
         }
 
         /// <summary>
@@ -366,6 +374,7 @@ namespace Nito.Async
         private void OnTimer()
         {
             // When this is called, we have already been synchronized with the original thread and our context is valid (see Enabled.set() for details).
+            Contract.Assume(this.timer != null);
 
             // Copy properties for use from within the callback; these are the "default values"
             this.enabledAfterElapsed = this.AutoReset;

@@ -6,6 +6,7 @@ namespace Nito.Async
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -58,12 +59,12 @@ namespace Nito.Async
         /// <summary>
         /// A mapping from synchronization context type names to their properties. We map from type names instead of actual types to avoid dependencies on unnecessary assemblies.
         /// </summary>
-        private static Dictionary<string, SynchronizationContextProperties> synchronizationContextProperties = PredefinedSynchronizationContextProperties();
+        private static readonly Dictionary<string, SynchronizationContextProperties> synchronizationContextProperties = PredefinedSynchronizationContextProperties();
 
         /// <summary>
         /// Registers a <see cref="SynchronizationContext"/> type claiming to provide certain guarantees.
         /// </summary>
-        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/>.</param>
+        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/>. May not be <c>null</c>.</param>
         /// <param name="properties">The guarantees provided by this type.</param>
         /// <remarks>
         /// <para>This method should be called once for each type of <see cref="SynchronizationContext"/>. It is not necessary to call this method for .NET <see cref="SynchronizationContext"/> types or <see cref="ActionDispatcherSynchronizationContext"/>.</para>
@@ -71,6 +72,8 @@ namespace Nito.Async
         /// </remarks>
         public static void Register(Type synchronizationContextType, SynchronizationContextProperties properties)
         {
+            Contract.Requires(synchronizationContextType != null);
+
             lock (synchronizationContextProperties)
             {
                 if (synchronizationContextProperties.ContainsKey(synchronizationContextType.FullName))
@@ -87,10 +90,12 @@ namespace Nito.Async
         /// <summary>
         /// Looks up the guarantees for a <see cref="SynchronizationContext"/> type.
         /// </summary>
-        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/> to test.</param>
+        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/> to test. May not be <c>null</c>.</param>
         /// <returns>The properties guaranteed by <paramref name="synchronizationContextType"/>.</returns>
         public static SynchronizationContextProperties Lookup(Type synchronizationContextType)
         {
+            Contract.Requires(synchronizationContextType != null);
+
             lock (synchronizationContextProperties)
             {
                 SynchronizationContextProperties supported = SynchronizationContextProperties.None;
@@ -106,10 +111,12 @@ namespace Nito.Async
         /// <summary>
         /// Verifies that a <see cref="SynchronizationContext"/> satisfies the guarantees required by the calling code.
         /// </summary>
-        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/> to test.</param>
+        /// <param name="synchronizationContextType">The type derived from <see cref="SynchronizationContext"/> to test. May not be <c>null</c>.</param>
         /// <param name="properties">The guarantees required by the calling code.</param>
         public static void Verify(Type synchronizationContextType, SynchronizationContextProperties properties)
         {
+            Contract.Requires(synchronizationContextType != null);
+
             SynchronizationContextProperties supported = Lookup(synchronizationContextType);
             if ((supported & properties) != properties)
             {
@@ -139,10 +146,12 @@ namespace Nito.Async
         /// <returns>The mapping for all predefined (.NET) <see cref="SynchronizationContext"/> types.</returns>
         private static Dictionary<string, SynchronizationContextProperties> PredefinedSynchronizationContextProperties()
         {
-            Dictionary<string, SynchronizationContextProperties> ret = new Dictionary<string, SynchronizationContextProperties>();
-            ret.Add("System.Threading.SynchronizationContext", SynchronizationContextProperties.NonReentrantPost);
-            ret.Add("System.Windows.Forms.WindowsFormsSynchronizationContext", SynchronizationContextProperties.Standard);
-            ret.Add("System.Windows.Threading.DispatcherSynchronizationContext", SynchronizationContextProperties.Standard);
+            var ret = new Dictionary<string, SynchronizationContextProperties>
+            {
+                { "System.Threading.SynchronizationContext", SynchronizationContextProperties.NonReentrantPost },
+                { "System.Windows.Forms.WindowsFormsSynchronizationContext", SynchronizationContextProperties.Standard },
+                { "System.Windows.Threading.DispatcherSynchronizationContext", SynchronizationContextProperties.Standard }
+            };
 
             // AspNetSynchronizationContext does not provide any guarantees at all, so it is not added here
             return ret;
