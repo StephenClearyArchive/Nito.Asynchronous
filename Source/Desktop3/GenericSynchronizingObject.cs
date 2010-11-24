@@ -6,6 +6,7 @@ namespace Nito.Async
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -30,12 +31,12 @@ namespace Nito.Async
         /// <summary>
         /// The captured synchronization context.
         /// </summary>
-        private SynchronizationContext synchronizationContext;
+        private readonly SynchronizationContext synchronizationContext;
 
         /// <summary>
         /// The managed thread id of the synchronization context's specific associated thread, if any.
         /// </summary>
-        private int? synchronizationContextThreadId;
+        private readonly int? synchronizationContextThreadId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericSynchronizingObject"/> class, binding to <see cref="SynchronizationContext.Current">SynchronizationContext.Current</see>.
@@ -52,11 +53,7 @@ namespace Nito.Async
         public GenericSynchronizingObject()
         {
             // (This method is always invoked from a SynchronizationContext thread)
-            this.synchronizationContext = SynchronizationContext.Current;
-            if (this.synchronizationContext == null)
-            {
-                this.synchronizationContext = new SynchronizationContext();
-            }
+            this.synchronizationContext = SynchronizationContext.Current ?? new SynchronizationContext();
 
             if ((SynchronizationContextRegister.Lookup(this.synchronizationContext.GetType()) & SynchronizationContextProperties.SpecificAssociatedThread) == SynchronizationContextProperties.SpecificAssociatedThread)
             {
@@ -92,17 +89,26 @@ namespace Nito.Async
             }
         }
 
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(this.synchronizationContext != null);
+        }
+
         /// <summary>
         /// Starts the invocation of a delegate synchronized by the <see cref="SynchronizationContext"/> of the thread that created this <see cref="GenericSynchronizingObject"/>. A corresponding call to <see cref="EndInvoke"/> is not required.
         /// </summary>
-        /// <param name="method">The delegate to run.</param>
-        /// <param name="args">The arguments to pass to <paramref name="method"/>.</param>
+        /// <param name="method">The delegate to run. May not be <c>null</c>.</param>
+        /// <param name="args">The arguments to pass to <paramref name="method"/>. May be <c>null</c> if the delegate does not require arguments.</param>
         /// <returns>An <see cref="IAsyncResult"/> that can be used to detect completion of the delegate.</returns>
         /// <remarks>
         /// <para>If the <see cref="SynchronizationContext.Post"/> for this object's synchronization context is reentrant, then this method is also reentrant.</para>
         /// </remarks>
         public IAsyncResult BeginInvoke(Delegate method, object[] args)
         {
+            Contract.Ensures(Contract.Result<IAsyncResult>() != null);
+            Contract.Assume(method != null);
+
             // (This method may be invoked from any thread)
             IAsyncResult ret = new AsyncResult();
 
@@ -130,12 +136,15 @@ namespace Nito.Async
         /// Waits for the invocation of a delegate to complete, and returns the result of the delegate. This may only be called once for a given <see cref="IAsyncResult"/> object.
         /// </summary>
         /// <param name="result">The <see cref="IAsyncResult"/> returned from a call to <see cref="BeginInvoke"/>.</param>
-        /// <returns>The result of the delegate.</returns>
+        /// <returns>The result of the delegate. May not be <c>null</c>.</returns>
         /// <remarks>
         /// <para>If the delegate raised an exception, then this method will raise a <see cref="System.Reflection.TargetInvocationException"/> with that exception as the <see cref="Exception.InnerException"/> property.</para>
         /// </remarks>
         public object EndInvoke(IAsyncResult result)
         {
+            Contract.Assume(result != null);
+            Contract.Assume(result.GetType() == typeof(AsyncResult));
+
             // (This method may be invoked from any thread)
             AsyncResult asyncResult = (AsyncResult)result;
             asyncResult.WaitForAndDispose();
@@ -150,8 +159,8 @@ namespace Nito.Async
         /// <summary>
         /// Synchronously invokes a delegate synchronized with the <see cref="SynchronizationContext"/> of the thread that created this <see cref="GenericSynchronizingObject"/>.
         /// </summary>
-        /// <param name="method">The delegate to invoke.</param>
-        /// <param name="args">The parameters for <paramref name="method"/>.</param>
+        /// <param name="method">The delegate to invoke. May not be <c>null</c>.</param>
+        /// <param name="args">The parameters for <paramref name="method"/>. May be <c>null</c> if the delegate does not require arguments.</param>
         /// <returns>The result of the delegate.</returns>
         /// <remarks>
         /// <para>If the <see cref="SynchronizationContext.Send"/> for this object's synchronization context is reentrant, then this method is also reentrant.</para>
@@ -159,10 +168,12 @@ namespace Nito.Async
         /// </remarks>
         public object Invoke(Delegate method, object[] args)
         {
+            Contract.Assume(method != null);
+
             // (This method may be invoked from any thread)
-            ReturnValue ret = new ReturnValue();
+            var ret = new ReturnValue();
             this.synchronizationContext.Send(
-                delegate(object unusedState)
+                _ =>
                 {
                     try
                     {
@@ -230,7 +241,7 @@ namespace Nito.Async
             /// <summary>
             /// Object used for synchronization.
             /// </summary>
-            private object syncObject = new object();
+            private readonly object syncObject = new object();
 
             /// <summary>
             /// Gets or sets the return value. Must be set before calling <see cref="Done"/>.
@@ -263,18 +274,20 @@ namespace Nito.Async
             {
                 get
                 {
+                    Contract.Ensures(Contract.Result<WaitHandle>() != null);
+                    Contract.Ensures(this.asyncWaitHandle != null);
+
                     lock (this.syncObject)
                     {
-                        // If it already exists, return it
-                        if (this.asyncWaitHandle != null)
+                        // Create a new one if it doesn't already exist
+                        if (this.asyncWaitHandle == null)
                         {
-                            return this.asyncWaitHandle;
+                            this.asyncWaitHandle = new ManualResetEvent(this.isCompleted);
                         }
-
-                        // Create a new one
-                        this.asyncWaitHandle = new ManualResetEvent(this.isCompleted);
-                        return this.asyncWaitHandle;
                     }
+
+                    Contract.Assume(this.asyncWaitHandle != null);
+                    return this.asyncWaitHandle;
                 }
             }
 
