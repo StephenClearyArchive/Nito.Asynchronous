@@ -1,10 +1,11 @@
 ﻿// <copyright file="ActionThread.cs" company="Nito Programs">
-//     Copyright (c) 2009 Nito Programs.
+//     Copyright (c) 2009-2010 Nito Programs.
 // </copyright>
 
 namespace Nito.Async
 {
     using System;
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -33,12 +34,12 @@ namespace Nito.Async
         /// <summary>
         /// The child thread.
         /// </summary>
-        private Thread thread;
+        private readonly Thread thread;
 
         /// <summary>
         /// The queue of actions to perform.
         /// </summary>
-        private ActionDispatcher dispatcher;
+        private readonly ActionDispatcher dispatcher;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionThread"/> class, creating a child thread waiting for commands.
@@ -100,9 +101,17 @@ namespace Nito.Async
         /// </example>
         public string Name
         {
-            get { return this.thread.Name; }
+            get
+            {
+                return this.thread.Name;
+            }
 
-            set { this.thread.Name = value; }
+            set
+            {
+                Contract.Requires(value != null);
+
+                this.thread.Name = value;
+            }
         }
 
 #if !SILVERLIGHT
@@ -118,6 +127,13 @@ namespace Nito.Async
             set { this.thread.Priority = value; }
         }
 #endif
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(this.dispatcher != null);
+            Contract.Invariant(this.thread != null);
+        }
 
         /// <summary>
         /// Requests this <see cref="ActionThread"/> to exit and then blocks the calling thread until either this <see cref="ActionThread"/> exits or a timeout occurs.
@@ -188,7 +204,7 @@ namespace Nito.Async
         /// <summary>
         /// Queues work for the <see cref="ActionThread"/> to do.
         /// </summary>
-        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <param name="action">The work to do. May not be <c>null</c>. This delegate may not throw an exception.</param>
         /// <example>The following code sample demonstrates how to queue work to an ActionThread:
         /// <code source="..\..\Source\Examples\DocumentationExamples\ActionThread\Do.cs"/>
         /// The code example above produces this output:
@@ -199,13 +215,15 @@ namespace Nito.Async
         /// </example>
         public void Do(Action action)
         {
+            Contract.Requires(action != null);
+
             this.dispatcher.QueueAction(action);
         }
 
         /// <summary>
         /// Queues work for the <see cref="ActionThread"/> to do, and blocks the calling thread until it is complete or until the specified time has elapsed.
         /// </summary>
-        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <param name="action">The work to do. May not be <c>null</c>. This delegate may not throw an exception.</param>
         /// <param name="timeout">The time to wait for <paramref name="action"/> to execute.</param>
         /// <returns><c>true</c> if <paramref name="action"/> executed completely; <c>false</c> if there was a timeout.</returns>
         /// <remarks>
@@ -221,7 +239,9 @@ namespace Nito.Async
         /// </example>
         public bool DoSynchronously(Action action, TimeSpan timeout)
         {
-            using (ManualResetEvent evt = new ManualResetEvent(false))
+            Contract.Requires(action != null);
+
+            using (var evt = new ManualResetEvent(false))
             {
                 this.dispatcher.QueueAction(() => { action(); evt.Set(); });
                 return evt.WaitOne(timeout);
@@ -231,7 +251,7 @@ namespace Nito.Async
         /// <summary>
         /// Queues work for the <see cref="ActionThread"/> to do, and blocks the calling thread until it is complete.
         /// </summary>
-        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <param name="action">The work to do. May not be <c>null</c>. This delegate may not throw an exception.</param>
         /// <remarks>
         /// <para>This method may not be called before the thread has started (see <see cref="Start"/>) or after the thread has joined (see <see cref="O:Nito.Async.ActionThread.Join"/>).</para>
         /// </remarks>
@@ -245,6 +265,8 @@ namespace Nito.Async
         /// </example>
         public void DoSynchronously(Action action)
         {
+            Contract.Requires(action != null);
+
             // This test actually has a race condition; it's not possible to fully detect all conditions
             if (this.thread.ThreadState == ThreadState.Unstarted || this.thread.ThreadState == ThreadState.Stopped)
             {
@@ -259,7 +281,7 @@ namespace Nito.Async
         /// Queues work for the <see cref="ActionThread"/> to do, and blocks the calling thread until it is complete.
         /// </summary>
         /// <typeparam name="T">The type of object retrieved by the delegate.</typeparam>
-        /// <param name="action">The work to do. This delegate may not throw an exception.</param>
+        /// <param name="action">The work to do. May not be <c>null</c>. This delegate may not throw an exception.</param>
         /// <returns>The return value of the delegate.</returns>
         /// <remarks>
         /// <para>This method may only be called after the thread has been started.</para>
@@ -274,8 +296,10 @@ namespace Nito.Async
         /// </example>
         public T DoGet<T>(Func<T> action)
         {
+            Contract.Requires(action != null);
+
             T ret = default(T);
-            this.DoSynchronously(() => { ret = action(); }, TimeSpan.FromMilliseconds(-1));
+            this.DoSynchronously(() => { ret = action(); });
             return ret;
         }
 

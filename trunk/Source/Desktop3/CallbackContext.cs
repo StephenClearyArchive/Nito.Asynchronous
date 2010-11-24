@@ -6,6 +6,7 @@ namespace Nito.Async
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -63,13 +64,15 @@ namespace Nito.Async
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
-        /// <param name="action">The contained delegate.</param>
+        /// <param name="action">The contained delegate. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The execution of the bound delegate must be synchronized with any other access of its bound <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Action Bind(Action action)
         {
+            Contract.Requires(action != null);
+
             // Create the object-context if it doesn't already exist.
             if (this.context == null)
             {
@@ -97,13 +100,15 @@ namespace Nito.Async
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
         /// <typeparam name="T">The return value of the contained and bound delegates.</typeparam>
-        /// <param name="func">The contained delegate.</param>
+        /// <param name="func">The contained delegate. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The execution of the bound delegate must be synchronized with any other access of its bound <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Func<T> Bind<T>(Func<T> func)
         {
+            Contract.Requires(func != null);
+
             // Create the object-context if it doesn't already exist.
             if (this.context == null)
             {
@@ -133,14 +138,17 @@ namespace Nito.Async
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
-        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizingObject">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="action">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizingObject">The object to use for synchronizing the delegate if necessary. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The returned delegate may be executed on any thread; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Action Bind(Action action, ISynchronizeInvoke synchronizingObject)
         {
+            Contract.Requires(action != null);
+            Contract.Requires(synchronizingObject != null);
+
             // Create the bound delegate
             Action boundAction = this.Bind(action);
 
@@ -167,14 +175,17 @@ namespace Nito.Async
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
-        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="action">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The returned delegate may be executed on any thread except the thread that owns <paramref name="synchronizationContext"/>; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Action Bind(Action action, SynchronizationContext synchronizationContext)
         {
+            Contract.Requires(action != null);
+            Contract.Requires(synchronizationContext != null);
+
             return this.Bind(action, synchronizationContext, true);
         }
 
@@ -185,8 +196,8 @@ namespace Nito.Async
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
-        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="action">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary. May not be <c>null</c>.</param>
         /// <param name="checkSynchronizationContextVerification">Whether to verify that <paramref name="synchronizationContext"/> does support <see cref="SynchronizationContextProperties.Synchronized"/>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
@@ -194,6 +205,9 @@ namespace Nito.Async
         /// </threadsafety>
         public Action Bind(Action action, SynchronizationContext synchronizationContext, bool checkSynchronizationContextVerification)
         {
+            Contract.Requires(action != null);
+            Contract.Requires(synchronizationContext != null);
+
             if (checkSynchronizationContextVerification)
             {
                 // Verify that the synchronization context provides synchronization
@@ -204,10 +218,7 @@ namespace Nito.Async
             Action boundAction = this.Bind(action);
 
             // Return a synchronized wrapper for the bound delegate
-            return () =>
-            {
-                synchronizationContext.Send((state) => boundAction(), null);
-            };
+            return () => synchronizationContext.Send((state) => boundAction(), null);
         }
 
 #if !SILVERLIGHT
@@ -219,14 +230,17 @@ namespace Nito.Async
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
         /// <typeparam name="T">The return value of the contained and bound delegates.</typeparam>
-        /// <param name="func">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizingObject">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="func">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizingObject">The object to use for synchronizing the delegate if necessary. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The returned delegate may be executed on any thread; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Func<T> Bind<T>(Func<T> func, ISynchronizeInvoke synchronizingObject)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(synchronizingObject != null);
+
             // Create the bound delegate
             Func<T> boundFunc = this.Bind(func);
 
@@ -253,14 +267,17 @@ namespace Nito.Async
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
         /// <typeparam name="T">The return value of the contained and bound delegates.</typeparam>
-        /// <param name="func">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizationContext">The object to use for synchronizing the delegate.</param>
+        /// <param name="func">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The returned delegate may be executed on any thread except the thread that owns <paramref name="synchronizationContext"/>; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Func<T> Bind<T>(Func<T> func, SynchronizationContext synchronizationContext)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(synchronizationContext != null);
+
             return this.Bind(func, synchronizationContext, true);
         }
 
@@ -272,8 +289,8 @@ namespace Nito.Async
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
         /// <typeparam name="T">The return value of the contained and bound delegates.</typeparam>
-        /// <param name="func">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizationContext">The object to use for synchronizing the delegate.</param>
+        /// <param name="func">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate. May not be <c>null</c>.</param>
         /// <param name="checkSynchronizationContextVerification">Whether to verify that <paramref name="synchronizationContext"/> does support <see cref="SynchronizationContextProperties.Synchronized"/>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
@@ -281,6 +298,9 @@ namespace Nito.Async
         /// </threadsafety>
         public Func<T> Bind<T>(Func<T> func, SynchronizationContext synchronizationContext, bool checkSynchronizationContextVerification)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(synchronizationContext != null);
+
             if (checkSynchronizationContextVerification)
             {
                 // Verify that the synchronization context provides synchronization
@@ -306,14 +326,17 @@ namespace Nito.Async
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
-        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="action">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary. May not be <c>null</c>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
         /// <para>The returned delegate may be executed on any thread except the thread that owns <paramref name="synchronizationContext"/>; it will synchronize itself with this <see cref="CallbackContext"/>.</para>
         /// </threadsafety>
         public Action AsyncBind(Action action, SynchronizationContext synchronizationContext)
         {
+            Contract.Requires(action != null);
+            Contract.Requires(synchronizationContext != null);
+
             return this.AsyncBind(action, synchronizationContext, true);
         }
 
@@ -324,8 +347,8 @@ namespace Nito.Async
         /// <para>The bound delegate will first determine if it is still valid. If the bound delegate is valid, then it will invoke the contained delegate. If the bound delegate is invalid, it will do nothing.</para>
         /// <para>To invalidate all bound delegates, call the <see cref="Reset"/> method.</para>
         /// </remarks>
-        /// <param name="action">The contained delegate. This delegate should not raise exceptions.</param>
-        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary.</param>
+        /// <param name="action">The contained delegate. May not be <c>null</c>. This delegate should not raise exceptions.</param>
+        /// <param name="synchronizationContext">The object to use for synchronizing the delegate if necessary. May not be <c>null</c>.</param>
         /// <param name="checkSynchronizationContextVerification">Whether to verify that <paramref name="synchronizationContext"/> does support <see cref="SynchronizationContextProperties.Synchronized"/>.</param>
         /// <returns>A valid delegate bound to the current context.</returns>
         /// <threadsafety>
@@ -333,6 +356,9 @@ namespace Nito.Async
         /// </threadsafety>
         public Action AsyncBind(Action action, SynchronizationContext synchronizationContext, bool checkSynchronizationContextVerification)
         {
+            Contract.Requires(action != null);
+            Contract.Requires(synchronizationContext != null);
+
             if (checkSynchronizationContextVerification)
             {
                 // Verify that the synchronization context provides synchronization
@@ -343,10 +369,7 @@ namespace Nito.Async
             Action boundAction = this.Bind(action);
 
             // Return a synchronized wrapper for the bound delegate
-            return () =>
-            {
-                synchronizationContext.Send((state) => boundAction(), null);
-            };
+            return () => synchronizationContext.Send((state) => boundAction(), null);
         }
 
         /// <summary>

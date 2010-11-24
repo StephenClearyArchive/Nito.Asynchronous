@@ -1,11 +1,12 @@
 ﻿// <copyright file="ActionDispatcher.cs" company="Nito Programs">
-//     Copyright (c) 2009 Nito Programs.
+//     Copyright (c) 2009-2010 Nito Programs.
 // </copyright>
 
 namespace Nito.Async
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -40,12 +41,22 @@ namespace Nito.Async
         /// <summary>
         /// An event that is signalled when the action queue has at least one action to run.
         /// </summary>
-        private ManualResetEvent actionQueueNotEmptyEvent;
+        private readonly ManualResetEvent actionQueueNotEmptyEvent;
 
         /// <summary>
         /// The queue holding the actions to run.
         /// </summary>
-        private Queue<Action> actionQueue;
+        private readonly Queue<Action> actionQueue;
+
+        /// <summary>
+        /// The action to queue that causes <see cref="Run"/> to exit.
+        /// </summary>
+        private static readonly Action ExitAction;
+
+        static ActionDispatcher()
+        {
+            ExitAction = () => { throw ExitException.Instance; };
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionDispatcher"/> class with an empty action queue.
@@ -70,7 +81,7 @@ namespace Nito.Async
         {
             get
             {
-                ActionDispatcherSynchronizationContext context = SynchronizationContext.Current as ActionDispatcherSynchronizationContext;
+                var context = SynchronizationContext.Current as ActionDispatcherSynchronizationContext;
                 if (context == null)
                 {
                     return null;
@@ -78,6 +89,13 @@ namespace Nito.Async
 
                 return context.ActionDispatcher;
             }
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(this.actionQueue != null);
+            Contract.Invariant(this.actionQueueNotEmptyEvent != null);
         }
 
         /// <summary>
@@ -130,7 +148,7 @@ namespace Nito.Async
         /// <summary>
         /// Queues an action to an action dispatcher.
         /// </summary>
-        /// <param name="action">The action to execute.</param>
+        /// <param name="action">The action to execute. May not be <c>null</c>.</param>
         /// <remarks>
         /// <para>Actions are executed in the order they are queued.</para>
         /// <para>Actions may queue other actions and/or an exit action by using the <see cref="Current"/> action dispatcher.</para>
@@ -141,6 +159,8 @@ namespace Nito.Async
         /// </example>
         public void QueueAction(Action action)
         {
+            Contract.Requires(action != null);
+
             lock (this.actionQueue)
             {
                 // Add the action to the action queue
@@ -176,6 +196,8 @@ namespace Nito.Async
         /// <returns>The next action from the action queue.</returns>
         private Action DequeueAction()
         {
+            Contract.Ensures(Contract.Result<Action>() != null);
+
             // Wait for an action to arrive
             this.actionQueueNotEmptyEvent.WaitOne();
 
@@ -185,6 +207,7 @@ namespace Nito.Async
             {
                 // Remove an action from the action queue
                 ret = this.actionQueue.Dequeue();
+                Contract.Assume(ret != null);
 
                 // Reset the signal if necessary
                 if (this.actionQueue.Count == 0)
@@ -201,6 +224,12 @@ namespace Nito.Async
         /// </summary>
         private sealed class ExitException : Exception
         {
+            public static readonly ExitException Instance;
+
+            static ExitException()
+            {
+                Instance = new ExitException();
+            }
         }
     }
 }

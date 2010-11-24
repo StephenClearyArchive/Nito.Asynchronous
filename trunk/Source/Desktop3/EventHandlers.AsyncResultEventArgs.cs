@@ -16,7 +16,7 @@ namespace Nito.Async
         /// <summary>
         /// The result of the asynchronous operation.
         /// </summary>
-        private T result;
+        private readonly T result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncResultEventArgs{T}"/> class.

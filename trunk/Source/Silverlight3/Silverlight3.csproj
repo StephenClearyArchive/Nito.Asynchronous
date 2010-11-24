@@ -17,6 +17,7 @@
     <SilverlightApplication>false</SilverlightApplication>
     <ValidateXaml>true</ValidateXaml>
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
+    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
   </PropertyGroup>
   <!-- This property group is only here to support building this project using the 
        MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
@@ -36,6 +37,29 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>
     </DocumentationFile>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>False</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>True</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
+    <CodeContractsRedundantAssumptions>True</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>False</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,8 +71,32 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>Bin\Release\Nito.Async.xml</DocumentationFile>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>True</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>True</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>True</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>True</CodeContractsArithmeticObligations>
+    <CodeContractsContainerAnalysis>False</CodeContractsContainerAnalysis>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsRunInBackground>False</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Preconditions</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=736440c9b414ea16, processorArchitecture=MSIL" />
     <Reference Include="mscorlib" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
