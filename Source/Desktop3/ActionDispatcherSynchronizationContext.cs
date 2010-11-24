@@ -1,9 +1,10 @@
 ﻿// <copyright file="ActionDispatcherSynchronizationContext.cs" company="Nito Programs">
-//     Copyright (c) 2009 Nito Programs.
+//     Copyright (c) 2009-2010 Nito Programs.
 // </copyright>
 
 namespace Nito.Async
 {
+    using System.Diagnostics.Contracts;
     using System.Threading;
 
     /// <summary>
@@ -16,6 +17,11 @@ namespace Nito.Async
     public sealed class ActionDispatcherSynchronizationContext : SynchronizationContext
     {
         /// <summary>
+        /// The action queue for the thread to synchronize with.
+        /// </summary>
+        private readonly ActionDispatcher actionDispatcher;
+
+        /// <summary>
         /// Initializes static members of the <see cref="ActionDispatcherSynchronizationContext"/> class by registering with <see cref="SynchronizationContextRegister"/>.
         /// </summary>
         static ActionDispatcherSynchronizationContext()
@@ -26,16 +32,26 @@ namespace Nito.Async
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionDispatcherSynchronizationContext"/> class by using the specified <see cref="Nito.Async.ActionDispatcher"/>.
         /// </summary>
-        /// <param name="actionDispatcher">The action queue to associate with this <see cref="ActionDispatcherSynchronizationContext"/>.</param>
+        /// <param name="actionDispatcher">The action queue to associate with this <see cref="ActionDispatcherSynchronizationContext"/>. May not be <c>null</c>.</param>
         public ActionDispatcherSynchronizationContext(ActionDispatcher actionDispatcher)
         {
-            this.ActionDispatcher = actionDispatcher;
+            Contract.Requires(actionDispatcher != null);
+            this.actionDispatcher = actionDispatcher;
         }
 
         /// <summary>
-        /// Gets or sets the action queue for the thread to synchronize with.
+        /// Gets the action queue for the thread to synchronize with.
         /// </summary>
-        internal ActionDispatcher ActionDispatcher { get; set; }
+        internal ActionDispatcher ActionDispatcher
+        {
+            get { return this.actionDispatcher; }
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(this.actionDispatcher != null);
+        }
 
         /// <summary>
         /// Creates a copy of this <see cref="ActionDispatcherSynchronizationContext"/>.
@@ -44,7 +60,7 @@ namespace Nito.Async
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
         public override SynchronizationContext CreateCopy()
         {
-            return new ActionDispatcherSynchronizationContext(this.ActionDispatcher);
+            return new ActionDispatcherSynchronizationContext(this.actionDispatcher);
         }
 
         /// <summary>
@@ -55,7 +71,7 @@ namespace Nito.Async
         /// <threadsafety>This method may be called by any thread at any time.</threadsafety>
         public override void Post(SendOrPostCallback d, object state)
         {
-            this.ActionDispatcher.QueueAction(() => d(state));
+            this.actionDispatcher.QueueAction(() => d(state));
         }
 
         /// <summary>
@@ -68,9 +84,9 @@ namespace Nito.Async
         /// </remarks>
         public override void Send(SendOrPostCallback d, object state)
         {
-            using (ManualResetEvent evt = new ManualResetEvent(false))
+            using (var evt = new ManualResetEvent(false))
             {
-                this.ActionDispatcher.QueueAction(() => { d(state); evt.Set(); });
+                this.actionDispatcher.QueueAction(() => { d(state); evt.Set(); });
                 evt.WaitOne();
             }
         }

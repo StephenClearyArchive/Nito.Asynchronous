@@ -6,6 +6,7 @@ namespace Nito.Async
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics.Contracts;
 
     /// <content>
     /// Utility methods for asynchronous event handlers.
@@ -16,7 +17,7 @@ namespace Nito.Async
         /// Runs <paramref name="action"/> followed by <paramref name="callback"/> with arguments indicating success. If <paramref name="action"/>
         /// raises an exception, <paramref name="callback"/> is invoked with arguments indicating the error.
         /// </summary>
-        /// <param name="action">The action to perform.</param>
+        /// <param name="action">The action to perform. May not be <c>null</c>.</param>
         /// <param name="callback">The callback to indicate success or error.</param>
         /// <param name="state">The user state to include in the arguments to the callback. May be null.</param>
         /// <remarks>
@@ -24,6 +25,8 @@ namespace Nito.Async
         /// </remarks>
         public static void InvokeAndCallback(Action action, Action<AsyncCompletedEventArgs> callback, object state)
         {
+            Contract.Requires(action != null);
+
             try
             {
                 action();
@@ -47,7 +50,7 @@ namespace Nito.Async
         /// is invoked with arguments indicating the error.
         /// </summary>
         /// <typeparam name="T">The type of the result of the action.</typeparam>
-        /// <param name="action">The action to perform.</param>
+        /// <param name="action">The action to perform. May not be <c>null</c>.</param>
         /// <param name="callback">The callback to indicate success or error.</param>
         /// <param name="state">The user state to include in the arguments to the callback. May be null.</param>
         /// <remarks>
@@ -55,6 +58,8 @@ namespace Nito.Async
         /// </remarks>
         public static void InvokeAndCallback<T>(Func<T> action, Action<AsyncResultEventArgs<T>> callback, object state)
         {
+            Contract.Requires(action != null);
+
             try
             {
                 T result = action();
